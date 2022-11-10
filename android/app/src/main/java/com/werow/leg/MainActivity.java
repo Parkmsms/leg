@@ -1,4 +1,4 @@
-package com.leg;
+package com.werow.leg;
 
 import android.os.Bundle; // add
 import com.facebook.react.ReactActivity;

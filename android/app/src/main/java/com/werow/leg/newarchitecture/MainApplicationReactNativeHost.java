@@ -1,4 +1,4 @@
-package com.leg.newarchitecture;
+package com.werow.leg.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.leg.BuildConfig;
-import com.leg.newarchitecture.components.MainComponentsRegistry;
-import com.leg.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.werow.leg.BuildConfig;
+import com.werow.leg.newarchitecture.components.MainComponentsRegistry;
+import com.werow.leg.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

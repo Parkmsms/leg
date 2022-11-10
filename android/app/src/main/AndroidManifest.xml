@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.leg">
+  package="com.werow.leg">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
       android:name=".MainApplication"
@@ -20,7 +22,16 @@
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+             <action android:name="com.google.firebase.MESSAGING_EVENT" />
         </intent-filter>
       </activity>
     </application>
+
+    <!-- <service
+         android:name=".java.MyFirebaseMessagingService"
+         android:exported="false">
+         <intent-filter>
+              <action android:name="com.google.firebase.MESSAGING_EVENT" />
+              </intent-filter>
+        </service> -->
 </manifest>

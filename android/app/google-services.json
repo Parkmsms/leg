@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "709011725351",
+    "project_id": "werow-leg",
+    "storage_bucket": "werow-leg.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709011725351:android:82e647655d2fdaa65a8202",
+        "android_client_info": {
+          "package_name": "com.werow.leg"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "709011725351-lg4kghctfa3c46glb1amors9mehtnno6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChGUn7pIMyiZ-3GgmyWlwmTncEgSFldeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709011725351-lg4kghctfa3c46glb1amors9mehtnno6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
