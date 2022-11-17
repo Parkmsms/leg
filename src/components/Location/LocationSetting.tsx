@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from 'react-native-geolocation-service';
 import axios from "axios";
 import { getAccessToken, mylocation } from "../../config/AxiosFunction";
@@ -46,7 +47,7 @@ const LocationSetting = ({ navigation, route }: LocationSetting) => {
   const MyLocationSetting = async () => {
     const accessToken = await getAccessToken('accessToken');
     const response = await mylocation(accessToken);
-    console.log(response.data);
+    console.log("유저위치 목록반환:", response.data);
     setMyLocationList(response.data);
 
   }
@@ -120,14 +121,29 @@ const LocationSetting = ({ navigation, route }: LocationSetting) => {
             renderItem={({ item }) =>
               <TouchableOpacity>
                 <View style={LocationWrapper.MyLocationList}>
-                  <Text style={{ color: '#000', fontWeight: 'bold' }}>{item.address.locationName}</Text>
-                  <View style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 10 }}>
-                    <Text style={LocationWrapper.AddressTypeContainer}>도로명</Text>
-                    <Text style={{ color: '#000', paddingLeft: 10 }}>{item.address.roadAddress}</Text>
+                  <View style={{ flexDirection: "column", justifyContent: 'center', alignItems: 'center', paddingRight: 20 }}>
+                    {item.alias === "HOME" ?
+                      <>
+                        <MaterialCommunityIcon name='greenhouse' size={25} color="black" />
+                        <Text style={{ color: 'black' }}>우리집</Text>
+                      </>
+                      :
+                      <>
+                        <MaterialCommunityIcon name='office-building-outline' size={25} color="black" />
+                        <Text>회사</Text>
+                      </>
+                    }
                   </View>
-                  <View style={{ flexDirection: 'row' }}>
-                    <Text style={LocationWrapper.AddressTypeContainer}>지번명</Text>
-                    <Text style={{ color: '#000', paddingLeft: 10 }}>{item.address.regionAddress}</Text>
+                  <View style={{ flexDirection: "column" }}>
+                    <Text style={{ color: '#000', fontWeight: 'bold' }}>{item.address.locationName}</Text>
+                    <View style={{ flexDirection: 'row', paddingTop: 10, paddingBottom: 10 }}>
+                      <Text style={LocationWrapper.AddressTypeContainer}>도로명</Text>
+                      <Text style={{ color: '#000', paddingLeft: 10 }}>{item.address.roadAddress}</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Text style={LocationWrapper.AddressTypeContainer}>지번명</Text>
+                      <Text style={{ color: '#000', paddingLeft: 10 }}>{item.address.regionAddress}</Text>
+                    </View>
                   </View>
                 </View>
 
@@ -220,7 +236,7 @@ const LocationWrapper = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: 'rgba(0, 0, 0, 0.05)',
-    flexDirection: 'column',
+    flexDirection: 'row',
     padding: 20,
   },
   AddressTypeContainer: {

@@ -23,6 +23,7 @@ import Router from '../../Router';
 import App from '../../App';
 import MenuSearch from '../pages/MenuSearch';
 import DetailPage from '../components/Menu/DetailPage';
+import DetailOptionPage from '../components/Menu/DetailOptionPage';
 
 
 const Stack = createNativeStackNavigator();
@@ -207,6 +208,18 @@ const StackNavigator = () => {
         name="DetailPage"
         component={DetailPage}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="DetailOptionPage"
+        component={DetailOptionPage}
+        options={{
+          title: '메뉴선택',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+          }
+        }}
       />
     </Stack.Navigator>
 

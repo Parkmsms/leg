@@ -116,11 +116,9 @@ const LocationVerify = ({ navigation, route }: LocationVerify) => {
     <>
       <View style={LocationVerifyWrapper.MainContainer}>
         <View style={LocationVerifyWrapper.PlaceContainer}>
-          <View style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+          <View>
             <Text style={{
+              color: 'black',
               fontWeight: 'bold',
               fontSize: 20,
               paddingBottom: 20
@@ -138,31 +136,31 @@ const LocationVerify = ({ navigation, route }: LocationVerify) => {
         <View style={LocationVerifyWrapper.AliasContainer}>
           <TouchableOpacity style={{
             backgroundColor: homeAlias === true ? '#87CEEB' : 'white',
-            width: 100,
+            width: 140,
             height: 80,
             justifyContent: 'flex-end',
             alignItems: 'center',
             borderRadius: 10,
-            borderColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: homeAlias === true ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)',
             shadowColor: '#52006A',
             borderWidth: 2,
-            marginRight: 50
+            marginRight: 10
           }} onPress={e => setAlias('home', e)}>
-            <Icon name='greenhouse' size={30} color="black" />
+            <Icon name='greenhouse' size={25} color="black" />
             <Text style={LocationVerifyWrapper.alias}>우리집</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{
             backgroundColor: companyAlias === true ? '#87CEEB' : 'white',
-            width: 100,
+            width: 140,
             height: 80,
             justifyContent: 'flex-end',
             alignItems: 'center',
             borderRadius: 10,
-            borderColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: companyAlias === true ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)',
             shadowColor: '#52006A',
             borderWidth: 2,
           }} onPress={e => setAlias('company', e)}>
-            <Icon name='office-building-outline' size={30} color="black" />
+            <Icon name='office-building-outline' size={25} color="black" />
             <Text style={LocationVerifyWrapper.alias}>회사</Text>
           </TouchableOpacity>
         </View>
@@ -198,6 +196,7 @@ const LocationVerifyWrapper = StyleSheet.create({
     backgroundColor: 'white',
   },
   TypeText: {
+    color: 'black',
     backgroundColor: '#87CEEB',
     justifyContent: 'center',
     alignItems: 'center',
@@ -206,12 +205,12 @@ const LocationVerifyWrapper = StyleSheet.create({
     paddingTop: 5,
     textAlign: 'center',
     borderRadius: 10,
-    fontWeight: 'bold'
+    fontWeight: '500'
   },
   LocationText: {
     color: 'black',
     fontSize: 15,
-    fontWeight: 'bold',
+    fontWeight: '600',
     paddingLeft: 10,
     // paddingBottom: 20,
   },

@@ -24,8 +24,8 @@ const Router = () => {
   }
 
   useEffect(() => {
-    // AsyncStorage.removeItem('accessToken');
-    // AsyncStorage.removeItem('refreshToken');
+    AsyncStorage.removeItem('accessToken');
+    AsyncStorage.removeItem('refreshToken');
     getToken()
   })
 

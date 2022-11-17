@@ -3,7 +3,7 @@ import axios from "axios";
 import { Agree } from "../models/agreeInfo";
 import { Device } from "../models/deviceInfo";
 import { PostLocation } from "../models/locationInfo";
-import { StoreParams } from "../models/storeInfo";
+import { StoreParams } from "../models/listfilterInfo";
 
 const hosturi = 'http://0giri.com/api';
 
@@ -254,11 +254,43 @@ export const getFoodKindsList = async (accessToken: string) => {
   }
 }
 
+export const getStoreInfo = async (accessToken: string, id: number) => {
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + '/posts/' + id + '/info',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    })
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
 export const getStoreMenu1 = async (accessToken: string, id: number) => {
   try {
     const result = await axios({
       method: 'get',
       url: hosturi + '/posts/' + id + '/menu',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    })
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export const getStoreMenu2 = async (accessToken: string, storeId: number, menuId: number) => {
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + '/posts/' + storeId + '/menu/' + menuId,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',

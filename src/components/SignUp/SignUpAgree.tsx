@@ -1,8 +1,10 @@
 import CheckBox from "@react-native-community/checkbox";
+import { RoundedCheckbox, PureRoundedCheckbox } from "react-native-rounded-checkbox";
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { Agree } from "../../models/agreeInfo";
 import Header from "../Header";
+import Icon from "react-native-vector-icons/Entypo";
 
 type SignUpAgree = {
   navigation: any;
@@ -52,7 +54,7 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
     if (checked) {
       setUserPolicyTerms({ ...userPolicyTerms, agreePolicy3: checked })
     } else {
-      setUserPolicyTerms({ ...userPolicyTerms, agreePolicy3: checked })
+      setUserPolicyTerms({ ...userPolicyTerms, agreePolicy3: !checked })
       setUserPolicyTerms({
         agreePolicy1: false,
         agreePolicy2: false,
@@ -124,40 +126,104 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
           <CheckBox
             nativeID="all"
             style={AgreeWrapper.checkBox}
+            onCheckColor="#00C1DE"
             disabled={false}
             onValueChange={allAgreeHnalder}
             value={isAllChecked}
           // onChange={allAgreeHnalder} 
           />
+          {/* <RoundedCheckbox
+            // outerStyle={{ borderWidth: 100 }}
+            innerStyle={AgreeWrapper.checkBox}
+            // active={isAllChecked}
+            onPress={allAgreeHnalder}
+            isChecked={isAllChecked}
+            checkedColor={'#00C1DE'}
+            uncheckedColor={'#00C1DE'}
+          // onChange={allAgreeHnalder} 
+          >
+            <Icon
+              size={16}
+              name="check"
+              color={isAllChecked ? "#fdfdfd" : "transparent"}
+            />
+          </RoundedCheckbox> */}
           <Text style={AgreeWrapper.checkText}> 전체 동의</Text>
         </View>
         <View style={AgreeWrapper.AgreeBox}>
           <CheckBox
-            nativeID="event"
+            nativeID="info"
             style={AgreeWrapper.checkBox}
+            onCheckColor="#00C1DE"
             disabled={false}
             onValueChange={(e: any) => setInfoCheckBox(e)}
             value={userPolicyTerms.agreePolicy1}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAgreeHandler('info', e)} />
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAgreeHandler('info', e)}
+          />
+          {/* <RoundedCheckbox
+            innerStyle={AgreeWrapper.checkBox}
+            // active={false}
+            onPress={(e: any) => setInfoCheckBox(e)}
+            isChecked={userPolicyTerms.agreePolicy1}
+            checkedColor={'#00C1DE'}
+            uncheckedColor={'#00C1DE'}
+          >
+            <Icon
+              size={16}
+              name="check"
+              color={userPolicyTerms.agreePolicy1 ? "#fdfdfd" : "transparent"}
+            />
+          </RoundedCheckbox> */}
           <Text style={AgreeWrapper.checkText}> [필수] 개인정보 수집 및 이용 동의</Text>
         </View>
         <View style={AgreeWrapper.AgreeBox}>
           <CheckBox
-            nativeID="location"
+            nativeID="event"
+            onCheckColor="#00C1DE"
             style={AgreeWrapper.checkBox}
             disabled={false}
             onValueChange={(e: any) => setEventCheckBox(e)}
             value={userPolicyTerms.agreePolicy2}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAgreeHandler('event', e)} />
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAgreeHandler('event', e)}
+          />
+          {/* <RoundedCheckbox
+            innerStyle={AgreeWrapper.checkBox}
+            // active={false}
+            onPress={(e: any) => setEventCheckBox(e)}
+            isChecked={userPolicyTerms.agreePolicy2}
+            checkedColor={'#00C1DE'}
+            uncheckedColor={'#00C1DE'}
+          ><Icon
+              size={16}
+              name="check"
+              color={userPolicyTerms.agreePolicy2 ? "#fdfdfd" : "transparent"}
+            />
+          </RoundedCheckbox> */}
           <Text style={AgreeWrapper.checkText}> [선택] 이벤트 정보 수신 동의</Text>
+
         </View>
         <View style={AgreeWrapper.AgreeBox}>
           <CheckBox
             style={AgreeWrapper.checkBox}
+            onCheckColor="#00C1DE"
             disabled={false}
             onValueChange={(e: any) => setLocationCheckBox(e)}
             value={userPolicyTerms.agreePolicy3}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAgreeHandler('location', e)} />
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAgreeHandler('location', e)}
+          />
+          {/* <RoundedCheckbox
+            innerStyle={AgreeWrapper.checkBox}
+            // active={false}
+            onPress={(e: any) => setLocationCheckBox(e)}
+            isChecked={userPolicyTerms.agreePolicy3}
+            checkedColor={'#00C1DE'}
+            uncheckedColor={'#00C1DE'}
+          ><Icon
+              size={16}
+              name="check"
+              color={userPolicyTerms.agreePolicy3 ? "#fdfdfd" : "transparent"}
+            />
+          </RoundedCheckbox> */}
           <Text style={AgreeWrapper.checkText}> [선택] 위치 정보 수신 동의</Text>
         </View>
         <TouchableOpacity style={AgreeWrapper.button}>
@@ -174,7 +240,7 @@ const SignUpAgree = ({ navigation, route }: SignUpAgree) => {
             placeholder="휴대전화 인증후 자동기입됩니다" style={AgreeWrapper.PhoneNumberInput}></TextInput>
         </View>
       </TouchableWithoutFeedback> */}
-    </View>
+    </View >
 
   )
 }
@@ -208,7 +274,7 @@ const AgreeWrapper = StyleSheet.create({
     width: 300,
     height: 50,
     borderStyle: 'solid',
-    borderWidth: 1,
+    borderBottomWidth: 1,
     borderRadius: 10,
     borderColor: 'lightgray',
     display: "flex",
@@ -216,11 +282,12 @@ const AgreeWrapper = StyleSheet.create({
     alignItems: 'center'
   },
   checkBox: {
-    margin: 5,
+    margin: 1,
   },
   checkText: {
     fontSize: 15,
-    fontWeight: '700'
+    fontWeight: '500',
+    color: 'black'
   },
   button: {
     width: 300,
