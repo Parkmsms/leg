@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, {useEffect, useState} from 'react';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SignIn from '../components/SignIn/SignInPhone';
 import SignUp from '../pages/SignUp';
 
@@ -24,15 +24,13 @@ import App from '../../App';
 import MenuSearch from '../pages/MenuSearch';
 import DetailPage from '../components/Menu/DetailPage';
 import DetailOptionPage from '../components/Menu/DetailOptionPage';
-
+import EventList from '../components/InTheEvent/EventList';
 
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
-
   return (
-
-    <Stack.Navigator initialRouteName='Home'>
+    <Stack.Navigator initialRouteName="Home">
       {/* <Stack.Screen
         name="MainPage"
         component={MainPage}
@@ -54,7 +52,8 @@ const StackNavigator = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="SignInPhone"
+      <Stack.Screen
+        name="SignInPhone"
         component={SignInPhone}
         options={{
           title: '로그인',
@@ -62,9 +61,11 @@ const StackNavigator = () => {
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: 'bold',
-          }
-        }} />
-      <Stack.Screen name="SignInVerify"
+          },
+        }}
+      />
+      <Stack.Screen
+        name="SignInVerify"
         component={SignInVerify}
         options={{
           title: '휴대폰 인증',
@@ -72,7 +73,7 @@ const StackNavigator = () => {
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: 'bold',
-          }
+          },
         }}
       />
       {/* <Stack.Screen
@@ -91,67 +92,67 @@ const StackNavigator = () => {
       <Stack.Screen
         name="SignUpAgree"
         component={SignUpAgree}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '회원가입',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //     fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }} 
+        options={{headerShown: false}}
+        // options={{
+        //   title: '회원가입',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //     fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
       <Stack.Screen
         name="SignUpPhone"
         component={SignUpPhone}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '휴대폰 인증',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //    fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }}  
+        options={{headerShown: false}}
+        // options={{
+        //   title: '휴대폰 인증',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //    fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
       <Stack.Screen
         name="SignUpVerify"
         component={SignUpVerify}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '휴대폰 인증',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //    fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }}  
+        options={{headerShown: false}}
+        // options={{
+        //   title: '휴대폰 인증',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //    fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
       <Stack.Screen
         name="SignUpName"
         component={SignUpName}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '휴대폰 인증',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //    fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }}  
+        options={{headerShown: false}}
+        // options={{
+        //   title: '휴대폰 인증',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //    fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
       <Stack.Screen
         name="CheckName"
         component={CheckName}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '휴대폰 인증',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //    fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }}  
+        options={{headerShown: false}}
+        // options={{
+        //   title: '휴대폰 인증',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //    fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
       <Stack.Screen
         name="LocationSetting"
@@ -163,7 +164,7 @@ const StackNavigator = () => {
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: 'bold',
-          }
+          },
         }}
       />
       <Stack.Screen
@@ -176,7 +177,7 @@ const StackNavigator = () => {
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: 'bold',
-          }
+          },
         }}
       />
       <Stack.Screen
@@ -189,7 +190,7 @@ const StackNavigator = () => {
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: 'bold',
-          }
+          },
         }}
       />
       <Stack.Screen
@@ -201,13 +202,13 @@ const StackNavigator = () => {
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: 'bold',
-          }
+          },
         }}
       />
       <Stack.Screen
         name="DetailPage"
         component={DetailPage}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="DetailOptionPage"
@@ -218,11 +219,23 @@ const StackNavigator = () => {
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: 'bold',
-          }
+          },
+        }}
+      />
+      <Stack.Screen
+        name="EventList"
+        component={EventList}
+        options={{
+          title: '이벤트',
+          headerTransparent: true,
+          headerTitleAlign: 'left',
+          headerTintColor: '#000000',
+          headerStyle: {
+            backgroundColor: '#F9FFFF',
+          },
         }}
       />
     </Stack.Navigator>
-
   );
 };
 
