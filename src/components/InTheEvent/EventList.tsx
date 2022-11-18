@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   Button,
 } from 'react-native';
-import {EventListAPI} from '../../config/AxiosFunction';
+import { EventListAPI, getAccessToken } from '../../config/AxiosFunction';
 // import {EventDetailAPI} from '../../config/AxiosFunction';
 
 /* 이벤트 리스트 Data */
@@ -28,14 +28,14 @@ type NoticeNavigator = {
 };
 
 const EventListPage = (
-  {navigation, route}: {navigation: any; route: any},
+  { navigation, route }: { navigation: any; route: any },
   prop: any,
 ) => {
   const [data, setData] = useState<EventListData[]>([]);
 
   const GetData = async () => {
-    const response = await EventListAPI();
-    console.log(response.data.content);
+    const accessToken = await getAccessToken('accessToken');
+    const response = await EventListAPI(accessToken);
     setData(response.data.content);
   };
 
@@ -46,7 +46,7 @@ const EventListPage = (
   };
 
   useEffect(() => {
-    console.log('route.params', route.params);
+    // console.log('route.params', route.params.id);
     GetData();
   }, []);
 
@@ -74,7 +74,7 @@ const EventListPage = (
               }>
               <Text style={NoticeListStyle.listTitle}>{item.title}</Text>
               <Image
-                style={{width: 100, height: 100}}
+                style={{ width: 100, height: 100 }}
                 source={{
                   uri: item.banner,
                 }}></Image>

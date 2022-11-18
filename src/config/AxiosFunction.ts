@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {Agree} from '../models/agreeInfo';
-import {Device} from '../models/deviceInfo';
-import {PostLocation} from '../models/locationInfo';
-import {StoreParams} from '../models/listfilterInfo';
+import { Agree } from '../models/agreeInfo';
+import { Device } from '../models/deviceInfo';
+import { PostLocation } from '../models/locationInfo';
+import { StoreParams } from '../models/listfilterInfo';
 
 const hosturi = 'http://0giri.com/api';
 
@@ -292,11 +292,7 @@ export const getStoreMenu1 = async (accessToken: string, id: number) => {
   }
 };
 
-export const getStoreMenu2 = async (
-  accessToken: string,
-  storeId: number,
-  menuId: number,
-) => {
+export const getStoreMenu2 = async (accessToken: string, storeId: number, menuId: number,) => {
   try {
     const result = await axios({
       method: 'get',
@@ -313,15 +309,14 @@ export const getStoreMenu2 = async (
 };
 
 /* 공지사항 목록 */
-export const NoticeListAPI = async () => {
+export const NoticeListAPI = async (accessToken: string) => {
   try {
     const result = await axios({
       method: 'get', // GET
       url: hosturi + '/notices', // URL
       headers: {
-        // Token
-        Authorization:
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NjcxMjI1OTAsInN1YiI6IjE3IiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.H53NNatwS-D3BBsXFjXCzSD_RoF5t29_aWIeetcTwtf3zSraw0n-du1eSMqQm5pdava3-9SLQR67gGrSY1KaeA',
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
       },
     });
     return result;
@@ -331,16 +326,15 @@ export const NoticeListAPI = async () => {
 };
 
 /* 공지사항 상세 */
-export const NoticeDetailAPI = async (id: number) => {
+export const NoticeDetailAPI = async (accessToken: string, id: number) => {
   try {
     const result = await axios({
       method: 'get',
       url: hosturi + '/notices/',
 
       headers: {
-        // Token
-        Authorization:
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NjcxMjI1OTAsInN1YiI6IjE3IiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.H53NNatwS-D3BBsXFjXCzSD_RoF5t29_aWIeetcTwtf3zSraw0n-du1eSMqQm5pdava3-9SLQR67gGrSY1KaeA',
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
       },
     });
     return result;
@@ -350,15 +344,14 @@ export const NoticeDetailAPI = async (id: number) => {
 };
 
 /* 이벤트 목록 */
-export const EventListAPI = async () => {
+export const EventListAPI = async (accessToken: string) => {
   try {
     const result = await axios({
       method: 'get', // GET
       url: hosturi + '/events', // URL
       headers: {
-        // Token
-        Authorization:
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NjcxMjI1OTAsInN1YiI6IjE3IiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.H53NNatwS-D3BBsXFjXCzSD_RoF5t29_aWIeetcTwtf3zSraw0n-du1eSMqQm5pdava3-9SLQR67gGrSY1KaeA',
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
       },
     });
     return result;
@@ -368,15 +361,14 @@ export const EventListAPI = async () => {
 };
 
 /* 이벤트 상세 */
-export const EventDetailAPI = async () => {
+export const EventDetailAPI = async (accessToken: string) => {
   try {
     const result = await axios({
       method: 'get', // GET
       url: hosturi + '/events/', // URL
       headers: {
-        // Token
-        Authorization:
-          'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NjcxMjI1OTAsInN1YiI6IjE3IiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.H53NNatwS-D3BBsXFjXCzSD_RoF5t29_aWIeetcTwtf3zSraw0n-du1eSMqQm5pdava3-9SLQR67gGrSY1KaeA',
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
       },
       params: {
         eventId: 2,
