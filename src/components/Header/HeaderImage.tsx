@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, Text, View } from "react-native";
 
-const Header = () => {
+const HeaderImage = () => {
   return (
     <View style={{
       marginTop: 100,
@@ -14,4 +14,4 @@ const Header = () => {
   )
 }
 
-export default Header;
+export default HeaderImage;

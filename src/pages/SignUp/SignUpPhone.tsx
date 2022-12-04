@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { authphone } from "../../config/AxiosFunction";
-import Header from "../Header";
+import Header from "../../components/Header/HeaderImage";
 
 type SignUpPhone = {
   navigation: any;
@@ -31,8 +31,8 @@ const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
     }
   }
   useEffect(() => {
-    console.log(phoneValid);
-  })
+    console.log("this", phoneValid);
+  }, [])
   useEffect(() => {
     console.log("핸드폰 Token:", route.params?.deviceInfo);
   }, [])
@@ -60,14 +60,14 @@ const SignUpPhone = ({ navigation, route }: SignUpPhone) => {
           dataDetectorTypes="phoneNumber"
           onChangeText={value => ButtonChange(value)}
         />
-        {phoneValid === undefined ? null : phoneValid === true ?
+        {/* {phoneValid === undefined ? null : phoneValid === true ?
           <Text style={{ color: '#00C1DE', fontWeight: 'bold', padding: 5 }}>
             사용 가능한 핸드폰 번호입니다.
           </Text> :
           <Text style={{ color: 'red', fontWeight: 'bold', padding: 5 }}>
             다시 입력해주세요.
           </Text>
-        }
+        } */}
 
         <View
           style={{

@@ -3,7 +3,7 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getAccessToken, location } from "../../config/AxiosFunction";
 import { initialKaKaoAddress, initialPostLocation, KaKaoAddress, PostLocation } from "../../models/locationInfo";
-import BottomPopup from "../BottomPopUp";
+import BottomPopup from "../../components/Modal/BottomPopUp";
 
 type LocationVerify = {
   navigation?: any;

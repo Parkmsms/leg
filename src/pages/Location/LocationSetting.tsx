@@ -5,7 +5,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import Geolocation from 'react-native-geolocation-service';
 import axios from "axios";
 import { getAccessToken, mylocation } from "../../config/AxiosFunction";
-import BottomPopup from "../BottomPopUp";
+import BottomPopup from "../../components/Modal/BottomPopUp";
 import { gpsToAdress } from "../../config/KkaoAxiosFunction";
 
 interface ILocation {

@@ -49,16 +49,17 @@ const Home = ({ navigation }: HomeProps) => {
     const getToken = (async () => {
         messaging().hasPermission().then((enabled: any) => {
             if (enabled) {
+                console.log(enabled);
                 setTimeout(() => {
                     if (!messaging().isDeviceRegisteredForRemoteMessages) {
                         messaging().registerDeviceForRemoteMessages();
                     }
-                    messaging().getToken().then((token: React.SetStateAction<string>) => {
+                    messaging().getToken().then((token) => {
                         console.log("messagging token", token);
                         setToken(token);
                     }).catch((error: any) => {
                         console.log("1st error", error);
-                        setToken("device_Token");
+                        setToken("eW-FzKY7TaWZZNvcHekU8z:APA91bGMbow5TI1Jat73HJGw0QRmdCamgnajYE4oLMngxA9qgAvJ9guutTLqCh_S6CQHn81JKXkMm7l1v-rku8f-clrf1-SPrbHkn92IrOnPToN_xs4KePFJKzVduJcUxEsHP9igjiX8");
                     })
                 }, 5000);
 

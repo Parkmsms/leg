@@ -3,7 +3,7 @@ import { FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, Vi
 import Icon from 'react-native-vector-icons/Ionicons';
 import Geolocation from 'react-native-geolocation-service';
 import axios from "axios";
-import BottomPopup from "../BottomPopUp";
+import BottomPopup from "../../components/Modal/BottomPopUp";
 import { gpsToAdress, keywordToAdress } from "../../config/KkaoAxiosFunction";
 
 interface ILocation {

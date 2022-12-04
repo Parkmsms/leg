@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Alert, Dimensions, Image, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View, VirtualizedList, ActivityIndicator } from "react-native";
+import { Alert, Dimensions, Image, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View, VirtualizedList, ActivityIndicator, SafeAreaView } from "react-native";
 import { activeLocation, getAccessToken, getStoreList, getBannerList, getFoodKindsList } from "../config/AxiosFunction";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { intialStorePrams, StoreParams } from "../models/listfilterInfo";
@@ -8,7 +8,7 @@ import { intialStorePrams, StoreParams } from "../models/listfilterInfo";
 // import SliderBox from 'react-native-image-slider-box';
 // import Carousel from 'react-native-snap-carousel';
 import { Picker } from '@react-native-picker/picker';
-import DetailPopup from "../components/Menu/DetailPopUp";
+import DetailPopup from "./Menu/DetailPopUp";
 
 const { width } = Dimensions.get('window');
 const height = width * 0.6;
@@ -119,9 +119,10 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
 
   }, [params, route.params?.menu])
 
-  const goDetail = (id: number) => {
+  const goDetail = (id: number, profile: string) => {
     console.log(id);
-    navigation.navigate('DetailPage', { detailId: id })
+    console.log(profile);
+    navigation.navigate('DetailPage', { detailId: id, profile: profile })
   }
 
   // const openModal = (id: number) => {
@@ -165,13 +166,13 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
   }
 
   return (
-    <ScrollView style={MainWrapper.MainContainer}>
+    <SafeAreaView style={{ flex: 1 }}>
       {ready ?
         <View style={[MainWrapper.container, MainWrapper.horizontal]}>
           <ActivityIndicator size="large" />
         </View>
         :
-        <>
+        <ScrollView style={MainWrapper.MainContainer}>
           <View style={MainWrapper.HeadeWrapper}>
             <View style={{ flexDirection: 'row', }} >
               <Text onPress={goLocationSetting}
@@ -310,7 +311,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
               {storeList?.map((store: Store, index: number) => {
                 return (
                   <TouchableOpacity key={index}
-                    onPress={() => goDetail(store.postId)}
+                    onPress={() => goDetail(store.postId, store.storeProfile)}
                     // onPress={() => openModal(store.postId)}
                     style={{
                       flexDirection: 'row',
@@ -374,10 +375,10 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
               })}
             </ScrollView>
           </View >
-        </>
+        </ScrollView>
 
       }
-    </ScrollView>
+    </SafeAreaView>
 
 
   )
@@ -385,7 +386,8 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
 const MainWrapper = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: 'background-color: rgba(0, 0, 0, 0.01)'
   },
   horizontal: {
     flexDirection: "row",
@@ -395,7 +397,7 @@ const MainWrapper = StyleSheet.create({
   MainContainer: {
     flex: 1,
     backgroundColor: 'white',
-    alignContent: 'center',
+    // alignContent: 'center',
     // padding: 10,
     paddingLeft: 10,
     // paddingRight: 10,

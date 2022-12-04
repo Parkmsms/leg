@@ -34,7 +34,7 @@ export const existphone = async (phone: string) => {
   try {
     const result = await axios({
       method: 'post',
-      url: hosturi + '/users/phone/check',
+      url: hosturi + '/users/phone/dup',
       // header: await AsyncStorage.getItem('session'), JWT 토큰 헤더에 담는 방법
       data: {
         phone: phone,
@@ -50,7 +50,7 @@ export const checkname = async (nickname: string) => {
   try {
     const result = await axios({
       method: 'post',
-      url: hosturi + '/users/nickname/check',
+      url: hosturi + '/users/nickname/dup',
       // header: await AsyncStorage.getItem('session'), JWT 토큰 헤더에 담는 방법
       data: {
         nickname: nickname,
@@ -372,6 +372,28 @@ export const EventDetailAPI = async (accessToken: string) => {
       },
       params: {
         eventId: 2,
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+/* 카트추가 */
+export const CartPost = async (accessToken: string, postId: number, itemSets: any) => {
+  try {
+    const result = await axios({
+      method: 'POST', // POST
+      url: hosturi + '/carts', // URL
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+      data: {
+        postId: postId,
+        itemSets: itemSets
       },
     });
     return result;

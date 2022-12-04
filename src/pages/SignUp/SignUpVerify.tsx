@@ -1,43 +1,69 @@
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { authphone, existphone, login } from "../../config/AxiosFunction";
+import { Agree } from "../../models/agreeInfo";
 import { Device } from "../../models/deviceInfo";
-import Header from "../Header";
+import Header from "../../components/Header/HeaderImage";
 
-type SignInVerify = {
-  navigation?: any;
-  route: any;
+
+type SignUpVerify = {
+  navigation?: any,
+  route: any
 }
-const SignInVerify = ({ navigation, route }: SignInVerify) => {
+const SignUpVerify = ({ navigation, route }: SignUpVerify) => {
+
   const [authCode, setAuthCode] = useState<string>('');
   const [verfify, setVerify] = useState<string>('');
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [deviceInfo, setDeviceInfo] = useState<Device>({
     deviceToken: '',
   });
+  const [userPolicyTerms, setUserPolicTerms] = useState<Agree>({
+    agreePolicy1: false,
+    agreePolicy2: false,
+    agreePolicy3: false
+  });
+
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   async function Verify(phone: string) {
     console.log("인증페이지에 전달받은 전화번호", phone);
     const response = await authphone(phone);
-    console.log("번호 인증후 받은 인증번호", response.data.authCode);
+    console.log("번호 인증후 받은 인증번호1", response.data.authCode);
     setAuthCode(response.data.authCode);
   }
-
   // 전달받은 DeviceToken 설정
   const settingDeviceInfo = useCallback(() => {
-    setDeviceInfo({ deviceToken: route.params?.deviceInfo })
+    setDeviceInfo(route.params?.deviceInfo)
+  }, []);
+
+  // 전달받은 동의내용 설정
+  const settingUserPolicyInfo = useCallback(() => {
+    setUserPolicTerms(route.params?.userPolicyTerms)
   }, []);
 
   useEffect(() => {
     // 인증번호 받는 함수 실행
-    Verify(route.params.phone);
+    Verify(route.params?.phone);
     // DeviceToken 설정 함수 실행
-    console.log("휴대폰 인증", route.params?.deviceInfo);
-
     settingDeviceInfo()
+    // 동의 설정 함수 실행
+    settingUserPolicyInfo()
+
+    // 기기토큰 임의변경 테스트 코드
+    // setDeviceInfo({
+    //   ...deviceInfo,
+    //   deviceToken: deviceInfo.deviceToken + '1'
+    // })
   }, [])
+
+  useEffect(() => {
+    // DeviceToken이 어떤값인지 조사해볼것
+    console.log("인증번호 받는 페이지 기기 IMEI:", route.params?.deviceInfo);
+    console.log("인증동의 받는 페이지 동의 정보:", userPolicyTerms);
+
+    // console.log("기기 TYPE:", deviceInfo.deviceType);
+  }, [deviceInfo])
 
   const ConfirmCode = async () => {
     // 입력한 인증번호와 받은 인증번호 일치하면
@@ -47,29 +73,22 @@ const SignInVerify = ({ navigation, route }: SignInVerify) => {
 
       //중복된 휴대폰이 없는경우
       if (response.data == false) {
-        Alert.alert('회원가입을 먼저 해주세요!')
+
         // 닉네임 중복체크 페이지로 이동
-        navigation.navigate('SignUpAgree', { deviceInfo: deviceInfo });
+        navigation.navigate('SignUpName', { phone: route.params?.phone, deviceInfo: deviceInfo, userPolicyTerms: userPolicyTerms })
 
         //중복된 휴대폰이 있는경우
       } else {
 
         try {
-          console.log(route.params?.phone, route.params?.deviceInfo);
-
           // 로그인 시도
-          const response = await login(route.params?.phone, route.params?.deviceInfo)
-          console.log("로그인 성공", response.status);
-          console.log("accessToken", response.data.accessToken);
-          console.log('refreshToken', response.data.refreshToken);
+          const response = await login(route.params?.phone, deviceInfo.deviceToken)
+          console.log(response.data);
           if (response.status === 200)
             await AsyncStorage.setItem('accessToken', response.data.accessToken);
           await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
-          navigation.navigate('LoginSucess')
-        } catch (err) {
-          console.log(err);
-
-          // setModalVisible(true)
+        } catch {
+          setModalVisible(true)
         }
       }
       // navigation.navigate('SignUpAgree', { phone: input });
@@ -133,6 +152,7 @@ const SignInVerify = ({ navigation, route }: SignInVerify) => {
         </View>
       </Modal>
     </View>
+
   )
 }
 const PhoneWrapper = StyleSheet.create({
@@ -177,10 +197,11 @@ const PhoneWrapper = StyleSheet.create({
   authCode: {
     width: 300,
     height: 60,
-    fontSize: 15,
+    fontSize: 17,
     borderColor: 'lightgray',
     borderWidth: 1,
     borderRadius: 10,
+    padding: 10
   },
   ConfirmView: {
     backgroundColor: '#00C1DE',
@@ -205,4 +226,4 @@ const PhoneWrapper = StyleSheet.create({
     backgroundColor: 'white',
   },
 })
-export default SignInVerify;
+export default SignUpVerify;

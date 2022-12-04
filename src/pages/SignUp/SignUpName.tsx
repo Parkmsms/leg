@@ -3,10 +3,10 @@ import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } fro
 import { authphone, checkname, existphone, login, register } from "../../config/AxiosFunction";
 import DeviceInfo from 'react-native-device-info';
 import { Device, initialDevice } from "../../models/deviceInfo";
-import Header from "../Header";
+import Header from "../../components/Header/HeaderImage";
 import { Agree, initialAgree } from "../../models/agreeInfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import BottomPopup from "../BottomPopUp";
+import BottomPopup from "../../components/Modal/BottomPopUp";
 
 type SignUpName = {
   navigation?: any,
@@ -133,7 +133,7 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
             placeholder="닉네임을 입력해주세요.">
           </TextInput>
           <View>
-            {nameValid == undefined && nameCheck === undefined ?
+            {/* {nameValid == undefined && nameCheck === undefined ?
               <Text style={{ color: 'black', fontWeight: 'bold' }}> 입력해주세요. </Text>
               : nameValid === true && nameCheck === undefined ?
                 <Text style={{ color: '#00C1DE', fontWeight: 'bold' }}> 사용 가능한 닉네임입니다.</Text>
@@ -146,7 +146,7 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
                       : nameValid === true && nameCheck === false ?
                         <Text style={{ color: 'red', fontWeight: 'bold' }}> 중복된 닉네임입니다. </Text>
                         : null
-            }
+            } */}
           </View>
 
         </View>

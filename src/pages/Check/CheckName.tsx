@@ -3,7 +3,7 @@ import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } fro
 import { changeuser, checkuser } from "../../config/AxiosFunction"
 import DeviceInfo from 'react-native-device-info';
 import { Device } from "../../models/deviceInfo";
-import Header from "../Header";
+import Header from "../../components/Header/HeaderImage";
 
 type CheckName = {
   navigation?: any,

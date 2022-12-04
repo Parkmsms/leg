@@ -42,7 +42,12 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
   const handleOption = (storeId: number, menu: StoreMenu1) => {
     // console.log("가게ID", storeId);
     // console.log("메뉴ID", menu);
-    navigation.navigate('DetailOptionPage', { storeId: storeId, menu: menu })
+    navigation.navigate('DetailOptionPage', {
+      storeId: storeId,
+      menu: menu,
+      storeInfo: storeInfo,
+      profile: route.params?.profile
+    })
   }
 
   const onPictureChange = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -75,9 +80,10 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {ready ? <View style={[DetailWrapper.container, DetailWrapper.horizontal]}>
-        <ActivityIndicator size="large" />
-      </View> :
+      {ready ?
+        <View style={[DetailWrapper.container, DetailWrapper.horizontal]}>
+          <ActivityIndicator size="large" />
+        </View> :
         <>
           <ScrollView style={DetailWrapper.MainContainer}>
             <View style={{ flex: 0.5, height: height }}>

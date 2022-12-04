@@ -3,7 +3,7 @@ import { RoundedCheckbox, PureRoundedCheckbox } from "react-native-rounded-check
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { Agree } from "../../models/agreeInfo";
-import Header from "../Header";
+import Header from "../../components/Header/HeaderImage";
 import Icon from "react-native-vector-icons/Entypo";
 
 type SignUpAgree = {
