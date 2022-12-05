@@ -220,9 +220,9 @@ const Home = ({ navigation }: HomeProps) => {
                 {/* <Image source={require('../assets/main.png')}
                 style={{ width: 100, height: 100 }}></Image> */}
                 <Text style={homeWrapper.mainTitle}>지금은 음식 포장하러 가는 중</Text>
-                <Image source={require('../assets/title.png')}
+                <Image source={require('.././assets/title.png')}
                     style={homeWrapper.headerTitle} />
-                <ImageBackground source={require('../assets/background.png')}
+                <ImageBackground source={require('.././assets/background.png')}
                     style={homeWrapper.background} />
                 <View style={homeWrapper.buttonView}>
                     <TouchableOpacity style={homeWrapper.button} onPress={goSignUp}>

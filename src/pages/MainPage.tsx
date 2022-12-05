@@ -32,7 +32,7 @@ type MyLocation = {
 };
 
 type Store = {
-  postId: number;
+  id: number;
   postTitle: string;
   cookTimeAvg: number;
   storeName: string;
@@ -40,6 +40,7 @@ type Store = {
   storeStar: string;
   town: string;
   distance: number;
+  foodTypes: string[];
 }
 type MainPageProps = {
   route: any;
@@ -83,12 +84,14 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
   const getBanner = async () => {
     const accessToken = await getAccessToken('accessToken');
     const response = await getBannerList(accessToken);
+    console.log("베너", response.data);
     setBannerList(response.data)
   }
 
   const getList = async () => {
     const accessToken = await getAccessToken('accessToken');
     const response = await getStoreList(accessToken, params);
+    console.log("가게정보", response.data.content);
     setStoreList(response.data.content)
   }
 
@@ -311,7 +314,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
               {storeList?.map((store: Store, index: number) => {
                 return (
                   <TouchableOpacity key={index}
-                    onPress={() => goDetail(store.postId, store.storeProfile)}
+                    onPress={() => goDetail(store.id, store.storeProfile)}
                     // onPress={() => openModal(store.postId)}
                     style={{
                       flexDirection: 'row',

@@ -1,12 +1,12 @@
 import React from 'react';
-import {Platform} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { Platform } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Home from '../pages/Home';
+// import Home from '../pages/Home';
 import Orders from '../pages/Orders';
 import MyPage from '../pages/MyPage';
 import MainPage from '../pages/MainPage';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -15,8 +15,8 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       initialRouteName="홈"
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused }) => {
           let iconName = Platform.OS === 'ios' ? 'ios-' : 'md-';
 
           if (route.name === '홈') {
@@ -62,15 +62,15 @@ const TabNavigator = () => {
       <Tab.Screen
         name="홈"
         component={MainPage}
-        options={{headerShown: false}}
-        // options={{
-        //   title: '주소 확인',
-        //   headerTitleAlign: 'center',
-        //   headerTitleStyle: {
-        //     fontSize: 20,
-        //     fontWeight: 'bold',
-        //   }
-        // }}
+        options={{ headerShown: false }}
+      // options={{
+      //   title: '주소 확인',
+      //   headerTitleAlign: 'center',
+      //   headerTitleStyle: {
+      //     fontSize: 20,
+      //     fontWeight: 'bold',
+      //   }
+      // }}
       />
       <Tab.Screen name="주문 현황" component={Orders} />
       {/* <Tab.Screen name="내 근처" component={Delivery} /> */}

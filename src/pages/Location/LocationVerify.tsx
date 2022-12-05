@@ -91,7 +91,7 @@ const LocationVerify = ({ navigation, route }: LocationVerify) => {
   // }
 
   const saveLocation = async () => {
-    console.log(data);
+    console.log("위치설정", data);
     const accessToken = await getAccessToken('accessToken');
     const response = await location(data, accessToken);
     console.log(response.data);

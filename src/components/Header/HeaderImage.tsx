@@ -8,7 +8,7 @@ const HeaderImage = () => {
       width: '50%',
       height: 30
     }}>
-      <Image source={require('../assets/title.png')}
+      <Image source={require('../../assets/title.png')}
       />
     </View>
   )

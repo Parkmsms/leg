@@ -145,7 +145,7 @@ export const location = async (data: PostLocation, accessToken: string) => {
   try {
     const result = await axios({
       method: 'post',
-      url: hosturi + '/users/locations',
+      url: hosturi + '/locations',
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
@@ -196,7 +196,7 @@ export const activeLocation = async (accessToken: string) => {
   try {
     const result = await axios({
       method: 'get',
-      url: hosturi + '/users/locations/active',
+      url: hosturi + '/locations/active',
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
