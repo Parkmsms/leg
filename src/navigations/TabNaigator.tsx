@@ -6,7 +6,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Orders from '../pages/Orders';
 import MyPage from '../pages/MyPage';
 import MainPage from '../pages/MainPage';
+import OrderStatus from '../pages/Order/OrderStatus';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import OrderPage from '../pages/OrderPage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -21,7 +23,7 @@ const TabNavigator = () => {
 
           if (route.name === '홈') {
             iconName += 'home-outline';
-          } else if (route.name === '주문 현황') {
+          } else if (route.name === '주문내역') {
             iconName += 'newspaper-outline';
           } else if (route.name === '마이 페이지') {
             iconName += 'person-outline';
@@ -72,7 +74,28 @@ const TabNavigator = () => {
       //   }
       // }}
       />
-      <Tab.Screen name="주문 현황" component={Orders} />
+      <Tab.Screen name="주문내역"
+        component={OrderPage}
+        // options={({navigation})=> ({
+        //    tabBarButton:props => <TouchableOpacity {...props} onPress={()=>navigation.goBack()}/>
+        // })}
+        options={{
+          title: '주문내역',
+          headerTransparent: true,
+          headerTitleAlign: 'left',
+          headerTintColor: '#000000',
+          headerStyle: {
+            backgroundColor: '#F9FFFF',
+          },
+          headerTitleStyle: {
+            fontSize: 20,
+            fontFamily: 'Urbanist',
+            fontWeight: 'bold',
+
+            // marginTop:10
+          },
+        }}
+      />
       {/* <Tab.Screen name="내 근처" component={Delivery} /> */}
       <Tab.Screen
         name="마이 페이지"

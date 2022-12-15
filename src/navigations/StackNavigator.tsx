@@ -24,6 +24,9 @@ import DetailOptionPage from '../pages/Menu/DetailOptionPage';
 import EventList from '../pages/InTheEvent/EventList';
 import CartList from '../pages/Cart/CartList';
 import OrderList from '../pages/Order/OrderList';
+import OrderStatus from '../pages/Order/OrderStatus';
+import ReviewPage from '../pages/Review/ReviewPage';
+import ReviewItem from '../pages/Review/ReviewItem';
 
 const Stack = createNativeStackNavigator();
 
@@ -254,6 +257,45 @@ const StackNavigator = () => {
             fontSize: 20,
             fontWeight: 'bold',
           },
+        }}
+      />
+      <Stack.Screen
+        name="OrderStatus"
+        component={OrderStatus}
+        options={{
+          title: '주문 현황',
+          headerTransparent: true,
+          headerTitleAlign: 'left',
+          headerTintColor: '#000000',
+          headerStyle: {
+            backgroundColor: '#F9FFFF',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="ReviewPage"
+        component={ReviewPage}
+        options={{
+          title: '',
+          headerTransparent: true,
+          headerTitleAlign: 'left',
+          headerTintColor: '#000000',
+          headerStyle: {
+            backgroundColor: '#F9FFFF',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="ReviewItem"
+        component={ReviewItem}
+        options={{
+          title: '리뷰👩🏻‍💻',
+          headerTransparent: true,
+          headerTitleAlign: 'center',
+          headerTintColor: '#000000',
+          headerStyle: {
+            backgroundColor: '#F9FFFF',
+          }
         }}
       />
     </Stack.Navigator>
