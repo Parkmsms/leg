@@ -14,6 +14,18 @@ public class MainActivity extends ReactActivity {
   protected void onCreate(Bundle savedInstanceState) {
       SplashScreen.show(this);  // here 
       super.onCreate(savedInstanceState);
+      // Intent intent = getIntent();
+      // if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+      //       Uri uri = "nmap://actionPath?parameter=value&appname=com.werow.leg"
+            
+      //       if(uri != null) {
+      //           String parameter = uri.getQueryParameter("parameter");
+      //           String appname = uri.getQueryParameter("appname");
+
+      //           Log.d("MyTag","parameter : " + when + " , appname : " + message);
+      //       }
+            
+      // }
   }
   
   /**

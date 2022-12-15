@@ -180,7 +180,7 @@ export const mylocation = async (accessToken: string) => {
   try {
     const result = await axios({
       method: 'get',
-      url: hosturi + '/users/locations',
+      url: hosturi + '/locations',
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
@@ -401,3 +401,44 @@ export const CartPost = async (accessToken: string, postId: number, itemSets: an
     throw err;
   }
 };
+
+export const pickStore = async (accessToken: string, postId: number,) => {
+  console.log(postId);
+
+  try {
+    const result = await axios({
+      method: 'POST', // POST
+      url: hosturi + '/picks',
+      params: {
+        postId: postId
+      },
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export const deletepickStore = async (accessToken: string, postId: number,) => {
+  try {
+    const result = await axios({
+      method: 'DELETE', // POST
+      url: hosturi + '/picks',
+      params: {
+        postId: postId
+      },
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}

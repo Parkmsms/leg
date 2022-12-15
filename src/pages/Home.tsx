@@ -49,17 +49,16 @@ const Home = ({ navigation }: HomeProps) => {
     const getToken = (async () => {
         messaging().hasPermission().then((enabled: any) => {
             if (enabled) {
-                console.log(enabled);
                 setTimeout(() => {
                     if (!messaging().isDeviceRegisteredForRemoteMessages) {
                         messaging().registerDeviceForRemoteMessages();
                     }
                     messaging().getToken().then((token) => {
-                        console.log("messagging token", token);
+                        console.log("messaging token", token);
                         setToken(token);
                     }).catch((error: any) => {
-                        console.log("1st error", error);
-                        setToken("eW-FzKY7TaWZZNvcHekU8z:APA91bGMbow5TI1Jat73HJGw0QRmdCamgnajYE4oLMngxA9qgAvJ9guutTLqCh_S6CQHn81JKXkMm7l1v-rku8f-clrf1-SPrbHkn92IrOnPToN_xs4KePFJKzVduJcUxEsHP9igjiX8");
+                        console.log("error", error);
+                        setToken("ckTj-EseR4GWhcGSYgDRIV:APA91bGvX1dU2E0lk73vTswhlABgQR-qPX09ONixJFh4L3ysV2P12YgqRgm4Td9SFeQKKVXa2QKcbUPq5BjaaaeSynlYW_IwYXpaJWoG8wQoAR8ela1sjDruhnKnODt-IHEsHg36-wVH");
                     })
                 }, 5000);
 
@@ -69,8 +68,6 @@ const Home = ({ navigation }: HomeProps) => {
                     console.log("AUTHORIZED", messaging.AuthorizationStatus.AUTHORIZED);
                     console.log("PROVISIONAL", messaging.AuthorizationStatus.PROVISIONAL);
                     const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-                    console.log(enabled);
-
                     if (enabled) {
                         messaging().getToken().then((token: React.SetStateAction<string>) => {
                             //푸시 토큰 표시 

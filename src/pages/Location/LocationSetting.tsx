@@ -235,7 +235,7 @@ const LocationWrapper = StyleSheet.create({
     // marginHorizontal: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: 'rgba(0, 0, 0, 0.05)',
+    borderColor: 'rgba(0, 0, 0, 0.1)',
     flexDirection: 'row',
     padding: 20,
   },

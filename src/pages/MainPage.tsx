@@ -253,7 +253,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
                     minWidth: 70,
                     // width: 80,
                     height: 30,
-                    backgroundColor: params.foodType === menu ? 'linear-gradient(180deg, #00C1DE 0%, rgba(27, 147, 234, 0.93) 100%);' : '#E8E8E8',
+                    backgroundColor: params.foodType === menu ? '#00C1DE' : '#E8E8E8',
                     // backgroundColor: 'rgba(27, 147, 234, 0.93)',
                     borderRadius: 30,
                     justifyContent: "center",
@@ -290,7 +290,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
             onChangeValue={() => handleChangeFilter}
           /> */}
 
-            <View style={{ flexDirection: 'row', }}>
+            <View style={{ display: 'flex', flexDirection: 'row', width: 100 }}>
               <Picker
                 mode="dropdown"
                 selectedValue={params.sort}
@@ -435,7 +435,7 @@ const MainWrapper = StyleSheet.create({
     margin: 3
   },
   BannerPagingActive: {
-    color: 'white',
+    color: '#00C1DE',
     margin: 3
   },
   Horizon: {

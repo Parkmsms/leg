@@ -6,6 +6,8 @@ import { initialStoreMenu1, StoreMenu1 } from "../../models/storemenu";
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
 import { RoundedCheckbox, PureRoundedCheckbox } from "react-native-rounded-checkbox";
 import Icon from "react-native-vector-icons/Entypo";
+import AntIcon from "react-native-vector-icons/AntDesign";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type DetailOptionPageProps = {
   route: any;
@@ -36,6 +38,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   let arr: StoreMenuOption[] = [];
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [totalAmount, setTotalAmount] = useState<number>(1);
+  const [contentLimit, setContentlimit] = useState<number>(20);
   let sum = 0;
   const [radioButtons, setRadioButtons] = useState<StoreMenuOption[]>([]);
   // const initialMenuOpiton: StoreMenuOption[] = {
@@ -109,13 +112,27 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
     }
 
 
+
     console.log(checkList);
+
+
     if (route.params?.storeId && route.params?.menu) {
       getMenuOption()
       console.log("상위메뉴:", route.params?.menu);
       setStoreMenu(route.params?.menu)
     }
   }, [route, radioButtons, sum, totalAmount, storeMenu])
+
+  useEffect(() => {
+    if (MenuOption[0]) {
+      console.log("첫번째 id", MenuOption[0].smallItems[0].id);
+      setCheckList(checkList.concat(MenuOption[0].smallItems[0].id));
+    }
+
+  }, [MenuOption])
+  // useEffect(() => {
+  //   setCheckList(checkList.concat(MenuOption[0].smallItems[0].id));
+  // }, [MenuOption])
 
   // useEffect(() => {
   //   MenuOption.map((small) => small.smallItems.forEach((element) => {
@@ -131,16 +148,25 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   //   console.log("smallItems", radioButtons);
   // }, [MenuOption])
 
-  const goCart = () => {
-    navigation.navigate('CartList', {
-      storeInfo: route.params?.storeInfo,
-      postId: route.params?.storeId,
-      profile: route.params?.profile,
-      menu: route.params?.menu,
-      smallItem: radioButtons,
-      amount: totalAmount,
-      price: totalPrice
-    })
+  const goBack = async () => {
+    navigation.goBack();
+    await AsyncStorage.setItem('storeInfo', JSON.stringify(route.params?.storeInfo));
+    await AsyncStorage.setItem('storeId', JSON.stringify(route.params?.storeId));
+    await AsyncStorage.setItem('profile', JSON.stringify(route.params?.profile));
+    await AsyncStorage.setItem('menu', JSON.stringify(route.params?.menu));
+    await AsyncStorage.setItem('smallItem', JSON.stringify(radioButtons));
+    await AsyncStorage.setItem('totalAmount', JSON.stringify(totalAmount));
+    await AsyncStorage.setItem('totalPrice', JSON.stringify(totalPrice));
+
+    // navigation.navigate('CartList', {
+    //   storeInfo: route.params?.storeInfo,
+    //   postId: route.params?.storeId,
+    //   profile: route.params?.profile,
+    //   menu: route.params?.menu,
+    //   smallItem: radioButtons,
+    //   amount: totalAmount,
+    //   price: totalPrice
+    // })
   }
   const minusAmount = () => {
     setTotalAmount(totalAmount - 1);
@@ -148,21 +174,97 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   const plusAmount = () => {
     setTotalAmount(totalAmount + 1);
   }
+  const toggleEllipsis = (str: string, limit: number) => {
+    return {
+      string: str.slice(0, limit),
+      isShowMore: str.length > limit
+    }
+  }
+  const onClickMore = (str: string) => {
+    setContentlimit(str.length);
+  }
   return (
     <View style={DetailOptionWrapper.MainContainer}>
+
       <View style={{ flexDirection: 'column' }}>
         <View style={{ flexDirection: 'row', padding: 10 }}>
           <View style={DetailOptionWrapper.MenuTitle}>
             <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>{storeMenu.bigItem}</Text>
-            <Text style={{ fontSize: 15, paddingTop: 10 }}>{storeMenu.description}</Text>
+            <Text style={{ fontSize: 15, paddingTop: 10 }}>
+              {toggleEllipsis(storeMenu.description, contentLimit).string}
+              <View style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}>
+                <TouchableOpacity
+                  onPress={() => onClickMore(storeMenu.description)}>
+                  {toggleEllipsis(storeMenu.description, contentLimit).isShowMore
+                    &&
+                    <Text style={{ margin: -10 }}>... 더보기</Text>
+                  }
+                </TouchableOpacity>
+              </View>
+            </Text>
           </View>
           <View style={{ flex: 1, padding: 10 }}>
             <Image style={{ borderRadius: 30, height: 100, resizeMode: 'cover' }} source={{ uri: storeMenu.image ? storeMenu.image : 'null' }} />
           </View>
         </View>
-        <View style={{ flexDirection: 'row', padding: 30, justifyContent: 'space-between' }}>
+
+        <View style={{
+          flexDirection: 'row',
+          paddingLeft: 20,
+          paddingRight: 20,
+          justifyContent: 'space-between'
+        }}>
           <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>가격</Text>
-          <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>{storeMenu.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
+          <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>{totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
+          {/* <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>{storeMenu.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text> */}
+        </View>
+
+        <View style={{ flexDirection: 'row', padding: 20, justifyContent: 'space-between' }}>
+          <View style={{ height: 50, justifyContent: 'center', alignContent: 'center' }}>
+            <Text style={{
+              color: 'black', fontSize: 20, fontWeight: 'bold',
+              alignSelf: 'center', alignItems: 'center', textAlign: 'center',
+              justifyContent: 'center', alignContent: 'center'
+            }}>수량</Text>
+          </View>
+          <View style={{
+            flexDirection: 'row', display: 'flex', justifyContent: 'space-between', alignSelf: 'center', alignItems: 'center', alignContent: 'center'
+          }}>
+            <TouchableOpacity
+              onPress={minusAmount}
+              disabled={totalAmount === 1 ? true : false}>
+              <AntIcon name="minuscircleo" size={20} style={{ color: '#00C1DE' }} />
+            </TouchableOpacity>
+            <Text style={{ fontSize: 20, color: 'black', padding: 10 }}>
+              {totalAmount}
+            </Text>
+            <TouchableOpacity
+              onPress={plusAmount}>
+              <AntIcon name="pluscircleo" size={20} style={{ color: '#00C1DE' }} />
+            </TouchableOpacity>
+          </View>
+
+          {/* <TouchableOpacity
+            style={{ borderWidth: 1, borderRadius: 50, height: 50, width: 200, justifyContent: 'center', alignContent: 'center' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+              <TouchableOpacity
+                onPress={minusAmount}
+                disabled={totalAmount === 1 ? true : false}
+              ><Text style={{ fontSize: 30, color: totalAmount === 1 ? 'blue' : 'black' }}>-</Text></TouchableOpacity>
+              <Text style={{ fontSize: 15, color: 'black', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>
+                {totalAmount}
+              </Text>
+              <TouchableOpacity>
+                <Text onPress={plusAmount}
+                  style={{ fontSize: 30 }}>+</Text>
+              </TouchableOpacity>
+
+            </View>
+
+          </TouchableOpacity> */}
         </View>
       </View>
 
@@ -172,11 +274,10 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
         borderStyle: 'solid',
         borderBottomWidth: 1,
         borderColor: 'lightgray',
-        width: '95%',
+        width: '100%',
       }}></View>
 
       <View style={DetailOptionWrapper.MenuOption}>
-
         <ScrollView style={{ flexDirection: 'column' }}>
           {MenuOption.filter(option => option.checkLimit === -1).map((option: StoreMenuDetail, index: number) => {
             return (
@@ -187,7 +288,13 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
 
                 {option.smallItems.map((item: StoreMenuOption, index) => {
                   return (
-                    <View key={index} style={{ flexDirection: "row", alignItems: 'center', alignContent: 'center', padding: 10, justifyContent: 'space-between', }}>
+                    <View key={index} style={{
+                      flexDirection: "row",
+                      alignItems: 'center',
+                      alignContent: 'center',
+                      padding: 10,
+                      // justifyContent: 'space-between',
+                    }}>
                       {/* <RadioGroup
                         radioButtons={[item]}
                         onPress={onPressRadioButton}
@@ -203,9 +310,9 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
                           color={checkList.filter((check: number) => check === item.id) ? "#fdfdfd" : "transparent"}
                         />
                       </RoundedCheckbox>
-                      <Text style={{ color: 'black' }}>{item.smallItem}</Text>
-                      <Text style={{ color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.description}</Text>
-                      <Text style={{ color: 'black' }}>{item.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
+                      <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.smallItem}</Text>
+                      <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.description}</Text>
+                      <Text style={{ paddingLeft: 50, color: 'black' }}>{item.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
                     </View>
                   )
                 })}
@@ -217,41 +324,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
             {MenuOption.filter(option =>
               option.checkLimit === 1).map(option => option.items.map(item => item.name))}
           </Text> */}
-          <View style={{
-            flex: 0.5,
-            borderStyle: 'solid',
-            borderBottomWidth: 1,
-            borderColor: 'lightgray',
-            width: '100%',
-          }}></View>
 
-          <View style={{ flex: 1, flexDirection: 'row', padding: 20, justifyContent: 'space-between' }}>
-            <View style={{ height: 50, justifyContent: 'center', alignContent: 'center' }}>
-              <Text style={{
-                color: 'black', fontSize: 20, fontWeight: 'bold',
-                alignSelf: 'center', alignItems: 'center', textAlign: 'center',
-                justifyContent: 'center', alignContent: 'center'
-              }}>수량</Text>
-            </View>
-            <TouchableOpacity
-              style={{ borderWidth: 1, borderRadius: 50, height: 50, width: 200, justifyContent: 'center', alignContent: 'center' }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-                <TouchableOpacity
-                  onPress={minusAmount}
-                  disabled={totalAmount === 1 ? true : false}
-                ><Text style={{ fontSize: 30, color: totalAmount === 1 ? 'blue' : 'black' }}>-</Text></TouchableOpacity>
-                <Text style={{ fontSize: 15, color: 'black', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>
-                  {totalAmount}개
-                </Text>
-                <TouchableOpacity>
-                  <Text onPress={plusAmount}
-                    style={{ fontSize: 30 }}>+</Text>
-                </TouchableOpacity>
-
-              </View>
-
-            </TouchableOpacity>
-          </View>
 
         </ScrollView>
         <View style={{
@@ -261,20 +334,24 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
           borderColor: 'lightgray',
           width: '100%',
         }}></View>
-
       </View>
 
-      <View style={{ flex: 0.7, flexDirection: 'row', padding: 20, justifyContent: 'space-between' }}>
-        <View style={{ height: 50, justifyContent: 'center', alignContent: 'center' }}>
+      <View style={DetailOptionWrapper.footer}>
+        {/* <View style={{ height: 50, paddingLeft: 20, justifyContent: 'center', alignContent: 'center' }}>
           <Text style={{
             color: 'black', fontSize: 20, fontWeight: 'bold',
-            alignSelf: 'center', alignItems: 'center', textAlign: 'center',
-            justifyContent: 'center', alignContent: 'center'
+            alignSelf: 'center', alignItems: 'center', textAlign: 'center'
           }}>가격</Text>
         </View>
         <TouchableOpacity onPress={goCart}
           style={{ backgroundColor: '#00C1DE', borderRadius: 10, height: 50, width: 250, justifyContent: 'center', alignContent: 'center' }}>
-          <Text style={{ fontSize: 20, color: 'white', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>{totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원 담기</Text>
+          <Text style={{ fontSize: 20, color: 'white', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>
+          {totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원 담기
+          </Text>
+        </TouchableOpacity> */}
+        <TouchableOpacity onPress={goBack}
+          style={{ backgroundColor: '#00C1DE', borderRadius: 10, height: 50, width: 350, justifyContent: 'center', alignContent: 'center' }}>
+          <Text style={{ fontSize: 20, color: 'white', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>포장 카트에 담기</Text>
         </TouchableOpacity>
       </View>
 
@@ -295,6 +372,15 @@ const DetailOptionWrapper = StyleSheet.create({
   MenuOption: {
     flex: 4,
     padding: 10
+  },
+  footer: {
+    flex: 1,
+    flexDirection: 'row',
+    padding: 10,
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   }
 })
 export default DetailOptionPage;

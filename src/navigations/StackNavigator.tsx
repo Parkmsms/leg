@@ -23,6 +23,7 @@ import DetailPage from '../pages/Menu/DetailPage';
 import DetailOptionPage from '../pages/Menu/DetailOptionPage';
 import EventList from '../pages/InTheEvent/EventList';
 import CartList from '../pages/Cart/CartList';
+import OrderList from '../pages/Order/OrderList';
 
 const Stack = createNativeStackNavigator();
 
@@ -236,6 +237,18 @@ const StackNavigator = () => {
         component={CartList}
         options={{
           title: '카트 주문하기 🛒',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="OrderList"
+        component={OrderList}
+        options={{
+          title: '결제하기',
           headerTitleAlign: 'center',
           headerTitleStyle: {
             fontSize: 20,
