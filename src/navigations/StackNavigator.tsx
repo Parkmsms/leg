@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { TouchableOpacity, Text, } from 'react-native';
 import SignIn from '../pages/SignIn/SignInPhone';
 
 import TabNavigator from '../navigations/TabNaigator';
@@ -31,6 +32,9 @@ import ReviewItem from '../pages/Review/ReviewItem';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
+
+  const [isClicked, setIsClicked] = useState<boolean>(false);
+
   return (
     <Stack.Navigator initialRouteName="Home">
       {/* <Stack.Screen
@@ -274,17 +278,28 @@ const StackNavigator = () => {
       />
       <Stack.Screen
         name="ReviewPage"
-        component={ReviewPage}
         options={{
           title: '',
           headerTransparent: true,
           headerTitleAlign: 'left',
           headerTintColor: '#000000',
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => {
+                setIsClicked((state) => !state);
+
+              }}
+            >
+              <Text>저장</Text>
+            </TouchableOpacity>
+          ),
           headerStyle: {
             backgroundColor: '#F9FFFF',
           },
         }}
-      />
+      >
+        {(props) => <ReviewPage isClicked={isClicked} {...props} />}
+      </Stack.Screen>
       <Stack.Screen
         name="ReviewItem"
         component={ReviewItem}

@@ -7,24 +7,30 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Stars from 'react-native-stars';
 import BottomSheet from "../../components/Modal/BottomSheet";
 import { getAccessToken } from "../../config/AxiosFunction";
+import useDidMountEffect from "../../config/useDidMountEffect";
 
 type ReviewWriteProps = {
   route: any;
   navigation?: any;
+  isClicked: boolean;
 }
 
 const width = Dimensions.get('window').width;
-const ReviewPage = ({ navigation, route }: ReviewWriteProps) => {
+const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
 
   const [inputReview, setInputReview] = useState<string>('');
   const [photo, setPhoto] = useState<any>('');
   const [request, setRequest] = useState<ReviewInfo>(initialReviewInfo)
   const [modalVisible, setModalVisible] = useState(false);
 
+  //customHook => 첫 렌더링때도 state가 설정되는 것으로 보고 useEffect가 실행하는것 방지
+  useDidMountEffect(() => {
+    console.log(request)
+  }, isClicked)
+
   const selectPhoto = () => {
     setModalVisible(true);
   }
-
   const saveReview = async () => {
     console.log(request)
     // const accessToken = await getAccessToken('accessToken');
@@ -37,7 +43,6 @@ const ReviewPage = ({ navigation, route }: ReviewWriteProps) => {
   }
 
   const goTakePhoto = async () => {
-    console.log("카메라작동")
     try {
       //카메라 권한체크
       const granted = await PermissionsAndroid.request(
@@ -74,7 +79,6 @@ const ReviewPage = ({ navigation, route }: ReviewWriteProps) => {
   }
 
   const goGallery = async () => {
-    console.log("앨범작동")
     try {
       //앨범 권한 체크
       const granted = await PermissionsAndroid.request(
