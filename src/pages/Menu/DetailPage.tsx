@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Button, Dimensions, Image, Linking, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { deletepickStore, getAccessToken, getStoreInfo, getStoreMenu1, pickStore } from "../../config/AxiosFunction";
+import { deletepickStore, getAccessToken, getStoreInfo, getStoreMenu1, pickStore,topImage3 } from "../../config/AxiosFunction";
 import { initialStoreInfo, StoreInfo } from "../../models/storeInfo";
 import DetailPopup from "./DetailPopUp";
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -57,6 +57,9 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
   const [selectStoreMenu, setSelectStoreMenu] = useState<StoreMenu1>(initialStoreMenu1);
   const [selectTotalAmount, setSelectTotalAmount] = useState<number>(0);
   const [selectTotalPrice, setSelectTotalPrice] = useState<number>(0);
+
+  //박문수 test
+  const [top3Image, setTop3Image] = useState<[]>([]);
 
   const [radioButtons, setRadioButtons] = useState<StoreMenuOption[]>([]);
 
@@ -129,6 +132,8 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
         setId(route.params?.detailId);
         detailStoreInfo()
         getStoreMenu()
+        //박문수 test <<
+        getImage3();
         setReady(false)
       }, 2000)
 
@@ -153,6 +158,16 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
     console.log(storeInfo.isPicked);
 
   }, [storeInfo.isPicked])
+ //박문수 test
+  const getImage3 = async () => {
+    const accessToken = await getAccessToken('accessToken');
+    const response = await topImage3(accessToken)
+    setTop3Image(response.data);
+  }
+
+  const onReviewPage = (str:string) => {
+    navigation.navigate('ReviewItem', { selectedImage: str })
+  }
 
   const toggleEllipsis = (str: string, limit: number) => {
     return {
@@ -373,11 +388,39 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
                         }
                       </TouchableOpacity>
                     </View>
-
-
                   </Text>
-
                 </View>
+
+                {/* 박문수test */}
+                <View style={{
+                  borderStyle: 'solid',
+                  borderBottomWidth: 1,
+                  borderColor: 'lightgray',
+                  width: '95%',
+                }}></View>
+                <View style={{flexDirection: 'row',justifyContent: "center",alignItems: 'center',marginTop:15}}>
+                {top3Image?.map((image: string, index: number) => {
+                    return (
+                      <TouchableOpacity onPress={() => 
+                       onReviewPage(image)
+                      }>
+                      <View key={index}>
+                        <Image
+                          source={{ uri: image ? image : 'null' }}
+                          style={{
+                            justifyContent: "center",
+                            alignItems: 'center',
+                            width: 120, height: 70,
+                            margin:3,
+                            borderRadius:5
+                          }}/>
+                      </View>
+                      </TouchableOpacity>
+                    )
+                  })}
+                </View>
+
+               
 
                 <View style={DetailWrapper.Horizon}></View>
 

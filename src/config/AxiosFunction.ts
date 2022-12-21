@@ -442,3 +442,53 @@ export const deletepickStore = async (accessToken: string, postId: number,) => {
     throw err;
   }
 }
+
+export const getCompleteOrderListAPI = async (accessToken: string) => {
+  try {
+    const result = await axios({
+      method: 'get', // GET
+      url: hosturi + '/orders/off', // URL
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getInProgressOrderListAPI = async (accessToken: string) => {
+  try {
+    const result = await axios({
+      method: 'get', // GET
+      url: hosturi + '/orders/on', // URL
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+//review 사진 3개
+export const topImage3 = async (accessToken: string) => {
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + '/reviews/images/top3',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};

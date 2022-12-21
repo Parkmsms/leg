@@ -36,7 +36,7 @@ const StackNavigator = () => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="LoginSucess">
       {/* <Stack.Screen
         name="MainPage"
         component={MainPage}
