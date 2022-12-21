@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import { getCompleteOrderListAPI, getAccessToken } from '../../config/AxiosFunction';
+import { getCompleteOrderListAPI, getAccessToken, activeLocation } from '../../config/AxiosFunction';
 import { Dimensions, ActivityIndicator, ScrollView } from "react-native";
 import { intialOrderInfo, OrderInfo } from '../../models/orderInfo';
 
@@ -27,8 +27,12 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
   const [ready, setReady] = useState<boolean>(true);
 
   useEffect(() => {
-    getCompleteOrderList();
+    setTimeout(() => {
+      getCompleteOrderList();
+      setReady(false);
+    }, 1000)
   }, [])
+
 
 
   //날짜 형태 변환
@@ -44,22 +48,25 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
     // return (param.toString().split('').filter((x: any) => x.match(/\d/)).join(''));
     if (val === 'pickUpAt') {
       let today = new Date().getTime();
-      let compDay = new Date(param).getTime();
+      let compDay =
+        // new Date(param).getTime();
+        //Test용 시간
+        new Date('2022-12-21T16:20:12.480Z').getTime();
+      let result: any = Math.floor((+(compDay) - +(today)) / 1000 / 60 / 60)
 
-      let result: any = Math.floor((+(today) - +(compDay)) / 1000 / 60 / 60)
-      if (result > 24) {
-        result = Math.floor(result / 24)
-        if (result > 7) {
-          result = '7일 이전'
-        }
-        else
-          result = result + '일 후'
-      }
-      else if (result == 0) {
-        result = Math.floor((+(today) - +(compDay)) / 1000 / 60) + '분 후'
+      // if (result > 24) {
+      //   result = Math.floor(result / 24)
+      //   if (result > 7) {
+      //     result = '7일 이전'
+      //   }
+      //   else
+      //     result = result + '일 후'
+      // }
+      if (result >= 0) {
+        result = Math.floor((+(compDay) - +(today)) / 1000 / 60) + '분 후'
       }
       else {
-        result = result + '시간 후'
+        result = '만료'
       }
       return result
     }
@@ -99,7 +106,8 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
         ]
       });
     }
-    setReady(false);
+
+    console.log(OrderCompeteLst)
   }
 
   return (
@@ -123,7 +131,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                         <View style={OrderWrapper.CenterAlign}>
                           <Image
                             // source={require('../../assets/main.png')}
-                            source={{ uri: order.storeProfile }}
+                            source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
                             style={{
                               width: 90,
                               height: 90,
@@ -155,14 +163,16 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                           {
                             color: '#00C1DE',
                             fontWeight: '600',
-                          }]}>{order.doneAt}</Text>
+                          }]}>
+                            {order.pickUpAt}
+                            {/* {order.donAt} */}
+                          </Text>
                         </View>
                       </View>
                       <View style={OrderWrapper.Horizontal}>
                         <TouchableOpacity
                           style={OrderWrapper.ActivateButton}
                           onPress={() => {
-                            console.log(OrderCompeteLst)
                             props.goReview()
                           }}>
                           <Text style={OrderWrapper.ButtonText}>포장 완료</Text>

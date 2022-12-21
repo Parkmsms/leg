@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Agree } from '../models/agreeInfo';
 import { Device } from '../models/deviceInfo';
-import { PostLocation } from '../models/locationInfo';
+import { PostLocation, MyLocation } from '../models/locationInfo';
 import { StoreParams } from '../models/listfilterInfo';
 
 const hosturi = 'http://0giri.com/api';
@@ -482,6 +482,22 @@ export const topImage3 = async (accessToken: string) => {
     const result = await axios({
       method: 'get',
       url: hosturi + '/reviews/images/top3',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getDistanceAPI = async (accessToken: string, param: any, orderId: number) => {
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + '/orders/' + orderId + '/distance?' + param,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',

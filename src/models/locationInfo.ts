@@ -80,3 +80,39 @@ export const initialPostLocation: PostLocation = {
     lat: 0
   }
 }
+
+export interface MyLocation {
+  id: number,
+  userId: number,
+  alias: string,
+  isActive: boolean,
+  address: {
+    regionAddress: string,
+    roadAddress: string,
+    locationName: string,
+    depth1: string,
+    depth2: string,
+    depth3: string,
+    detail: string,
+    lng: number,
+    lat: number
+  }
+}
+
+export const initialMyLocation: MyLocation = {
+  id: 0,
+  userId: 0,
+  alias: '',
+  isActive: false,
+  address: {
+    regionAddress: '',
+    roadAddress: '',
+    locationName: '',
+    depth1: '',
+    depth2: '',
+    depth3: '',
+    detail: '',
+    lng: 0,
+    lat: 0
+  }
+}

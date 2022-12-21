@@ -13,8 +13,7 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
   const layout = useWindowDimensions();
   //주문내역
   const FirstRoute = () => (
-    <OrderList goStatus={goDtail}
-      goTest={goTest} />
+    <OrderList goStatus={goDtail} />
   );
   //주문 완료 내역
   const SecondRoute = () => (
@@ -22,8 +21,8 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
   );
 
   //주문 현황 페이지로 이동
-  const goDtail = () => {
-    navigation.navigate('OrderStatus')
+  const goDtail = (param: number) => {
+    navigation.navigate('OrderStatus', { orderId: param })
   }
 
   //리뷰 페이지로 이동
