@@ -497,7 +497,7 @@ export const getDistanceAPI = async (accessToken: string, param: any, orderId: n
   try {
     const result = await axios({
       method: 'get',
-      url: hosturi + '/orders/' + orderId + '/distance?' + param,
+      url: hosturi + `/orders/${orderId}/distance?lng=${param.lng}&lat=${param.lat}`,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',

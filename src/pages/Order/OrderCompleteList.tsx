@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { getCompleteOrderListAPI, getAccessToken, activeLocation } from '../../config/AxiosFunction';
 import { Dimensions, ActivityIndicator, ScrollView } from "react-native";
-import { intialOrderInfo, OrderInfo } from '../../models/orderInfo';
+import { OrderInfo } from '../../models/orderInfo';
 
 type BottomPopupProps = {
   goReview: any
@@ -23,14 +23,14 @@ const width = Dimensions.get('window').width;
 
 const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompleteProps) => {
 
-  const [OrderCompeteLst, setOrderCompeteLst] = useState<OrderInfo[]>([intialOrderInfo]);
+  const [OrderCompeteLst, setOrderCompeteLst] = useState<OrderInfo[]>([]);
   const [ready, setReady] = useState<boolean>(true);
 
   useEffect(() => {
     setTimeout(() => {
       getCompleteOrderList();
       setReady(false);
-    }, 1000)
+    }, 200)
   }, [])
 
 
@@ -106,8 +106,6 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
         ]
       });
     }
-
-    console.log(OrderCompeteLst)
   }
 
   return (
@@ -118,7 +116,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
         </View>
         :
         <ScrollView>
-          {OrderCompeteLst.length !== undefined &&
+          {OrderCompeteLst.length !== 0 &&
             OrderCompeteLst?.map((order: OrderInfo, index: number) => {
               return (
                 <SafeAreaView style={OrderWrapper.MainContainer} key={index}>
@@ -164,12 +162,12 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                             color: '#00C1DE',
                             fontWeight: '600',
                           }]}>
-                            {order.pickUpAt}
-                            {/* {order.donAt} */}
+                            {/* {order.pickUpAt} */}
+                            {order.doneAt}
                           </Text>
                         </View>
                       </View>
-                      <View style={OrderWrapper.Horizontal}>
+                      <View style={OrderWrapper.Vertical}>
                         <TouchableOpacity
                           style={OrderWrapper.ActivateButton}
                           onPress={() => {
@@ -177,13 +175,21 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                           }}>
                           <Text style={OrderWrapper.ButtonText}>포장 완료</Text>
                         </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[OrderWrapper.ActivateButton,,{backgroundColor:'#3E3E3E'}]}
+                          onPress={() => {
+                            props.goReview()
+                          }}>
+                          <Text style={OrderWrapper.ButtonText}>리뷰 쓰기</Text>
+                        </TouchableOpacity>
+                        
                       </View>
                     </View>
                   </View >
                 </SafeAreaView>
               )
             })}
-          {OrderCompeteLst.length === undefined &&
+          {OrderCompeteLst.length === 0 &&
             <View><Text>데이터가 없습니다.</Text></View>
           }
         </ScrollView>
@@ -223,7 +229,9 @@ export const OrderWrapper = StyleSheet.create({
     borderRadius: 10,
     height: 40,
     justifyContent: 'center',
-    alignContent: 'center'
+    alignContent: 'center',
+    margin:5,
+    flex:2,
   },
   InActivateButton: {
     backgroundColor: '#3E3E3E',

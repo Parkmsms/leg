@@ -7,12 +7,23 @@ import {
     TouchableOpacity,
     SafeAreaView,
     Button,
-    ScrollView
+    ScrollView,
+    Alert
 } from 'react-native';
-import { Dimensions } from "react-native";
+import { Dimensions, ActivityIndicator } from "react-native";
 import OrderPopUp from "../../components/Modal/OrderPopUp";
 import { activeLocation, getDistanceAPI } from '../../config/AxiosFunction';
 import { MyLocation, initialMyLocation } from '../../models/locationInfo';
+import { DistanceInfo, initialDistanceInfo } from '../../models/orderInfo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import CountDownPage from './CountDownPage'
+import { useSelector, useDispatch } from 'react-redux';
+import {
+    selectMinutesinfo,
+    selectSecondsinfo,
+    doTimer,
+    doEnd
+} from '../../slices/time';
 
 
 const width = Dimensions.get('window').width;
@@ -22,10 +33,30 @@ type OrderStatusProps = {
     navigation?: any;
 }
 
+
 const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
+    const dispatch = useDispatch();
+
+    const t_minutes = useSelector(selectMinutesinfo);
+    const t_seconds = useSelector(selectSecondsinfo);
+
     const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzE0MTA4NzEsInN1YiI6IjEwMTYiLCJ0b2tlblR5cGUiOnRydWUsImFjY291bnRUeXBlIjoiVVNFUiIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX1VTRVIifV19.U-FmO73zLO6mm2Mt5QPN3NLIXfHwom7xmeoamhCA4wjRoOO6dqm36uj0G5x-1QhKzXOtdBaT0ThIef8SmP7usA'
     const [modalOpen, setModalOpen] = useState(false);
-    const [location, setLocation] = useState<MyLocation>();
+    const [location, setLocation] = useState<MyLocation>(initialMyLocation);
+    const [distances, setDistances] = useState<DistanceInfo>(initialDistanceInfo);
+    const [ready, setReady] = useState<boolean>(true);
+
+    const setTimer123 = (param: any) => {
+        const param2 = {
+            t_seconds: param.substr(param.indexOf('-') + 1),
+            t_minutes: param.substr(0, param.indexOf('-'))
+        }
+        dispatch(doTimer(param2));
+    }
+    const theEnd = (param: any) => {
+        dispatch(doEnd());
+    }
+
 
     const closeModal = () => {
         setModalOpen(false);
@@ -40,69 +71,81 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     }
 
     const getActiveLocation = async () => {
-        const response: any = await activeLocation(accessToken);
-        setLocation(response.data);
-    }
-    const getDistance = async () => {
-        const response: any = await getDistanceAPI(accessToken,
+        const response1: any = await activeLocation(accessToken);
+        setLocation((current) => {
+            let newCondition = { ...current };
+            newCondition = response1.data;
+            return newCondition;
+        });
+        setLocation(response1.data);
+        //setLocation 의 location 값으로 parameter설정시 비동기이기 때문에 (initialMyLocation)빈값으로 설정됌.. 
+        //response 데이터 자체를 param으로 설정
+        const response2: any = await getDistanceAPI(accessToken,
             {
-                lng: location?.address.lng,
-                lat: location?.address.lat
+                lng: response1.data.address.lng,
+                lat: response1.data.address.lat
             }
             , route.params.orderId)
-        setLocation(response.data);
+        setDistances(response2.data);
+
+        setReady(false);
     }
 
     useEffect(() => {
-        console.log("orderId", route.params?.orderId);
-        setTimeout(() => {
-            getActiveLocation();
-            getDistance();
-        }, 1000)
-    }, [route.params?.orderId])
+        getActiveLocation();
+    }, [ready])
 
     return (
         <SafeAreaView style={OrderWrapper.MainContainer}>
-            <View style={OrderWrapper.Vertical}>
-                <Text style={OrderWrapper.FontStatus}>픽업 대기중입니다🍽</Text>
-                <Image source={require('../../assets/location.png')}
-                    style={{
-                        width: 180,
-                        height: 180,
-                        padding: 30,
-                        justifyContent: "center",
-                        alignItems: 'center',
-                        borderRadius: 20,
-                    }} />
-                <View style={OrderWrapper.Horizontal}>
-                    <Text style={OrderWrapper.FontTime}>60</Text>
-                    <Text style={OrderWrapper.FontMinute}>분</Text>
+            {ready ?
+                <View style={[OrderWrapper.container, OrderWrapper.horizontal]}>
+                    <ActivityIndicator size="large" />
                 </View>
-                <View style={{ margin: 15, height: 150 }}>
-                    <ScrollView>
-                        <TouchableOpacity style={OrderWrapper.CommentBox}>
-                            <Text style={OrderWrapper.FontColor}>미쁘동/일회용품선택 O</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={OrderWrapper.CommentBox}>
-                            <Text style={OrderWrapper.FontColor}>미쁘동/일회용품선택 X</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={OrderWrapper.CommentBox}>
-                            <Text style={OrderWrapper.FontColor}>사장 </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={OrderWrapper.CommentBox}>
-                            <Text style={OrderWrapper.FontColor}>사장 </Text>
-                        </TouchableOpacity>
-                    </ScrollView>
-                </View>
-                <TouchableOpacity
-                    style={OrderWrapper.ActivateButton}
-                    onPress={openModal}
-                >
-                    <Text style={OrderWrapper.ButtonText}>포장받기 완료</Text>
-                </TouchableOpacity>
+                :
+                <View style={OrderWrapper.Vertical}>
+                    <Text style={OrderWrapper.FontStatus}>픽업 대기중입니다🍽</Text>
+                    <Image source={require('../../assets/location.png')}
+                        style={{
+                            width: 180,
+                            height: 180,
+                            padding: 30,
+                            justifyContent: "center",
+                            alignItems: 'center',
+                            borderRadius: 20,
+                        }} />
+                    <View style={OrderWrapper.Horizontal}>
+                        <Text style={OrderWrapper.FontMinute}>픽업예정 시간:</Text>
+                        <Text style={OrderWrapper.FontTime}>
+                            <CountDownPage mm={t_minutes} ss={t_seconds} onTheEnd={theEnd} setTimer={setTimer123} />
+                        </Text>
+                    </View>
+                    <View>
 
-            </View >
+                    </View>
+                    <View style={{ margin: 15, height: 150 }}>
+                        <ScrollView>
+                            <TouchableOpacity style={OrderWrapper.CommentBox}>
+                                <Text style={OrderWrapper.FontColor}>{location.address.locationName}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={OrderWrapper.CommentBox}>
+                                <Text style={OrderWrapper.FontColor}>거리 : {distances.distance}</Text>
 
+                            </TouchableOpacity>
+                            <TouchableOpacity style={OrderWrapper.CommentBox}>
+                                <Text style={OrderWrapper.FontColor}>사장 </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={OrderWrapper.CommentBox}>
+                                <Text style={OrderWrapper.FontColor}>사장 </Text>
+                            </TouchableOpacity>
+                        </ScrollView>
+                    </View>
+                    <TouchableOpacity
+                        style={OrderWrapper.ActivateButton}
+                        onPress={openModal}
+                    >
+                        <Text style={OrderWrapper.ButtonText}>포장받기 완료</Text>
+                    </TouchableOpacity>
+                </View >}
             <OrderPopUp
                 open={modalOpen}
                 close={closeModal}
@@ -163,14 +206,15 @@ export const OrderWrapper = StyleSheet.create({
     },
     FontMinute: {
         color: '#000000',
-        fontSize: 30,
+        fontSize: 20,
         fontFamily: 'Urbanist',
         fontStyle: 'normal',
         fontWeight: '800',
+        marginTop:1,
     },
     FontTime: {
         color: '#00C1DE',
-        fontSize: 30,
+        fontSize: 20,
         fontFamily: 'Urbanist',
         fontStyle: 'normal',
         fontWeight: '800',
@@ -190,7 +234,16 @@ export const OrderWrapper = StyleSheet.create({
         marginLeft: 8,
         padding: 10,
         width: width * 0.75
-    }
+    },
+    container: {
+        flex: 1,
+        justifyContent: "center",
+    },
+    horizontal: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        padding: 10
+    },
 });
 
 

@@ -28,6 +28,7 @@ import OrderList from '../pages/Order/OrderList';
 import OrderStatus from '../pages/Order/OrderStatus';
 import ReviewPage from '../pages/Review/ReviewPage';
 import ReviewItem from '../pages/Review/ReviewItem';
+import CountDownPage from '../pages/Order/CountDownPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,7 +37,7 @@ const StackNavigator = () => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   return (
-    <Stack.Navigator initialRouteName="LoginSucess">
+    <Stack.Navigator initialRouteName="Home">
       {/* <Stack.Screen
         name="MainPage"
         component={MainPage}
@@ -313,7 +314,15 @@ const StackNavigator = () => {
           }
         }}
       />
+       <Stack.Screen
+        name="CountDownPage"
+        component={CountDownPage}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
+    
   );
 };
 

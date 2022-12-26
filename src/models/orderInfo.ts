@@ -11,15 +11,23 @@ export interface OrderInfo {
     status: string
 }
 
-export const intialOrderInfo: OrderInfo = {
-    id: 0,
-    orderAt: '',
-    storeProfile: '',
-    storeName: '',
-    simpleMenu: '',
-    finalPrice: 0,
-    pickUpAt: '',
-    acceptAt: '',
-    doneAt: '',
-    status: ''
+// export const intialOrderInfo: OrderInfo = {
+//     id: 0,
+//     orderAt: '',
+//     storeProfile: '',
+//     storeName: '',
+//     simpleMenu: '',
+//     finalPrice: 0,
+//     pickUpAt: '',
+//     acceptAt: '',
+//     doneAt: '',
+//     status: ''
+// }
+
+export interface DistanceInfo {
+    distance:number
 }
+
+export const initialDistanceInfo: DistanceInfo = {
+    distance: 0,
+  }

@@ -13,7 +13,7 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
   const layout = useWindowDimensions();
   //주문내역
   const FirstRoute = () => (
-    <OrderList goStatus={goDtail} />
+    <OrderList goStatus={goDtail} goTest={goTest} />
   );
   //주문 완료 내역
   const SecondRoute = () => (
@@ -31,7 +31,7 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
   }
 
   const goTest = () => {
-    navigation.navigate('ReviewItem')
+    navigation.navigate('CountDownPage')
   }
 
   const renderScene = SceneMap({
