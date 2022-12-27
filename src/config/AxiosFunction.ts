@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { Agree } from '../models/agreeInfo';
-import { Device } from '../models/deviceInfo';
-import { PostLocation, MyLocation } from '../models/locationInfo';
-import { StoreParams } from '../models/listfilterInfo';
+import {Agree} from '../models/agreeInfo';
+import {Device} from '../models/deviceInfo';
+import {PostLocation, MyLocation} from '../models/locationInfo';
+import {StoreParams} from '../models/listfilterInfo';
 
 const hosturi = 'http://0giri.com/api';
 
@@ -292,7 +292,11 @@ export const getStoreMenu1 = async (accessToken: string, id: number) => {
   }
 };
 
-export const getStoreMenu2 = async (accessToken: string, storeId: number, menuId: number,) => {
+export const getStoreMenu2 = async (
+  accessToken: string,
+  storeId: number,
+  menuId: number,
+) => {
   try {
     const result = await axios({
       method: 'get',
@@ -300,6 +304,43 @@ export const getStoreMenu2 = async (accessToken: string, storeId: number, menuId
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/* 이벤트 목록 */
+export const EventListAPI = async (accessToken: string) => {
+  try {
+    const result = await axios({
+      method: 'get', // GET
+      url: hosturi + '/events', // URL
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/* 이벤트 상세 */
+export const EventDetailAPI = async (accessToken: string, id: number) => {
+  try {
+    const result = await axios({
+      method: 'get', // GET
+      url: hosturi + '/events/' + id, // URL
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+      params: {
+        eventId: 2,
       },
     });
     return result;
@@ -330,8 +371,7 @@ export const NoticeDetailAPI = async (accessToken: string, id: number) => {
   try {
     const result = await axios({
       method: 'get',
-      url: hosturi + '/notices/',
-
+      url: hosturi + '/notices/' + id,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
@@ -343,35 +383,57 @@ export const NoticeDetailAPI = async (accessToken: string, id: number) => {
   }
 };
 
-/* 이벤트 목록 */
-export const EventListAPI = async (accessToken: string) => {
+/* 유저 간략 정보 조회 */
+export const UserSimpleAPI = async (accessToken: string) => {
   try {
     const result = await axios({
       method: 'get', // GET
-      url: hosturi + '/events', // URL
+      url: hosturi + '/users/simple', // URL
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
       },
     });
+    console.log(result);
     return result;
   } catch (err) {
     throw err;
   }
 };
 
-/* 이벤트 상세 */
-export const EventDetailAPI = async (accessToken: string) => {
+/* 유저 상세 정보 */
+export const UserProfileAPI = async (accessToken: string) => {
   try {
     const result = await axios({
       method: 'get', // GET
-      url: hosturi + '/events/', // URL
+      url: hosturi + '/users/detail', // URL
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
       },
-      params: {
-        eventId: 2,
+    });
+    console.log(result);
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/* 유저 닉네임 변경 */
+export const UserNicknameChangeAPI = async (
+  accessToken: string,
+  nickname: string,
+) => {
+  try {
+    const result = await axios({
+      method: 'patch',
+      url: hosturi + '/users/nickname',
+      data: {
+        nickname: nickname,
+      },
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
       },
     });
     return result;
@@ -379,10 +441,13 @@ export const EventDetailAPI = async (accessToken: string) => {
     throw err;
   }
 };
-
 
 /* 카트추가 */
-export const CartPost = async (accessToken: string, postId: number, itemSets: any) => {
+export const CartPost = async (
+  accessToken: string,
+  postId: number,
+  itemSets: any,
+) => {
   try {
     const result = await axios({
       method: 'POST', // POST
@@ -393,7 +458,7 @@ export const CartPost = async (accessToken: string, postId: number, itemSets: an
       },
       data: {
         postId: postId,
-        itemSets: itemSets
+        itemSets: itemSets,
       },
     });
     return result;
@@ -402,7 +467,7 @@ export const CartPost = async (accessToken: string, postId: number, itemSets: an
   }
 };
 
-export const pickStore = async (accessToken: string, postId: number,) => {
+export const pickStore = async (accessToken: string, postId: number) => {
   console.log(postId);
 
   try {
@@ -410,7 +475,7 @@ export const pickStore = async (accessToken: string, postId: number,) => {
       method: 'POST', // POST
       url: hosturi + '/picks',
       params: {
-        postId: postId
+        postId: postId,
       },
       headers: {
         'content-type': 'application/json',
@@ -422,15 +487,15 @@ export const pickStore = async (accessToken: string, postId: number,) => {
   } catch (err) {
     throw err;
   }
-}
+};
 
-export const deletepickStore = async (accessToken: string, postId: number,) => {
+export const deletepickStore = async (accessToken: string, postId: number) => {
   try {
     const result = await axios({
       method: 'DELETE', // POST
       url: hosturi + '/picks',
       params: {
-        postId: postId
+        postId: postId,
       },
       headers: {
         'content-type': 'application/json',
@@ -441,7 +506,7 @@ export const deletepickStore = async (accessToken: string, postId: number,) => {
   } catch (err) {
     throw err;
   }
-}
+};
 
 export const getCompleteOrderListAPI = async (accessToken: string) => {
   try {
@@ -475,7 +540,6 @@ export const getInProgressOrderListAPI = async (accessToken: string) => {
   }
 };
 
-
 //review 사진 3개
 export const topImage3 = async (accessToken: string) => {
   try {
@@ -493,11 +557,17 @@ export const topImage3 = async (accessToken: string) => {
   }
 };
 
-export const getDistanceAPI = async (accessToken: string, param: any, orderId: number) => {
+export const getDistanceAPI = async (
+  accessToken: string,
+  param: any,
+  orderId: number,
+) => {
   try {
     const result = await axios({
       method: 'get',
-      url: hosturi + `/orders/${orderId}/distance?lng=${param.lng}&lat=${param.lat}`,
+      url:
+        hosturi +
+        `/orders/${orderId}/distance?lng=${param.lng}&lat=${param.lat}`,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
@@ -509,7 +579,10 @@ export const getDistanceAPI = async (accessToken: string, param: any, orderId: n
   }
 };
 
-export const getOrderSimpleAPI = async (accessToken: string, orderId: number) => {
+export const getOrderSimpleAPI = async (
+  accessToken: string,
+  orderId: number,
+) => {
   try {
     const result = await axios({
       method: 'get',
@@ -524,4 +597,3 @@ export const getOrderSimpleAPI = async (accessToken: string, orderId: number) =>
     throw err;
   }
 };
-
