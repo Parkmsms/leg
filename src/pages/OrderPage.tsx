@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';;
 import { useWindowDimensions, Text, StyleSheet, Alert, Image } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import OrderList from './Order/OrderList2';
+import OrderStatusList from './Order/OrderStatusList';
 import OrderCompleteList from './Order/OrderCompleteList';
 
 type OrderPageProps = {
@@ -13,7 +13,7 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
   const layout = useWindowDimensions();
   //주문내역
   const FirstRoute = () => (
-    <OrderList goStatus={goDtail} goTest={goTest} />
+    <OrderStatusList goStatus={goDtail} />
   );
   //주문 완료 내역
   const SecondRoute = () => (
@@ -21,8 +21,8 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
   );
 
   //주문 현황 페이지로 이동
-  const goDtail = (param: number) => {
-    navigation.navigate('OrderStatus', { orderId: param })
+  const goDtail = (param: any) => {
+    navigation.navigate('OrderStatus', { param: param })
   }
 
   //리뷰 페이지로 이동
@@ -30,9 +30,6 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
     navigation.navigate('ReviewPage')
   }
 
-  const goTest = () => {
-    navigation.navigate('CountDownPage')
-  }
 
   const renderScene = SceneMap({
     OrderList: FirstRoute,

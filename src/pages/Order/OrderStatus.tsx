@@ -6,16 +6,15 @@ import {
     Image,
     TouchableOpacity,
     SafeAreaView,
-    Button,
     ScrollView,
-    Alert
 } from 'react-native';
 import { Dimensions, ActivityIndicator } from "react-native";
 import OrderPopUp from "../../components/Modal/OrderPopUp";
-import { activeLocation, getDistanceAPI } from '../../config/AxiosFunction';
+import { activeLocation, getDistanceAPI, getOrderSimpleAPI } from '../../config/AxiosFunction';
 import { MyLocation, initialMyLocation } from '../../models/locationInfo';
-import { DistanceInfo, initialDistanceInfo } from '../../models/orderInfo';
+import { DistanceInfo, initialDistanceInfo, initialOrderSmpInfo, OrderSmpInfo } from '../../models/orderInfo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { OrderInfo } from '../../models/orderInfo';
 import CountDownPage from './CountDownPage'
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -44,20 +43,20 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [location, setLocation] = useState<MyLocation>(initialMyLocation);
     const [distances, setDistances] = useState<DistanceInfo>(initialDistanceInfo);
+    const [orderSimple, setOrderSimple] = useState<OrderSmpInfo>(initialOrderSmpInfo);
+    const [propData, setPropData] = useState<OrderInfo>(route.params.param);
     const [ready, setReady] = useState<boolean>(true);
 
-    const setTimer123 = (param: any) => {
-        const param2 = {
+    const setTimer = (param: any) => {
+        const setTimeParam = {
             t_seconds: param.substr(param.indexOf('-') + 1),
             t_minutes: param.substr(0, param.indexOf('-'))
         }
-        dispatch(doTimer(param2));
+        dispatch(doTimer(setTimeParam));
     }
-    const theEnd = (param: any) => {
+    const theEnd = () => {
         dispatch(doEnd());
     }
-
-
     const closeModal = () => {
         setModalOpen(false);
     }
@@ -85,14 +84,22 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
                 lng: response1.data.address.lng,
                 lat: response1.data.address.lat
             }
-            , route.params.orderId)
+            , route.params.param.id)
         setDistances(response2.data);
+    }
 
+    const getOrderSimple = async () => {
+        const response3: any = await getOrderSimpleAPI(accessToken, route.params.param.id);
+        setOrderSimple({
+            ...response3.data,
+            finalPrice: response3.data.finalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        })
         setReady(false);
     }
 
     useEffect(() => {
         getActiveLocation();
+        getOrderSimple();
     }, [ready])
 
     return (
@@ -116,33 +123,109 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
                     <View style={OrderWrapper.Horizontal}>
                         <Text style={OrderWrapper.FontMinute}>픽업예정 시간:</Text>
                         <Text style={OrderWrapper.FontTime}>
-                            <CountDownPage mm={t_minutes} ss={t_seconds} onTheEnd={theEnd} setTimer={setTimer123} />
+                            <CountDownPage mm={t_minutes} ss={t_seconds} onTheEnd={theEnd} setTimer={setTimer} />
                         </Text>
                     </View>
-                    <View>
-
+                    <View style={OrderWrapper.Horizontal}>
+                        <Text>남은 거리 : {distances.distance}</Text>
+                        <TouchableOpacity onPress={getActiveLocation} >
+                            <Ionicons name="refresh" size={20} style={{ marginLeft: 5 }} />
+                        </TouchableOpacity>
                     </View>
-                    <View style={{ margin: 15, height: 150 }}>
+                    <View>
+                    </View>
+                    <View style={{ margin: 15, height: 160 }}>
+                        {/* test */}
                         <ScrollView>
-                            <TouchableOpacity style={OrderWrapper.CommentBox}>
-                                <Text style={OrderWrapper.FontColor}>{location.address.locationName}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={OrderWrapper.CommentBox}>
-                                <Text style={OrderWrapper.FontColor}>거리 : {distances.distance}</Text>
+                            <View style={OrderWrapper.ContInfoBox}>
+                                <TouchableOpacity style={OrderWrapper.CommentBox}>
+                                    <View style={OrderWrapper.Horizontal}>
+                                        <Text style={OrderWrapper.FontText}>{propData.orderAt}</Text>
+                                    </View>
+                                    <View style={OrderWrapper.VerticalN}>
+                                        <View style={OrderWrapper.Horizontal}>
+                                            <View style={OrderWrapper.CenterAlign}>
+                                                <Image
+                                                    source={{ uri: propData.storeProfile ? propData.storeProfile : 'none' }}
+                                                    style={{
+                                                        width: 50,
+                                                        height: 50,
+                                                        aspectRatio: 1.1,
+                                                        resizeMode: 'contain'
+                                                    }}
+                                                />
+                                            </View>
+                                            <View
+                                                style={[OrderWrapper.VerticalN, {
+                                                    marginLeft: 15
+                                                }]}>
+                                                <View style={OrderWrapper.horizontalN}>
+                                                    <Text style={[OrderWrapper.FontText,
+                                                    {
+                                                        fontSize: 15,
+                                                        color: '#000000',
+                                                        fontWeight: 'bold'
+                                                    }]}>{propData.storeName} / </Text>
 
-                            </TouchableOpacity>
-                            <TouchableOpacity style={OrderWrapper.CommentBox}>
-                                <Text style={OrderWrapper.FontColor}>사장 </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={OrderWrapper.CommentBox}>
-                                <Text style={OrderWrapper.FontColor}>사장 </Text>
-                            </TouchableOpacity>
+                                                    <Text style={[OrderWrapper.FontText,
+                                                    {
+                                                        color: '#000000',
+                                                        fontWeight: '500',
+                                                    }]}>{propData.simpleMenu}</Text>
+                                                </View>
+
+                                                <View style={OrderWrapper.horizontalN}>
+                                                    <Text style={[OrderWrapper.FontText,
+                                                    {
+                                                        color: '#000000',
+                                                        fontWeight: '100',
+                                                    }]}>
+                                                        요청사항 :
+                                                    </Text>
+                                                    <Text style={[OrderWrapper.FontText,
+                                                    {
+                                                        color: '#00C1DE',
+                                                        fontWeight: 'bold',
+                                                        marginLeft: 5
+                                                    }]}>
+                                                        {orderSimple.requirements}
+                                                    </Text>
+                                                </View>
+
+                                                <View style={OrderWrapper.horizontalN}>
+                                                    <Text style={[OrderWrapper.FontText,
+                                                    {
+                                                        color: '#000000',
+                                                        fontWeight: '100',
+                                                    }]}>
+                                                        총액:
+                                                    </Text>
+                                                    <Text style={[OrderWrapper.FontText,
+                                                    {
+                                                        color: '#000000',
+                                                        fontWeight: 'bold',
+                                                        marginLeft: 5
+                                                    }]}>
+                                                        {orderSimple.finalPrice}
+                                                    </Text>
+                                                    <Text style={[OrderWrapper.FontText,
+                                                    {
+                                                        color: '#000000',
+                                                        fontWeight: '100',
+                                                    }]}>
+                                                        원
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
                         </ScrollView>
                     </View>
                     <TouchableOpacity
                         style={OrderWrapper.ActivateButton}
-                        onPress={openModal}
-                    >
+                        onPress={openModal}>
                         <Text style={OrderWrapper.ButtonText}>포장받기 완료</Text>
                     </TouchableOpacity>
                 </View >}
@@ -161,20 +244,18 @@ export const OrderWrapper = StyleSheet.create({
     MainContainer: {
         flex: 1,
         backgroundColor: 'white',
-        width: width,
-        height: width * 0.6,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 15
+        marginTop: 50
     },
     Horizontal: {
         flexDirection: 'row',
         margin: 10
     },
     Vertical: {
-        marginTop: 50,
         flexDirection: 'column',
         alignItems: 'center',
+    },
+    VerticalN: {
+        flexDirection: 'column',
     },
     ActivateButton: {
         backgroundColor: '#00C1DE',
@@ -210,7 +291,7 @@ export const OrderWrapper = StyleSheet.create({
         fontFamily: 'Urbanist',
         fontStyle: 'normal',
         fontWeight: '800',
-        marginTop:1,
+        marginTop: 1,
     },
     FontTime: {
         color: '#00C1DE',
@@ -227,13 +308,16 @@ export const OrderWrapper = StyleSheet.create({
         letterSpacing: 0.2,
         color: '#00C1DE'
     },
+    ContInfoBox: {
+        backgroundColor: 'white',
+        borderRadius: 15,
+        marginLeft: 8,
+        width: width * 0.75,
+    },
     CommentBox: {
         backgroundColor: 'rgba(0, 193, 222, 0.12)',
         borderRadius: 15,
-        marginTop: 8,
-        marginLeft: 8,
-        padding: 10,
-        width: width * 0.75
+        height: 130
     },
     container: {
         flex: 1,
@@ -243,6 +327,36 @@ export const OrderWrapper = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-around",
         padding: 10
+    },
+    horizontalN: {
+        flexDirection: "row",
+    },
+    CenterAlign: {
+        justifyContent: "center",
+        alignItems: 'center',
+    },
+    ContentsBox: {
+        borderWidth: 1,
+        marginTop: 20,
+        sborderRadius: 1,
+        paddingLeft: 26,
+        paddingRight: 26,
+        paddingTop: 15,
+        paddingBottom: 15,
+        borderColor: 'rgba(0, 0, 0, 0.05)',
+        backgroundColor: 'white',
+    },
+    FontText: {
+        fontFamily: 'Apple SD Gothic Neo',
+        fontStyle: 'normal',
+        letterSpacing: 0.5,
+    },
+    InActivateButton: {
+        backgroundColor: '#3E3E3E',
+        borderRadius: 10,
+        height: 40,
+        justifyContent: 'center',
+        alignContent: 'center'
     },
 });
 

@@ -314,7 +314,7 @@ const StackNavigator = () => {
           }
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="CountDownPage"
         component={CountDownPage}
         options={{
@@ -322,7 +322,7 @@ const StackNavigator = () => {
         }}
       />
     </Stack.Navigator>
-    
+
   );
 };
 

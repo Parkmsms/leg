@@ -36,7 +36,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
 
 
   //날짜 형태 변환
-  const Datefilter = (val: string, param: string) => {
+  const dateFilter = (val: string, param: string) => {
     let fullDate = param.toString().replace('T', ' ')
     let dayStr = new Date(param)
     const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
@@ -51,22 +51,14 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
       let compDay =
         // new Date(param).getTime();
         //Test용 시간
-        new Date('2022-12-21T16:20:12.480Z').getTime();
+        new Date('2022-12-27T16:20:12.480Z').getTime();
       let result: any = Math.floor((+(compDay) - +(today)) / 1000 / 60 / 60)
 
-      // if (result > 24) {
-      //   result = Math.floor(result / 24)
-      //   if (result > 7) {
-      //     result = '7일 이전'
-      //   }
-      //   else
-      //     result = result + '일 후'
-      // }
       if (result >= 0) {
         result = Math.floor((+(compDay) - +(today)) / 1000 / 60) + '분 후'
       }
       else {
-        result = '만료'
+        result = '시간만료'
       }
       return result
     }
@@ -99,9 +91,9 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
             finalPrice: response.data.content[key]['finalPrice'],
             status: response.data.content[key]['pickUpAt'],
             acceptAt: response.data.content[key]['acceptAt'],
-            pickUpAt: Datefilter('pickUpAt', response.data.content[key]['pickUpAt']),
-            orderAt: Datefilter('orderAt', response.data.content[key]['orderAt']),
-            doneAt: Datefilter('doneAt', response.data.content[key]['doneAt']),
+            pickUpAt: dateFilter('pickUpAt', response.data.content[key]['pickUpAt']),
+            orderAt: dateFilter('orderAt', response.data.content[key]['orderAt']),
+            doneAt: dateFilter('doneAt', response.data.content[key]['doneAt']),
           },
         ]
       });
@@ -162,7 +154,6 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                             color: '#00C1DE',
                             fontWeight: '600',
                           }]}>
-                            {/* {order.pickUpAt} */}
                             {order.doneAt}
                           </Text>
                         </View>
@@ -176,13 +167,13 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                           <Text style={OrderWrapper.ButtonText}>포장 완료</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                          style={[OrderWrapper.ActivateButton,,{backgroundColor:'#3E3E3E'}]}
+                          style={[OrderWrapper.ActivateButton, { backgroundColor: '#3E3E3E' }]}
                           onPress={() => {
                             props.goReview()
                           }}>
                           <Text style={OrderWrapper.ButtonText}>리뷰 쓰기</Text>
                         </TouchableOpacity>
-                        
+
                       </View>
                     </View>
                   </View >
@@ -230,8 +221,8 @@ export const OrderWrapper = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignContent: 'center',
-    margin:5,
-    flex:2,
+    margin: 5,
+    flex: 2,
   },
   InActivateButton: {
     backgroundColor: '#3E3E3E',

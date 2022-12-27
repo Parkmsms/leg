@@ -11,38 +11,35 @@ import {
 } from 'react-native';
 import { Dimensions } from "react-native";
 import { getInProgressOrderListAPI, getAccessToken } from '../../config/AxiosFunction';
-import {  OrderInfo } from '../../models/orderInfo';
+import { OrderInfo } from '../../models/orderInfo';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  doTimer,
+} from '../../slices/time';
 
 type BottomPopupProps = {
   goStatus: any
-  goTest: any
 }
 const width = Dimensions.get('window').width;
 
-const OrderList = (props: BottomPopupProps) => {
-
+const OrderStatusList = (props: BottomPopupProps) => {
+  const dispatch = useDispatch();
   const [OrderLst, setOrderLst] = useState<OrderInfo[]>([]);
   const [ready, setReady] = useState<boolean>(true);
 
 
-  const goStatus = (param: number) => {
+  const goStatus = (param: any) => {
     props.goStatus(param);
   }
-
-  const goTest = () => {
-    props.goTest();
-  }
-
   useEffect(() => {
     // 아직 데이터가 없을때 바로 예외처리로 넘어가기 때문에 api 조회 주석처리
     setTimeout(() => {
       getOrderList();
-      console.log("TQ",OrderLst.length)
       setReady(false);
     }, 500)
   }, [ready])
 
-  const Datefilter = (val: string, param: string) => {
+  const dateFilter = (val: string, param: string) => {
     let fullDate = param.toString().replace('T', ' ')
     let dayStr = new Date(param)
     const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
@@ -51,28 +48,28 @@ const OrderList = (props: BottomPopupProps) => {
     let month = fullDate.slice(5, 7);
     let day = fullDate.slice(8, 10);
     let time = fullDate.slice(11, 16);
-    // return (param.toString().split('').filter((x: any) => x.match(/\d/)).join(''));
     if (val === 'pickUpAt') {
       let today = new Date().getTime();
-      let compDay =
-        // new Date(param).getTime();
-        //Test용 시간
-        new Date('2022-12-21T16:20:12.480Z').getTime();
+
+      //Test용 시간
+      let compDay = new Date('2022-12-27T17:58:12.480Z').getTime();
+      //let compDay = new Date(param).getTime(); <<차후 이거로 변경
+
       let result: any = Math.floor((+(compDay) - +(today)) / 1000 / 60 / 60)
 
-      // if (result > 24) {
-      //   result = Math.floor(result / 24)
-      //   if (result > 7) {
-      //     result = '7일 이전'
-      //   }
-      //   else
-      //     result = result + '일 후'
-      // }
       if (result >= 0) {
-        result = Math.floor((+(compDay) - +(today)) / 1000 / 60) + '분 후'
+
+        let data = (+(compDay) - +(today)) / 1000 / 60
+        result = Math.floor(data) + '분 후'
+
+        const timeSetParam = {
+          t_seconds: 59,
+          t_minutes: Math.floor(data) - 1
+        }
+        dispatch(doTimer(timeSetParam));
       }
       else {
-        result = '만료'
+        result = '시간만료'
       }
       return result
     }
@@ -102,8 +99,10 @@ const OrderList = (props: BottomPopupProps) => {
             finalPrice: response.data.content[key]['finalPrice'],
             status: response.data.content[key]['pickUpAt'],
             acceptAt: response.data.content[key]['acceptAt'],
-            pickUpAt: response.data.content[key]['pickUpAt'],
-            orderAt: Datefilter('orderAt', response.data.content[key]['orderAt']),
+            // test <데이터가 없어서 mockup>
+            pickUpAt: dateFilter('pickUpAt', '2022-12-21T16:20:12.480Z'),
+            // pickUpAt: response.data.content[key]['pickUpAt'],
+            orderAt: dateFilter('orderAt', response.data.content[key]['orderAt']),
             doneAt: response.data.content[key]['doneAt'],
           },
         ]
@@ -125,10 +124,10 @@ const OrderList = (props: BottomPopupProps) => {
                 <SafeAreaView style={OrderWrapper.MainContainer} key={index}>
                   <View style={OrderWrapper.CenterAlign} >
                     <View style={OrderWrapper.ContentsBox}>
-                      <View style={[OrderWrapper.Horizontal, { marginLeft: 5 }]}>
+                      <View style={[OrderWrapper.Vertical, { marginLeft: 5 }]}>
                         <Text style={OrderWrapper.FontText}>{order.orderAt}</Text>
                       </View>
-                      <View style={OrderWrapper.Vertical}>
+                      <View style={OrderWrapper.Horizontal}>
                         <View style={OrderWrapper.CenterAlign}>
                           <Image
                             // source={require('../../assets/main.png')}
@@ -142,7 +141,7 @@ const OrderList = (props: BottomPopupProps) => {
                           />
                         </View>
                         <View
-                          style={[OrderWrapper.Horizontal, {
+                          style={[OrderWrapper.Vertical, {
                             marginLeft: 15,
                             padding: 15
                           }]}>
@@ -165,15 +164,15 @@ const OrderList = (props: BottomPopupProps) => {
                             color: '#00C1DE',
                             fontWeight: '600',
                           }]}>
-                            {/* {order.pickUpAt} */}
-                            {order.doneAt}
+                            {order.pickUpAt}
+                            {/* {order.doneAt} */}
                           </Text>
                         </View>
                       </View>
-                      <View style={OrderWrapper.Horizontal}>
+                      <View style={OrderWrapper.Vertical}>
                         <TouchableOpacity
                           onPress={() =>
-                            goStatus(order.id)
+                            goStatus(order)
                           }
                           style={OrderWrapper.InActivateButton}>
                           <Text style={OrderWrapper.ButtonText}>포장 대기</Text>
@@ -191,65 +190,7 @@ const OrderList = (props: BottomPopupProps) => {
         </ScrollView>
       }
     </SafeAreaView>
-    // <>
-    //   <SafeAreaView style={OrderWrapper.MainContainer}>
-    //     <View style={OrderWrapper.CenterAlign} >
-    //       <View style={OrderWrapper.ContentsBox}>
-    //         <View style={[OrderWrapper.Horizontal, { marginLeft: 5 }]}>
-    //           <Text style={OrderWrapper.FontText}>09.11(월) 17:00주문</Text>
-    //           {/* <Text>{orderList.orderDate}</Text> */}
-    //         </View>
-    //         <View style={OrderWrapper.Vertical}>
-    //           <View style={OrderWrapper.CenterAlign}>
-    //             <Image
-    //               source={require('../../assets/main.png')}
-    //               style={{
-    //                 justifyContent: "center",
-    //                 alignItems: 'center',
-    //                 borderRadius: 20,
-    //                 width: 90, height: 90
-    //               }}
-    //             />
-    //           </View>
-    //           <View
-    //             style={[OrderWrapper.Horizontal, {
-    //               marginLeft: 15,
-    //               padding: 15
-    //             }]}>
-    //             <Text style={[OrderWrapper.FontText,
-    //             {
-    //               fontSize: 15,
-    //               marginBottom: 10,
-    //               color: '#000000',
-    //               fontWeight: 'bold'
-    //             }]}>미쁘동</Text>
-    //             <Text style={[OrderWrapper.FontText,
-    //             {
-    //               marginBottom: 10,
-    //               color: '#000000',
-    //               fontWeight: '500',
-    //             }]}>미쁘동 / 일회용품 선택 O</Text>
-    //             <Text style={[OrderWrapper.FontText,
-    //             {
-    //               color: '#00C1DE',
-    //               fontWeight: '600',
-    //             }]}>픽업시간 18:00</Text>
-    //           </View>
-    //         </View>
-    //         <View style={OrderWrapper.Horizontal}>
-    //           <TouchableOpacity onPress={() => goStatus(9)}
-    //             style={OrderWrapper.InActivateButton}>
-    //             <Text style={OrderWrapper.ButtonText}>주문 현황</Text>
-    //           </TouchableOpacity>
-    //           <TouchableOpacity onPress={() => goTest()}
-    //             style={OrderWrapper.InActivateButton}>
-    //             <Text style={OrderWrapper.ButtonText}>테스트페이지이동</Text>
-    //           </TouchableOpacity>
-    //         </View>
-    //       </View>
-    //     </View >
-    //   </SafeAreaView>
-    // </>
+
   );
 };
 
@@ -275,10 +216,10 @@ export const OrderWrapper = StyleSheet.create({
     borderColor: 'rgba(0, 0, 0, 0.05)',
     backgroundColor: 'white',
   },
-  Horizontal: {
+  Vertical: {
     flexDirection: 'column'
   },
-  Vertical: {
+  Horizontal: {
     flexDirection: 'row'
   },
   ActivateButton: {
@@ -323,4 +264,4 @@ export const OrderWrapper = StyleSheet.create({
   },
 });
 
-export default OrderList;
+export default OrderStatusList;

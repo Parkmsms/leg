@@ -508,3 +508,20 @@ export const getDistanceAPI = async (accessToken: string, param: any, orderId: n
     throw err;
   }
 };
+
+export const getOrderSimpleAPI = async (accessToken: string, orderId: number) => {
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + `/orders/${orderId}/simple`,
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+

@@ -25,9 +25,27 @@ export interface OrderInfo {
 // }
 
 export interface DistanceInfo {
-    distance:number
+    distance: number
 }
 
 export const initialDistanceInfo: DistanceInfo = {
     distance: 0,
-  }
+}
+
+export interface OrderSmpInfo {
+    id: number,
+    simpleMenu: string,
+    finalPrice: number,
+    requirements: string,
+    status: string,
+    pickUpAt: string
+}
+
+export const initialOrderSmpInfo: OrderSmpInfo = {
+    id: 0,
+    simpleMenu: '',
+    finalPrice: 0,
+    requirements: '',
+    status: '',
+    pickUpAt: ''
+}

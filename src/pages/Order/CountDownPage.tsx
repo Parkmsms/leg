@@ -54,8 +54,9 @@ const Orders = (props: any) => {
     <>
       {t_minutes >= 5 && <Text> {t_minutes}:{t_seconds < 10 ? `0${t_seconds}` : t_seconds}</Text>}
       {t_minutes < 5 && <Text style={{ color: 'red' }}> {t_minutes}:{t_seconds < 10 ? `0${t_seconds}` : t_seconds}</Text>}
+      {/* {t_minutes >= 5 ? <Text> {t_minutes}</Text> : <Text style={{ color: 'red' }}> {t_minutes}</Text>} */}
       <TouchableOpacity onPress={extensionFive} >
-        <Ionicons name="refresh" size={20} style={{marginLeft:5}} />
+        <Ionicons name="refresh" size={20} style={{ marginLeft: 5 }} />
       </TouchableOpacity>
     </>
   )
