@@ -4,7 +4,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 // import Home from '../pages/Home';
 import Orders from '../pages/Orders';
-import MyPage from '../pages/MyPage';
+import MyPage from '../pages/MyPage/MyPage';
 import MainPage from '../pages/MainPage';
 import OrderStatus from '../pages/Order/OrderStatus';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
