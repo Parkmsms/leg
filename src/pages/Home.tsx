@@ -149,18 +149,7 @@ const Home = ({ navigation }: HomeProps) => {
         // //푸시 토큰 표시 
         // console.log('Home Device Token 2nd', token);
         // setToken(token);
-
-        try {
-            setTimeout(() => {
-                getToken();
-                // getToken2();
-            }, 5000)
-        } catch (e: any) {
-            console.log(e.message);
-        }
-
-
-
+        getToken();
     }, []);
 
     // 현재 위치 사용 권한 설정
