@@ -111,11 +111,6 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
       setTotalPrice(sum);
     }
 
-
-
-    console.log(checkList);
-
-
     if (route.params?.storeId && route.params?.menu) {
       getMenuOption()
       console.log("상위메뉴:", route.params?.menu);
@@ -123,13 +118,14 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
     }
   }, [route, radioButtons, sum, totalAmount, storeMenu])
 
-  useEffect(() => {
-    if (MenuOption[0]) {
-      console.log("첫번째 id", MenuOption[0].smallItems[0].id);
-      setCheckList(checkList.concat(MenuOption[0].smallItems[0].id));
-    }
+  // useEffect(() => {
+  //   if (MenuOption[0]) {
+  //     console.log("첫번째 id", MenuOption[0].smallItems[0].id);
+  //     setCheckList(checkList.concat(MenuOption[0].smallItems[0].id));
+  //   }
 
-  }, [MenuOption])
+  // }, [MenuOption])
+
   // useEffect(() => {
   //   setCheckList(checkList.concat(MenuOption[0].smallItems[0].id));
   // }, [MenuOption])
@@ -148,8 +144,8 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   //   console.log("smallItems", radioButtons);
   // }, [MenuOption])
 
-  const goBack = async () => {
-    navigation.goBack();
+  const setCart = async () => {
+    console.log("카트에 담는 radioButtons", radioButtons);
     await AsyncStorage.setItem('storeInfo', JSON.stringify(route.params?.storeInfo));
     await AsyncStorage.setItem('storeId', JSON.stringify(route.params?.storeId));
     await AsyncStorage.setItem('profile', JSON.stringify(route.params?.profile));
@@ -157,7 +153,10 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
     await AsyncStorage.setItem('smallItem', JSON.stringify(radioButtons));
     await AsyncStorage.setItem('totalAmount', JSON.stringify(totalAmount));
     await AsyncStorage.setItem('totalPrice', JSON.stringify(totalPrice));
-
+  }
+  const goBack = async () => {
+    setCart();
+    navigation.goBack();
     // navigation.navigate('CartList', {
     //   storeInfo: route.params?.storeInfo,
     //   postId: route.params?.storeId,
@@ -311,7 +310,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
                         />
                       </RoundedCheckbox>
                       <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.smallItem}</Text>
-                      <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.description}</Text>
+                      {/* <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.description}</Text> */}
                       <Text style={{ paddingLeft: 50, color: 'black' }}>{item.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
                     </View>
                   )

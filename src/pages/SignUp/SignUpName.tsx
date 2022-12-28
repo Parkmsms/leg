@@ -122,7 +122,7 @@ const SignUpName = ({ navigation, route }: SignUpName) => {
               width: 165,
               height: 50,
               fontSize: 15,
-              borderColor: nameValid === undefined && true ? 'lightgray' : 'red',
+              borderColor: nameValid === undefined && true ? 'lightgray' : '#28A745',
               borderWidth: 1,
               borderRadius: 10,
             }}

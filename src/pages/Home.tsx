@@ -58,7 +58,7 @@ const Home = ({ navigation }: HomeProps) => {
                         setToken(token);
                     }).catch((error: any) => {
                         console.log("error", error);
-                        setToken("ckTj-EseR4GWhcGSYgDRIV:APA91bGvX1dU2E0lk73vTswhlABgQR-qPX09ONixJFh4L3ysV2P12YgqRgm4Td9SFeQKKVXa2QKcbUPq5BjaaaeSynlYW_IwYXpaJWoG8wQoAR8ela1sjDruhnKnODt-IHEsHg36-wVH");
+                        setToken("device_Token");
                     })
                 }, 5000);
 
@@ -223,7 +223,7 @@ const Home = ({ navigation }: HomeProps) => {
                     style={homeWrapper.background} />
                 <View style={homeWrapper.buttonView}>
                     <TouchableOpacity style={homeWrapper.button} onPress={goSignUp}>
-                        <Text style={homeWrapper.title} >포장하기</Text>
+                        <Text style={homeWrapper.title} >회원가입</Text>
                     </TouchableOpacity>
                 </View>
             </View>

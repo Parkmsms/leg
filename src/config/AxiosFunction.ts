@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {Agree} from '../models/agreeInfo';
-import {Device} from '../models/deviceInfo';
-import {PostLocation, MyLocation} from '../models/locationInfo';
-import {StoreParams} from '../models/listfilterInfo';
+import { Agree } from '../models/agreeInfo';
+import { Device } from '../models/deviceInfo';
+import { PostLocation, MyLocation } from '../models/locationInfo';
+import { StoreParams } from '../models/listfilterInfo';
 
 const hosturi = 'http://0giri.com/api';
 
@@ -443,11 +443,8 @@ export const UserNicknameChangeAPI = async (
 };
 
 /* 카트추가 */
-export const CartPost = async (
-  accessToken: string,
-  postId: number,
-  itemSets: any,
-) => {
+export const CartPost = async (accessToken: string, cart: any) => {
+  console.log("API", cart);
   try {
     const result = await axios({
       method: 'POST', // POST
@@ -456,10 +453,24 @@ export const CartPost = async (
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
       },
-      data: {
-        postId: postId,
-        itemSets: itemSets,
-      },
+      data: cart,
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const CartGet = async (accessToken: string, cartId: number) => {
+  console.log("API cartId", cartId);
+  try {
+    const result = await axios({
+      method: 'get', // GET
+      url: hosturi + '/carts/' + cartId, // URL
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      }
     });
     return result;
   } catch (err) {
@@ -579,10 +590,7 @@ export const getDistanceAPI = async (
   }
 };
 
-export const getOrderSimpleAPI = async (
-  accessToken: string,
-  orderId: number,
-) => {
+export const getOrderSimpleAPI = async (accessToken: string, orderId: number,) => {
   try {
     const result = await axios({
       method: 'get',
@@ -597,3 +605,19 @@ export const getOrderSimpleAPI = async (
     throw err;
   }
 };
+
+export const getCouponList = async (accessToken: string) => {
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + '/coupons',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}

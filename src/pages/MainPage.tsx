@@ -223,17 +223,17 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
                 )
               })}
             </ScrollView>
-            <View style={{ flexDirection: 'row', position: 'absolute', bottom: 0, alignSelf: 'center' }}>
-              {bannerList.map((banner: Banner, index: number) => {
-                return (
-                  <Text
-                    key={index}
-                    style={index == active ? MainWrapper.BannerPagingActive : MainWrapper.BannerPaging}>⬤</Text>
-                )
-              })}
-            </View>
-          </View>
 
+          </View>
+          <View style={{ justifyContent: 'center', height: height * 0.1, flexDirection: 'row', alignSelf: 'center' }}>
+            {bannerList.map((banner: Banner, index: number) => {
+              return (
+                <Text
+                  key={index}
+                  style={index == active ? MainWrapper.BannerPagingActive : MainWrapper.BannerPaging}>⬤</Text>
+              )
+            })}
+          </View>
 
           {/* <Image source={require('../assets/banner.png')} ></Image> */}
           {/* </View> */}
