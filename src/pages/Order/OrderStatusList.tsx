@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  Alert,
   ActivityIndicator
 } from 'react-native';
 import { Dimensions } from "react-native";
@@ -16,6 +17,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   doTimer,
 } from '../../slices/time';
+import OrderConfirmPopUp from "../../components/Modal/OrderConfirmPopUp";
 
 type BottomPopupProps = {
   goStatus: any
@@ -26,18 +28,30 @@ const OrderStatusList = (props: BottomPopupProps) => {
   const dispatch = useDispatch();
   const [OrderLst, setOrderLst] = useState<OrderInfo[]>([]);
   const [ready, setReady] = useState<boolean>(true);
+  const [modalOpen, setModalOpen] = useState(false);
 
 
   const goStatus = (param: any) => {
+    console.log("넘길떄 param =", param)
     props.goStatus(param);
   }
   useEffect(() => {
-    // 아직 데이터가 없을때 바로 예외처리로 넘어가기 때문에 api 조회 주석처리
     setTimeout(() => {
       getOrderList();
       setReady(false);
-    }, 500)
+    }, 200)
   }, [ready])
+
+  const closeModal = () => {
+    setModalOpen(false);
+  }
+  const openModal = () => {
+    setModalOpen(true);
+  }
+  const openAlert = () => {
+    Alert.alert("완료")
+  }
+
 
   const dateFilter = (val: string, param: string) => {
     let fullDate = param.toString().replace('T', ' ')
@@ -52,23 +66,29 @@ const OrderStatusList = (props: BottomPopupProps) => {
       let today = new Date().getTime();
 
       //Test용 시간
-      let compDay = new Date('2022-12-27T17:58:12.480Z').getTime();
+      let compDay = new Date('2022-12-29T17:58:12.480Z').getTime();
       //let compDay = new Date(param).getTime(); <<차후 이거로 변경
 
       let result: any = Math.floor((+(compDay) - +(today)) / 1000 / 60 / 60)
 
       if (result >= 0) {
-
         let data = (+(compDay) - +(today)) / 1000 / 60
-        result = Math.floor(data) + '분 후'
 
+        //한시간 이상
+        if (result >= 1) {
+          let hh = data / 60;
+          let mm = data % 60;
+          result = `${Math.floor(hh)}시간 ${Math.floor(mm)}분 후`
+        } else {
+          result = Math.floor(data) + '분 후'
+        }
         const timeSetParam = {
-          t_seconds: 59,
-          t_minutes: Math.floor(data) - 1
+          t_minutes: Math.floor(data)
         }
         dispatch(doTimer(timeSetParam));
       }
       else {
+        dispatch(doTimer({ t_minutes: 0 }));
         result = '시간만료'
       }
       return result
@@ -87,17 +107,18 @@ const OrderStatusList = (props: BottomPopupProps) => {
   const getOrderList = async () => {
     // const accessToken = await getAccessToken('accessToken');
     //임시 accessToken값
-    const response: any = await getInProgressOrderListAPI('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzE0MTA4NzEsInN1YiI6IjEwMTYiLCJ0b2tlblR5cGUiOnRydWUsImFjY291bnRUeXBlIjoiVVNFUiIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX1VTRVIifV19.U-FmO73zLO6mm2Mt5QPN3NLIXfHwom7xmeoamhCA4wjRoOO6dqm36uj0G5x-1QhKzXOtdBaT0ThIef8SmP7usA');
+    const response: any = await getInProgressOrderListAPI('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg');
     for (const key in response.data.content) {
       setOrderLst(() => {
         return [
           {
             id: response.data.content[key]['id'],
+            storeId: response.data.content[key]['storeId'],
             storeProfile: response.data.content[key]['storeProfile'],
             storeName: response.data.content[key]['storeName'],
             simpleMenu: response.data.content[key]['simpleMenu'],
             finalPrice: response.data.content[key]['finalPrice'],
-            status: response.data.content[key]['pickUpAt'],
+            status: response.data.content[key]['status'],
             acceptAt: response.data.content[key]['acceptAt'],
             // test <데이터가 없어서 mockup>
             pickUpAt: dateFilter('pickUpAt', '2022-12-21T16:20:12.480Z'),
@@ -130,7 +151,6 @@ const OrderStatusList = (props: BottomPopupProps) => {
                       <View style={OrderWrapper.Horizontal}>
                         <View style={OrderWrapper.CenterAlign}>
                           <Image
-                            // source={require('../../assets/main.png')}
                             source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
                             style={{
                               width: 90,
@@ -165,19 +185,38 @@ const OrderStatusList = (props: BottomPopupProps) => {
                             fontWeight: '600',
                           }]}>
                             {order.pickUpAt}
-                            {/* {order.doneAt} */}
                           </Text>
                         </View>
                       </View>
-                      <View style={OrderWrapper.Vertical}>
-                        <TouchableOpacity
-                          onPress={() =>
-                            goStatus(order)
-                          }
-                          style={OrderWrapper.InActivateButton}>
-                          <Text style={OrderWrapper.ButtonText}>포장 대기</Text>
-                        </TouchableOpacity>
+                      <View style={OrderWrapper.Horizontal}>
+                        {order.status === "REQUEST" &&
+                          <>
+                            <TouchableOpacity
+                              onPress={() =>
+                                goStatus(order)
+                              }
+                              style={[OrderWrapper.InActivateButton, { flex: 2, margin: 5 }]}>
+                              <Text style={OrderWrapper.ButtonText}>포장 요청</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={openModal}
+                              style={[OrderWrapper.ActivateButton, { flex: 2, margin: 5 }]}>
+                              <Text style={OrderWrapper.ButtonText}>주문 취소</Text>
+                            </TouchableOpacity>
+                          </>
+                        }
 
+                        {order.status === "ACCEPT" &&
+                          <>
+                            <TouchableOpacity
+                              onPress={() =>
+                                goStatus(order)
+                              }
+                              style={OrderWrapper.InActivateButton}>
+                              <Text style={OrderWrapper.ButtonText}>주문 취소</Text>
+                            </TouchableOpacity>
+                          </>
+                        }
                       </View>
                     </View>
                   </View >
@@ -187,7 +226,16 @@ const OrderStatusList = (props: BottomPopupProps) => {
           {OrderLst.length === 0 &&
             <View><Text>데이터가 없습니다.</Text></View>
           }
+          <OrderConfirmPopUp
+            open={modalOpen}
+            close={closeModal}
+            title={"주문 취소"}
+            subTitle={`선택하신 주문을 취소하시겠습니까?`}
+            openResult={openAlert}
+          />
+
         </ScrollView>
+
       }
     </SafeAreaView>
 

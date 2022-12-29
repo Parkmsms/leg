@@ -45,7 +45,6 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
     let month = fullDate.slice(5, 7);
     let day = fullDate.slice(8, 10);
     let time = fullDate.slice(11, 16);
-    // return (param.toString().split('').filter((x: any) => x.match(/\d/)).join(''));
     if (val === 'pickUpAt') {
       let today = new Date().getTime();
       let compDay =
@@ -77,7 +76,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
     // const accessToken = await getAccessToken('accessToken');
 
     //임시 accessToken값
-    const response: any = await getCompleteOrderListAPI('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzE0MTA4NzEsInN1YiI6IjEwMTYiLCJ0b2tlblR5cGUiOnRydWUsImFjY291bnRUeXBlIjoiVVNFUiIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX1VTRVIifV19.U-FmO73zLO6mm2Mt5QPN3NLIXfHwom7xmeoamhCA4wjRoOO6dqm36uj0G5x-1QhKzXOtdBaT0ThIef8SmP7usA');
+    const response: any = await getCompleteOrderListAPI('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg');
     // setOrderCompeteLst(response.data.content);
 
     for (const key in response.data.content) {
@@ -85,6 +84,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
         return [
           {
             id: response.data.content[key]['id'],
+            storeId: response.data.content[key]['storeId'],
             storeProfile: response.data.content[key]['storeProfile'],
             storeName: response.data.content[key]['storeName'],
             simpleMenu: response.data.content[key]['simpleMenu'],
@@ -114,10 +114,10 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                 <SafeAreaView style={OrderWrapper.MainContainer} key={index}>
                   <View style={OrderWrapper.CenterAlign} >
                     <View style={OrderWrapper.ContentsBox}>
-                      <View style={[OrderWrapper.Horizontal, { marginLeft: 5 }]}>
+                      <View style={[OrderWrapper.Vertical, { marginLeft: 5 }]}>
                         <Text style={OrderWrapper.FontText}>{order.orderAt}</Text>
                       </View>
-                      <View style={OrderWrapper.Vertical}>
+                      <View style={OrderWrapper.Horizontal}>
                         <View style={OrderWrapper.CenterAlign}>
                           <Image
                             // source={require('../../assets/main.png')}
@@ -131,7 +131,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                           />
                         </View>
                         <View
-                          style={[OrderWrapper.Horizontal, {
+                          style={[OrderWrapper.Vertical, {
                             marginLeft: 15,
                             padding: 15
                           }]}>
@@ -158,16 +158,16 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                           </Text>
                         </View>
                       </View>
-                      <View style={OrderWrapper.Vertical}>
+                      <View style={OrderWrapper.Horizontal}>
                         <TouchableOpacity
-                          style={OrderWrapper.ActivateButton}
+                          style={[OrderWrapper.ActivateButton, { backgroundColor: '#3E3E3E' }]}
                           onPress={() => {
                             props.goReview()
                           }}>
                           <Text style={OrderWrapper.ButtonText}>포장 완료</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                          style={[OrderWrapper.ActivateButton, { backgroundColor: '#3E3E3E' }]}
+                          style={OrderWrapper.ActivateButton}
                           onPress={() => {
                             props.goReview()
                           }}>
@@ -209,10 +209,10 @@ export const OrderWrapper = StyleSheet.create({
     borderColor: 'rgba(0, 0, 0, 0.05)',
     backgroundColor: 'white',
   },
-  Horizontal: {
+  Vertical: {
     flexDirection: 'column'
   },
-  Vertical: {
+  Horizontal: {
     flexDirection: 'row'
   },
   ActivateButton: {

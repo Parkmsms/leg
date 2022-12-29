@@ -1,5 +1,6 @@
 export interface OrderInfo {
     id: number,
+    storeId: number
     orderAt: string,
     storeProfile: string,
     storeName: string,
@@ -25,11 +26,11 @@ export interface OrderInfo {
 // }
 
 export interface DistanceInfo {
-    distance: number
+    distance: string
 }
 
 export const initialDistanceInfo: DistanceInfo = {
-    distance: 0,
+    distance: '',
 }
 
 export interface OrderSmpInfo {
@@ -48,4 +49,22 @@ export const initialOrderSmpInfo: OrderSmpInfo = {
     requirements: '',
     status: '',
     pickUpAt: ''
+}
+
+export interface OrderFinishInfo {
+    id: number,
+    finalPrice: number,
+    distance: number,
+    maxRewardRatio: number,
+    maxRewardDistance: number,
+    reward: number
+}
+
+export const initialOrderFinishInfo: OrderFinishInfo = {
+    id: 0,
+    finalPrice: 0,
+    distance: 0,
+    maxRewardRatio: 0,
+    maxRewardDistance: 0,
+    reward: 0
 }

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Agree } from '../models/agreeInfo';
 import { Device } from '../models/deviceInfo';
-import { PostLocation, MyLocation } from '../models/locationInfo';
+import { PostLocation } from '../models/locationInfo';
 import { StoreParams } from '../models/listfilterInfo';
 
 const hosturi = 'http://0giri.com/api';
@@ -571,14 +571,15 @@ export const topImage3 = async (accessToken: string) => {
 export const getDistanceAPI = async (
   accessToken: string,
   param: any,
-  orderId: number,
+  storeId: number,
 ) => {
   try {
+    console.log("inputData = ", storeId, param, accessToken)
     const result = await axios({
       method: 'get',
       url:
         hosturi +
-        `/orders/${orderId}/distance?lng=${param.lng}&lat=${param.lat}`,
+        `/stores/${storeId}/distance?lng=${param.lng}&lat=${param.lat}`,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
@@ -611,6 +612,23 @@ export const getCouponList = async (accessToken: string) => {
     const result = await axios({
       method: 'get',
       url: hosturi + '/coupons',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+
+//박문수 주문완료처리 api
+export const getOrderFinishAPI = async (accessToken: string, orderId: number) => {
+  try {
+    const result = await axios({
+      method: 'post',
+      url: hosturi + `/orders/${orderId}/finish`,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',

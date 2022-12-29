@@ -9,20 +9,20 @@ import {
     ScrollView,
 } from 'react-native';
 import { Dimensions, ActivityIndicator } from "react-native";
-import OrderPopUp from "../../components/Modal/OrderPopUp";
-import { activeLocation, getDistanceAPI, getOrderSimpleAPI } from '../../config/AxiosFunction';
-import { MyLocation, initialMyLocation } from '../../models/locationInfo';
-import { DistanceInfo, initialDistanceInfo, initialOrderSmpInfo, OrderSmpInfo } from '../../models/orderInfo';
+import OrderResultPopUp from "../../components/Modal/OrderResultPopUp";
+import { getDistanceAPI, getOrderSimpleAPI, getOrderFinishAPI } from '../../config/AxiosFunction';
+import { DistanceInfo, initialDistanceInfo, initialOrderSmpInfo, OrderSmpInfo, OrderFinishInfo, initialOrderFinishInfo } from '../../models/orderInfo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { OrderInfo } from '../../models/orderInfo';
 import CountDownPage from './CountDownPage'
 import { useSelector, useDispatch } from 'react-redux';
+import Geolocation from 'react-native-geolocation-service';
 import {
     selectMinutesinfo,
-    selectSecondsinfo,
     doTimer,
     doEnd
 } from '../../slices/time';
+import OrderConfirmPopUp from "../../components/Modal/OrderConfirmPopUp";
 
 
 const width = Dimensions.get('window').width;
@@ -33,23 +33,24 @@ type OrderStatusProps = {
 }
 
 
+
 const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     const dispatch = useDispatch();
 
     const t_minutes = useSelector(selectMinutesinfo);
-    const t_seconds = useSelector(selectSecondsinfo);
 
-    const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzE0MTA4NzEsInN1YiI6IjEwMTYiLCJ0b2tlblR5cGUiOnRydWUsImFjY291bnRUeXBlIjoiVVNFUiIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX1VTRVIifV19.U-FmO73zLO6mm2Mt5QPN3NLIXfHwom7xmeoamhCA4wjRoOO6dqm36uj0G5x-1QhKzXOtdBaT0ThIef8SmP7usA'
-    const [modalOpen, setModalOpen] = useState(false);
-    const [location, setLocation] = useState<MyLocation>(initialMyLocation);
+    const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg'
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [resultOpen, setResultOpen] = useState(false);
     const [distances, setDistances] = useState<DistanceInfo>(initialDistanceInfo);
     const [orderSimple, setOrderSimple] = useState<OrderSmpInfo>(initialOrderSmpInfo);
     const [propData, setPropData] = useState<OrderInfo>(route.params.param);
     const [ready, setReady] = useState<boolean>(true);
+    const [orderFinish, setOrderFinish] = useState<OrderFinishInfo>(initialOrderFinishInfo);
+
 
     const setTimer = (param: any) => {
         const setTimeParam = {
-            t_seconds: param.substr(param.indexOf('-') + 1),
             t_minutes: param.substr(0, param.indexOf('-'))
         }
         dispatch(doTimer(setTimeParam));
@@ -57,52 +58,74 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     const theEnd = () => {
         dispatch(doEnd());
     }
-    const closeModal = () => {
-        setModalOpen(false);
-    }
-    const openModal = () => {
-        setModalOpen(true);
-    }
 
+
+    //Modal 관련 
+    const openConfirm = () => {
+        setConfirmOpen(true);
+    }
+    const closeConfirm = () => {
+        setConfirmOpen(false);
+    }
+    const openResult = async () => {
+        // const response = await getOrderFinishAPI(accessToken, propData.id);
+        // setOrderFinish(response.data)
+
+        setConfirmOpen(false);
+        setResultOpen(true);
+    }
+    const closeResult = () => {
+        setResultOpen(false)
+    }
     const goReview = () => {
-        setModalOpen(false);
+        setConfirmOpen(false);
         navigation.navigate('ReviewPage')
     }
+    //
 
-    const getActiveLocation = async () => {
-        const response1: any = await activeLocation(accessToken);
-        setLocation((current) => {
-            let newCondition = { ...current };
-            newCondition = response1.data;
-            return newCondition;
-        });
-        setLocation(response1.data);
-        //setLocation 의 location 값으로 parameter설정시 비동기이기 때문에 (initialMyLocation)빈값으로 설정됌.. 
-        //response 데이터 자체를 param으로 설정
+    const getActiveLocation = () => {
+
+        Geolocation.getCurrentPosition(
+            position => {
+                getDistance(position.coords);
+            },
+            error => {
+                console.log(error.code, error.message);
+            },
+            {
+                enableHighAccuracy: true,
+                distanceFilter: 0,
+            },
+        )
+    }
+
+    const getDistance = async (param: any) => {
         const response2: any = await getDistanceAPI(accessToken,
             {
-                lng: response1.data.address.lng,
-                lat: response1.data.address.lat
+                lng: param.longitude,
+                lat: param.latitude
             }
-            , route.params.param.id)
+            , propData.storeId)
         setDistances(response2.data);
+
     }
 
     const getOrderSimple = async () => {
-        const response3: any = await getOrderSimpleAPI(accessToken, route.params.param.id);
+        const response3: any = await getOrderSimpleAPI(accessToken, propData.id);
         setOrderSimple({
             ...response3.data,
             finalPrice: response3.data.finalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         })
-        setReady(false);
     }
 
     useEffect(() => {
         getActiveLocation();
         getOrderSimple();
-    }, [ready])
+        setReady(false);
+    }, [])
 
     return (
+
         <SafeAreaView style={OrderWrapper.MainContainer}>
             {ready ?
                 <View style={[OrderWrapper.container, OrderWrapper.horizontal]}>
@@ -123,7 +146,7 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
                     <View style={OrderWrapper.Horizontal}>
                         <Text style={OrderWrapper.FontMinute}>픽업예정 시간:</Text>
                         <Text style={OrderWrapper.FontTime}>
-                            <CountDownPage mm={t_minutes} ss={t_seconds} onTheEnd={theEnd} setTimer={setTimer} />
+                            <CountDownPage mm={t_minutes} onTheEnd={theEnd} setTimer={setTimer} />
                         </Text>
                     </View>
                     <View style={OrderWrapper.Horizontal}>
@@ -148,8 +171,8 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
                                                 <Image
                                                     source={{ uri: propData.storeProfile ? propData.storeProfile : 'none' }}
                                                     style={{
-                                                        width: 50,
-                                                        height: 50,
+                                                        width: 70,
+                                                        height: 70,
                                                         aspectRatio: 1.1,
                                                         resizeMode: 'contain'
                                                     }}
@@ -165,15 +188,15 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
                                                         fontSize: 15,
                                                         color: '#000000',
                                                         fontWeight: 'bold'
-                                                    }]}>{propData.storeName} / </Text>
-
+                                                    }]}>{propData.storeName} </Text>
+                                                </View>
+                                                <View style={OrderWrapper.horizontalN}>
                                                     <Text style={[OrderWrapper.FontText,
                                                     {
                                                         color: '#000000',
                                                         fontWeight: '500',
                                                     }]}>{propData.simpleMenu}</Text>
                                                 </View>
-
                                                 <View style={OrderWrapper.horizontalN}>
                                                     <Text style={[OrderWrapper.FontText,
                                                     {
@@ -225,18 +248,27 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
                     </View>
                     <TouchableOpacity
                         style={OrderWrapper.ActivateButton}
-                        onPress={openModal}>
+                        onPress={openConfirm}>
                         <Text style={OrderWrapper.ButtonText}>포장받기 완료</Text>
                     </TouchableOpacity>
                 </View >}
-            <OrderPopUp
-                open={modalOpen}
-                close={closeModal}
+
+            <OrderConfirmPopUp
+                open={confirmOpen}
+                close={closeConfirm}
+                title={"포장받기 완료"}
+                subTitle={`포장받기 완료처리 하시겠습니까?`}
+                openResult={openResult}
+            />
+
+            <OrderResultPopUp
+                open={resultOpen}
+                close={closeResult}
                 title={"별점을 선택해주세요"}
                 subTitle={"어떠셨나요? :)"}
-                onTouchOutSide={closeModal}
                 go={goReview}
             />
+
         </SafeAreaView>
     )
 }
@@ -317,7 +349,7 @@ export const OrderWrapper = StyleSheet.create({
     CommentBox: {
         backgroundColor: 'rgba(0, 193, 222, 0.12)',
         borderRadius: 15,
-        height: 130
+        height: 150
     },
     container: {
         flex: 1,
