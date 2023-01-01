@@ -6,10 +6,12 @@ export interface OrderInfo {
     storeName: string,
     simpleMenu: string,
     finalPrice: number,
-    pickUpAt: string
+    pickUpAt? : string,
     acceptAt: string,
     doneAt: string,
-    status: string
+    status: string,
+    orderNo:string,
+    isReviewed:boolean,
 }
 
 // export const intialOrderInfo: OrderInfo = {

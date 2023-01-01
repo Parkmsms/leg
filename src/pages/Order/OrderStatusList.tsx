@@ -11,7 +11,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { Dimensions } from "react-native";
-import { getInProgressOrderListAPI, getAccessToken } from '../../config/AxiosFunction';
+import { getInProgressOrderListAPI, getAccessToken, orderFinishAPI } from '../../config/AxiosFunction';
 import { OrderInfo } from '../../models/orderInfo';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -32,7 +32,6 @@ const OrderStatusList = (props: BottomPopupProps) => {
 
 
   const goStatus = (param: any) => {
-    console.log("넘길떄 param =", param)
     props.goStatus(param);
   }
   useEffect(() => {
@@ -40,7 +39,7 @@ const OrderStatusList = (props: BottomPopupProps) => {
       getOrderList();
       setReady(false);
     }, 200)
-  }, [ready])
+  }, [])
 
   const closeModal = () => {
     setModalOpen(false);
@@ -52,55 +51,65 @@ const OrderStatusList = (props: BottomPopupProps) => {
     Alert.alert("완료")
   }
 
+  // const doFinish = async (id:number) => {
+  //   const response: any = await orderFinishAPI('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg',id);
+  //   console.log("결과",response)
+  // }
 
-  const dateFilter = (val: string, param: string) => {
-    let fullDate = param.toString().replace('T', ' ')
-    let dayStr = new Date(param)
-    const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
-    let week = WEEKDAY[dayStr.getDay()];
-    let year = fullDate.slice(2, 4);
-    let month = fullDate.slice(5, 7);
-    let day = fullDate.slice(8, 10);
-    let time = fullDate.slice(11, 16);
-    if (val === 'pickUpAt') {
-      let today = new Date().getTime();
 
-      //Test용 시간
-      let compDay = new Date('2022-12-29T17:58:12.480Z').getTime();
-      //let compDay = new Date(param).getTime(); <<차후 이거로 변경
+  const dateFilter = (val: string, param?: any) => {
+    if(param.date==null){
+      return '없음'
+    }
+    else if (param.date!==null) {
+      let fullDate = param.date.toString().replace('T', ' ')
+      let dayStr = new Date(param.date)
+      const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
+      let week = WEEKDAY[dayStr.getDay()];
+      let year = fullDate.slice(2, 4);
+      let month = fullDate.slice(5, 7);
+      let day = fullDate.slice(8, 10);
+      let time = fullDate.slice(11, 16);
+      if (val === 'pickUpAt') {
+        let today = new Date().getTime();
+        let compDay = new Date(param.date).getTime();
 
-      let result: any = Math.floor((+(compDay) - +(today)) / 1000 / 60 / 60)
+        let result: any = Math.floor((+(compDay) - +(today)) / 1000 / 60 / 60)
 
-      if (result >= 0) {
-        let data = (+(compDay) - +(today)) / 1000 / 60
+        if (result >= 0) {
+          let data = (+(compDay) - +(today)) / 1000 / 60
 
-        //한시간 이상
-        if (result >= 1) {
-          let hh = data / 60;
-          let mm = data % 60;
-          result = `${Math.floor(hh)}시간 ${Math.floor(mm)}분 후`
-        } else {
-          result = Math.floor(data) + '분 후'
+          //한시간 이상
+          if (result >= 1) {
+            let hh = data / 60;
+            let mm = data % 60;
+            result = `${Math.floor(hh)}시간 ${Math.floor(mm)}분 후`
+          } else {
+            result = Math.floor(data) + '분 후'
+          }
+          const timeSetParam = {
+            t_minutes: Math.floor(data)
+          }
+          dispatch(doTimer(timeSetParam));
         }
-        const timeSetParam = {
-          t_minutes: Math.floor(data)
+        else {
+          // doFinish(param.id);
+          
+          dispatch(doTimer({ t_minutes: 0 }));
+          result = '시간만료'
         }
-        dispatch(doTimer(timeSetParam));
+        return result
+
+      }
+      else if (val === 'orderAt') {
+        return `${year}.${month}.${day}(${week}) ${time} 주문`
+      }
+      else if (val === 'doneAt') {
+        return `${year}.${month}.${day}(${week}) ${time} 완료`
       }
       else {
-        dispatch(doTimer({ t_minutes: 0 }));
-        result = '시간만료'
+        return param;
       }
-      return result
-    }
-    else if (val === 'orderAt') {
-      return `${year}.${month}.${day}(${week}) ${time} 주문`
-    }
-    else if (val === 'doneAt') {
-      return `${year}.${month}.${day}(${week}) ${time} 완료`
-    }
-    else {
-      return param;
     }
   }
 
@@ -108,26 +117,25 @@ const OrderStatusList = (props: BottomPopupProps) => {
     // const accessToken = await getAccessToken('accessToken');
     //임시 accessToken값
     const response: any = await getInProgressOrderListAPI('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg');
+
     for (const key in response.data.content) {
-      setOrderLst(() => {
-        return [
-          {
-            id: response.data.content[key]['id'],
-            storeId: response.data.content[key]['storeId'],
-            storeProfile: response.data.content[key]['storeProfile'],
-            storeName: response.data.content[key]['storeName'],
-            simpleMenu: response.data.content[key]['simpleMenu'],
-            finalPrice: response.data.content[key]['finalPrice'],
-            status: response.data.content[key]['status'],
-            acceptAt: response.data.content[key]['acceptAt'],
-            // test <데이터가 없어서 mockup>
-            pickUpAt: dateFilter('pickUpAt', '2022-12-21T16:20:12.480Z'),
-            // pickUpAt: response.data.content[key]['pickUpAt'],
-            orderAt: dateFilter('orderAt', response.data.content[key]['orderAt']),
-            doneAt: response.data.content[key]['doneAt'],
-          },
-        ]
-      });
+      setOrderLst(OrderLst => [...OrderLst,
+      {
+        id: response.data.content[key]['id'],
+        storeId: response.data.content[key]['storeId'],
+        storeProfile: response.data.content[key]['storeProfile'],
+        storeName: response.data.content[key]['storeName'],
+        simpleMenu: response.data.content[key]['simpleMenu'],
+        finalPrice: response.data.content[key]['finalPrice'],
+        status: response.data.content[key]['status'],
+        acceptAt: response.data.content[key]['acceptAt'],
+        // test <데이터가 없어서 mockup>
+        pickUpAt: dateFilter('pickUpAt', {date : response.data.content[key]['pickUpAt'],id : response.data.content[key]['id']}),
+        orderAt: dateFilter('orderAt', {date : response.data.content[key]['orderAt'],id : response.data.content[key]['id']}),
+        doneAt: response.data.content[key]['doneAt'],
+        isReviewed: response.data.content[key]['isReviewed'],
+        orderNo: response.data.content[key]['orderNo']
+      },]);
     }
   }
 
@@ -179,13 +187,16 @@ const OrderStatusList = (props: BottomPopupProps) => {
                             color: '#000000',
                             fontWeight: '500',
                           }]}>{order.simpleMenu}</Text>
-                          <Text style={[OrderWrapper.FontText,
-                          {
-                            color: '#00C1DE',
-                            fontWeight: '600',
-                          }]}>
-                            {order.pickUpAt}
-                          </Text>
+
+                          {order.status === "ACCEPT" &&
+                            <Text style={[OrderWrapper.FontText,
+                            {
+                              color: '#00C1DE',
+                              fontWeight: '600',
+                            }]}>
+                              {order.pickUpAt}
+                            </Text>
+                          }
                         </View>
                       </View>
                       <View style={OrderWrapper.Horizontal}>
@@ -212,8 +223,8 @@ const OrderStatusList = (props: BottomPopupProps) => {
                               onPress={() =>
                                 goStatus(order)
                               }
-                              style={OrderWrapper.InActivateButton}>
-                              <Text style={OrderWrapper.ButtonText}>주문 취소</Text>
+                              style={[OrderWrapper.ActivateButton, { flex: 1 }]}>
+                              <Text style={OrderWrapper.ButtonText}>주문 대기</Text>
                             </TouchableOpacity>
                           </>
                         }

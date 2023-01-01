@@ -94,6 +94,8 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
             pickUpAt: dateFilter('pickUpAt', response.data.content[key]['pickUpAt']),
             orderAt: dateFilter('orderAt', response.data.content[key]['orderAt']),
             doneAt: dateFilter('doneAt', response.data.content[key]['doneAt']),
+            isReviewed: response.data.content[key]['isReviewed'],
+            orderNo: response.data.content[key]['orderNo']
           },
         ]
       });

@@ -624,7 +624,7 @@ export const getCouponList = async (accessToken: string) => {
 }
 
 //박문수 주문완료처리 api
-export const getOrderFinishAPI = async (accessToken: string, orderId: number) => {
+export const orderFinishAPI = async (accessToken: string, orderId: number) => {
   try {
     const result = await axios({
       method: 'post',
