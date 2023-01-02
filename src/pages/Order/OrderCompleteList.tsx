@@ -22,7 +22,7 @@ type OrderCompleteProps = {
 const width = Dimensions.get('window').width;
 
 const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompleteProps) => {
-
+  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg'
   const [OrderCompeteLst, setOrderCompeteLst] = useState<OrderInfo[]>([]);
   const [ready, setReady] = useState<boolean>(true);
 
@@ -76,29 +76,26 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
     // const accessToken = await getAccessToken('accessToken');
 
     //임시 accessToken값
-    const response: any = await getCompleteOrderListAPI('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg');
+    const response: any = await getCompleteOrderListAPI(accessToken);
     // setOrderCompeteLst(response.data.content);
 
     for (const key in response.data.content) {
-      setOrderCompeteLst(() => {
-        return [
-          {
-            id: response.data.content[key]['id'],
-            storeId: response.data.content[key]['storeId'],
-            storeProfile: response.data.content[key]['storeProfile'],
-            storeName: response.data.content[key]['storeName'],
-            simpleMenu: response.data.content[key]['simpleMenu'],
-            finalPrice: response.data.content[key]['finalPrice'],
-            status: response.data.content[key]['pickUpAt'],
-            acceptAt: response.data.content[key]['acceptAt'],
-            pickUpAt: dateFilter('pickUpAt', response.data.content[key]['pickUpAt']),
-            orderAt: dateFilter('orderAt', response.data.content[key]['orderAt']),
-            doneAt: dateFilter('doneAt', response.data.content[key]['doneAt']),
-            isReviewed: response.data.content[key]['isReviewed'],
-            orderNo: response.data.content[key]['orderNo']
-          },
-        ]
-      });
+      setOrderCompeteLst(OrderCompeteLst => [...OrderCompeteLst,
+      {
+        id: response.data.content[key]['id'],
+        storeId: response.data.content[key]['storeId'],
+        storeProfile: response.data.content[key]['storeProfile'],
+        storeName: response.data.content[key]['storeName'],
+        simpleMenu: response.data.content[key]['simpleMenu'],
+        finalPrice: response.data.content[key]['finalPrice'],
+        status: response.data.content[key]['status'],
+        acceptAt: response.data.content[key]['acceptAt'],
+        pickUpAt: response.data.content[key]['pickUpAt'],
+        orderAt: dateFilter('orderAt', response.data.content[key]['orderAt']),
+        doneAt: dateFilter('doneAt', response.data.content[key]['doneAt']),
+        isReviewed: response.data.content[key]['isReviewed'],
+        orderNo: response.data.content[key]['orderNo']
+      },]);
     }
   }
 
@@ -122,8 +119,8 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                       <View style={OrderWrapper.Horizontal}>
                         <View style={OrderWrapper.CenterAlign}>
                           <Image
-                            // source={require('../../assets/main.png')}
-                            source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
+                            source={require('../../assets/main.png')}
+                            // source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
                             style={{
                               width: 90,
                               height: 90,
@@ -161,13 +158,10 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                         </View>
                       </View>
                       <View style={OrderWrapper.Horizontal}>
-                        <TouchableOpacity
-                          style={[OrderWrapper.ActivateButton, { backgroundColor: '#3E3E3E' }]}
-                          onPress={() => {
-                            props.goReview()
-                          }}>
+                        <View
+                          style={[OrderWrapper.ActivateButton, { backgroundColor: '#3E3E3E' }]}>
                           <Text style={OrderWrapper.ButtonText}>포장 완료</Text>
-                        </TouchableOpacity>
+                        </View>
                         <TouchableOpacity
                           style={OrderWrapper.ActivateButton}
                           onPress={() => {

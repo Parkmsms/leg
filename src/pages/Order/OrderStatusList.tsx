@@ -11,7 +11,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { Dimensions } from "react-native";
-import { getInProgressOrderListAPI, getAccessToken, orderFinishAPI } from '../../config/AxiosFunction';
+import { getInProgressOrderListAPI, getAccessToken, orderFinishAPI, orderCancleAPI } from '../../config/AxiosFunction';
 import { OrderInfo } from '../../models/orderInfo';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -22,18 +22,21 @@ import OrderConfirmPopUp from "../../components/Modal/OrderConfirmPopUp";
 type BottomPopupProps = {
   goStatus: any
 }
-const width = Dimensions.get('window').width;
 
-const OrderStatusList = (props: BottomPopupProps) => {
+type OrderStatusListProps = {
+  route: any;
+  navigation?: any;
+}
+const width = Dimensions.get('window').width;
+const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderStatusListProps) => {
   const dispatch = useDispatch();
+  //임시 accessToken 
+  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg'
   const [OrderLst, setOrderLst] = useState<OrderInfo[]>([]);
   const [ready, setReady] = useState<boolean>(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<number>(0)
 
-
-  const goStatus = (param: any) => {
-    props.goStatus(param);
-  }
   useEffect(() => {
     setTimeout(() => {
       getOrderList();
@@ -41,27 +44,46 @@ const OrderStatusList = (props: BottomPopupProps) => {
     }, 200)
   }, [])
 
+  /*Confrim Modal Component*/
   const closeModal = () => {
     setModalOpen(false);
   }
-  const openModal = () => {
+  //Modal Oepn, Set selected item Id 
+  const openModal = (param: number) => {
+    setSelectedItemId(param)
     setModalOpen(true);
   }
-  const openAlert = () => {
-    Alert.alert("완료")
+  //Do not action
+  const openResult = () => {
+    console.log("Do not anything")
+  }
+  //OrderConfirmPopUp confrim Modal에서 취소 확인 클릭 시 
+  const openCancle = async () => {
+    await orderCancleAPI(accessToken, selectedItemId);
+    setModalOpen(false);
+  }
+  /*Modal End*/
+
+  //상품 상세페이지 이동, redux store상태 변경 
+  const goStatus = async (param: any) => {
+    const response: any = await getInProgressOrderListAPI(accessToken);
+    const findResult = response.data.content.find((val: { id: number }) => val.id === param.id);
+    dateFilter('pickUpAt', { date: findResult.pickUpAt });
+    props.goStatus(param);
   }
 
-  // const doFinish = async (id:number) => {
-  //   const response: any = await orderFinishAPI('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg',id);
-  //   console.log("결과",response)
+  //시간만료된 상품 종료
+  // const doFinish = async (id: number) => {
+  //   const response: any = await orderFinishAPI(accessToken, id);
+  //   console.log("결과", response)
   // }
 
-
+  /* Date Fomrat을 변경하기 위한 함수 */
   const dateFilter = (val: string, param?: any) => {
-    if(param.date==null){
+    if (param.date == null) {
       return '없음'
     }
-    else if (param.date!==null) {
+    else if (param.date !== null) {
       let fullDate = param.date.toString().replace('T', ' ')
       let dayStr = new Date(param.date)
       const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
@@ -94,12 +116,10 @@ const OrderStatusList = (props: BottomPopupProps) => {
         }
         else {
           // doFinish(param.id);
-          
           dispatch(doTimer({ t_minutes: 0 }));
           result = '시간만료'
         }
         return result
-
       }
       else if (val === 'orderAt') {
         return `${year}.${month}.${day}(${week}) ${time} 주문`
@@ -113,10 +133,11 @@ const OrderStatusList = (props: BottomPopupProps) => {
     }
   }
 
+  /* OrderList Data */
   const getOrderList = async () => {
     // const accessToken = await getAccessToken('accessToken');
     //임시 accessToken값
-    const response: any = await getInProgressOrderListAPI('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg');
+    const response: any = await getInProgressOrderListAPI(accessToken);
 
     for (const key in response.data.content) {
       setOrderLst(OrderLst => [...OrderLst,
@@ -129,9 +150,8 @@ const OrderStatusList = (props: BottomPopupProps) => {
         finalPrice: response.data.content[key]['finalPrice'],
         status: response.data.content[key]['status'],
         acceptAt: response.data.content[key]['acceptAt'],
-        // test <데이터가 없어서 mockup>
-        pickUpAt: dateFilter('pickUpAt', {date : response.data.content[key]['pickUpAt'],id : response.data.content[key]['id']}),
-        orderAt: dateFilter('orderAt', {date : response.data.content[key]['orderAt'],id : response.data.content[key]['id']}),
+        pickUpAt: dateFilter('pickUpAt', { date: response.data.content[key]['pickUpAt'], id: response.data.content[key]['id'] }),
+        orderAt: dateFilter('orderAt', { date: response.data.content[key]['orderAt'], id: response.data.content[key]['id'] }),
         doneAt: response.data.content[key]['doneAt'],
         isReviewed: response.data.content[key]['isReviewed'],
         orderNo: response.data.content[key]['orderNo']
@@ -159,7 +179,8 @@ const OrderStatusList = (props: BottomPopupProps) => {
                       <View style={OrderWrapper.Horizontal}>
                         <View style={OrderWrapper.CenterAlign}>
                           <Image
-                            source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
+                            source={require('../../assets/main.png')}
+                            // source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
                             style={{
                               width: 90,
                               height: 90,
@@ -187,30 +208,24 @@ const OrderStatusList = (props: BottomPopupProps) => {
                             color: '#000000',
                             fontWeight: '500',
                           }]}>{order.simpleMenu}</Text>
-
-                          {order.status === "ACCEPT" &&
-                            <Text style={[OrderWrapper.FontText,
-                            {
-                              color: '#00C1DE',
-                              fontWeight: '600',
-                            }]}>
-                              {order.pickUpAt}
-                            </Text>
-                          }
+                          <Text style={[OrderWrapper.FontText,
+                          {
+                            color: '#00C1DE',
+                            fontWeight: '600',
+                          }]}>
+                            {order.status === "ACCEPT" ? order.pickUpAt : ''}
+                          </Text>
                         </View>
                       </View>
                       <View style={OrderWrapper.Horizontal}>
                         {order.status === "REQUEST" &&
                           <>
-                            <TouchableOpacity
-                              onPress={() =>
-                                goStatus(order)
-                              }
+                            <View
                               style={[OrderWrapper.InActivateButton, { flex: 2, margin: 5 }]}>
                               <Text style={OrderWrapper.ButtonText}>포장 요청</Text>
-                            </TouchableOpacity>
+                            </View>
                             <TouchableOpacity
-                              onPress={openModal}
+                              onPress={() => openModal(order.id)}
                               style={[OrderWrapper.ActivateButton, { flex: 2, margin: 5 }]}>
                               <Text style={OrderWrapper.ButtonText}>주문 취소</Text>
                             </TouchableOpacity>
@@ -219,13 +234,23 @@ const OrderStatusList = (props: BottomPopupProps) => {
 
                         {order.status === "ACCEPT" &&
                           <>
-                            <TouchableOpacity
-                              onPress={() =>
-                                goStatus(order)
-                              }
-                              style={[OrderWrapper.ActivateButton, { flex: 1 }]}>
-                              <Text style={OrderWrapper.ButtonText}>주문 대기</Text>
-                            </TouchableOpacity>
+                            {order.pickUpAt === "시간만료" ?
+                              <TouchableOpacity
+                                onPress={() =>
+                                  goStatus(order)
+                                }
+                                style={[OrderWrapper.ActivateButton, { flex: 1 }]}>
+                                <Text style={OrderWrapper.ButtonText}>주문 완료</Text>
+                              </TouchableOpacity>
+                              :
+                              <TouchableOpacity
+                                onPress={() =>
+                                  goStatus(order)
+                                }
+                                style={[OrderWrapper.ActivateButton, { flex: 1 }]}>
+                                <Text style={OrderWrapper.ButtonText}>주문 대기</Text>
+                              </TouchableOpacity>
+                            }
                           </>
                         }
                       </View>
@@ -238,11 +263,13 @@ const OrderStatusList = (props: BottomPopupProps) => {
             <View><Text>데이터가 없습니다.</Text></View>
           }
           <OrderConfirmPopUp
+            id={selectedItemId}
             open={modalOpen}
             close={closeModal}
             title={"주문 취소"}
             subTitle={`선택하신 주문을 취소하시겠습니까?`}
-            openResult={openAlert}
+            openResult={openResult}
+            openCancle={openCancle}
           />
 
         </ScrollView>

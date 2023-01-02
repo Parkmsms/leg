@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Dimensions, ActivityIndicator } from "react-native";
 import OrderResultPopUp from "../../components/Modal/OrderResultPopUp";
-import { getDistanceAPI, getOrderSimpleAPI, getOrderFinishAPI } from '../../config/AxiosFunction';
+import { getDistanceAPI, getOrderSimpleAPI, orderFinishAPI } from '../../config/AxiosFunction';
 import { DistanceInfo, initialDistanceInfo, initialOrderSmpInfo, OrderSmpInfo, OrderFinishInfo, initialOrderFinishInfo } from '../../models/orderInfo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { OrderInfo } from '../../models/orderInfo';
@@ -47,8 +47,7 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     const [propData, setPropData] = useState<OrderInfo>(route.params.param);
     const [ready, setReady] = useState<boolean>(true);
     const [orderFinish, setOrderFinish] = useState<OrderFinishInfo>(initialOrderFinishInfo);
-
-
+    /*redux dispatch => reducer 작동 */
     const setTimer = (param: any) => {
         const setTimeParam = {
             t_minutes: param.substr(0, param.indexOf('-'))
@@ -58,18 +57,32 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     const theEnd = () => {
         dispatch(doEnd());
     }
+    /**/
 
-
-    //Modal 관련 
+    /*Modal 관련*/
+    //Confirm Modal Open
     const openConfirm = () => {
         setConfirmOpen(true);
     }
     const closeConfirm = () => {
         setConfirmOpen(false);
     }
+    const openCancle = () => {
+        console.log("Do not anything this component")
+    }
+    //Order Finish API => Result Modal Open
     const openResult = async () => {
-        // const response = await getOrderFinishAPI(accessToken, propData.id);
-        // setOrderFinish(response.data)
+        const response = await orderFinishAPI(accessToken, propData.id);
+        setOrderFinish(response.data)
+        //test용
+        // setOrderFinish({
+        //     id: 0,
+        //     finalPrice: 0,
+        //     distance: 0,
+        //     maxRewardRatio: 0,
+        //     maxRewardDistance: 0,
+        //     reward: 0
+        // })
 
         setConfirmOpen(false);
         setResultOpen(true);
@@ -77,12 +90,19 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     const closeResult = () => {
         setResultOpen(false)
     }
+    //리뷰페이지 이동
     const goReview = () => {
         setConfirmOpen(false);
         navigation.navigate('ReviewPage')
     }
-    //
+    const goOrderPage = () => {
+        setConfirmOpen(false);
+        setResultOpen(false);
+        navigation.navigate('주문내역')
+    }
+    /**/
 
+    //현재 사용자위치와 타겟까지의 거리 재설정
     const getActiveLocation = () => {
 
         Geolocation.getCurrentPosition(
@@ -110,6 +130,7 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
 
     }
 
+    //OrderStatus컴포넌트 화면구성 데이터 바인딩
     const getOrderSimple = async () => {
         const response3: any = await getOrderSimpleAPI(accessToken, propData.id);
         setOrderSimple({
@@ -252,21 +273,25 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
                         <Text style={OrderWrapper.ButtonText}>포장받기 완료</Text>
                     </TouchableOpacity>
                 </View >}
-
+            {/* confirm Modal */}
             <OrderConfirmPopUp
+                id={propData.id}
                 open={confirmOpen}
                 close={closeConfirm}
                 title={"포장받기 완료"}
                 subTitle={`포장받기 완료처리 하시겠습니까?`}
                 openResult={openResult}
+                openCancle={openCancle}
             />
-
+            {/* result Modal */}
             <OrderResultPopUp
                 open={resultOpen}
                 close={closeResult}
+                orderFinish={orderFinish}
                 title={"별점을 선택해주세요"}
                 subTitle={"어떠셨나요? :)"}
                 go={goReview}
+                goOrderPage={goOrderPage}
             />
 
         </SafeAreaView>

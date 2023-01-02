@@ -574,7 +574,6 @@ export const getDistanceAPI = async (
   storeId: number,
 ) => {
   try {
-    console.log("inputData = ", storeId, param, accessToken)
     const result = await axios({
       method: 'get',
       url:
@@ -629,6 +628,22 @@ export const orderFinishAPI = async (accessToken: string, orderId: number) => {
     const result = await axios({
       method: 'post',
       url: hosturi + `/orders/${orderId}/finish`,
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+//주문 취소 api
+export const orderCancleAPI = async (accessToken: string, orderId: number) => {
+  try {
+    const result = await axios({
+      method: 'post',
+      url: hosturi + `/orders/${orderId}/cancel`,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',

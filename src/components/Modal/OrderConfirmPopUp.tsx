@@ -6,12 +6,14 @@ type BottomPopupProps = {
     title: string;
     subTitle: string;
     openResult: any
+    openCancle: any
+    id: number
 }
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const deviceHeight = Dimensions.get("window").height;
 const OrderConfirmPopUp = (props: BottomPopupProps) => {
-    const { open, close, title, subTitle } = props;
+    const { open, close, title, subTitle, id } = props;
     const [isShow, setIsShow] = useState<boolean>(false);
 
     useEffect(() => {
@@ -26,11 +28,10 @@ const OrderConfirmPopUp = (props: BottomPopupProps) => {
 
         switch (title) {
             case '포장받기 완료':
-                console.log("포장완료 API 호출!!!!")
                 props.openResult()
                 break;
             case '주문 취소':
-                console.log("취소 API 호출!!!");
+                props.openCancle()
                 break;
         }
 

@@ -1,9 +1,6 @@
 //아이디 비밀번호 저장용 store 입니다 .. 
 
 import { createSlice } from '@reduxjs/toolkit';
-import {
-  Alert
-} from 'react-native';
 
 const initialState = {
   minutes: 0,
@@ -14,11 +11,12 @@ export const time = createSlice({
   initialState,
 
   reducers: {
+    //state의 시간 변경
     doTimer: (state, action) => {
       state.minutes = action.payload.t_minutes
     },
+    //시간이 0분에 도달 시 
     doEnd: () => {
-      Alert.alert("끝!");
     },
   },
 

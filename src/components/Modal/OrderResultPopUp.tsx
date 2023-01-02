@@ -5,7 +5,9 @@ type BottomPopupProps = {
   close: any;
   title: string;
   subTitle: string;
-  go: any
+  go: any;
+  goOrderPage: any;
+  orderFinish: any;
 }
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -13,14 +15,16 @@ const deviceHeight = Dimensions.get("window").height;
 
 const OrderResultPopUp = (props: BottomPopupProps) => {
 
-  const { open, close, title, subTitle } = props;
+  const { open, close, title, subTitle, orderFinish } = props;
   const [isShow, setIsShow] = useState<boolean>(false);
 
 
   const goReview = () => {
     props.go();
   }
-
+  const goOrderPage = () => {
+    props.goOrderPage();
+  }
 
   useEffect(() => {
     if (open) {
@@ -51,10 +55,27 @@ const OrderResultPopUp = (props: BottomPopupProps) => {
             <Text style={ModalWrapper.smallTitle}>
               {subTitle}
             </Text>
+
+            <Text style={ModalWrapper.smallTitle}>
+              거리 : {orderFinish.distance}
+            </Text>
+            <Text style={ModalWrapper.smallTitle}>
+              총액 : {orderFinish.finalPrice}
+            </Text>
+            <Text style={ModalWrapper.smallTitle}>
+              리워드최장거리 : {orderFinish.maxRewardDistance}
+            </Text>
+            <Text style={ModalWrapper.smallTitle}>
+              환전비율 : {orderFinish.maxRewardRatio}
+            </Text>
+            <Text style={ModalWrapper.smallTitle}>
+              환전액 : {orderFinish.reward}
+            </Text>
+
             <View>
               <TouchableOpacity
                 style={ModalWrapper.ActiveButton}
-                onPress={close}>
+                onPress={goOrderPage}>
                 <Text style={ModalWrapper.ButtonText}>확인</Text>
               </TouchableOpacity>
             </View>
