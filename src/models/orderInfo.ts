@@ -6,12 +6,12 @@ export interface OrderInfo {
     storeName: string,
     simpleMenu: string,
     finalPrice: number,
-    pickUpAt? : string,
+    pickUpAt?: string,
     acceptAt: string,
     doneAt: string,
     status: string,
-    orderNo:string,
-    isReviewed:boolean,
+    orderNo: string,
+    isReviewed: boolean,
 }
 
 // export const intialOrderInfo: OrderInfo = {
@@ -41,7 +41,8 @@ export interface OrderSmpInfo {
     finalPrice: number,
     requirements: string,
     status: string,
-    pickUpAt: string
+    pickUpAt: string,
+    orderNo: string
 }
 
 export const initialOrderSmpInfo: OrderSmpInfo = {
@@ -50,7 +51,8 @@ export const initialOrderSmpInfo: OrderSmpInfo = {
     finalPrice: 0,
     requirements: '',
     status: '',
-    pickUpAt: ''
+    pickUpAt: '',
+    orderNo: ''
 }
 
 export interface OrderFinishInfo {

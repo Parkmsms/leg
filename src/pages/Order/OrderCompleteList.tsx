@@ -27,10 +27,10 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
   const [ready, setReady] = useState<boolean>(true);
 
   useEffect(() => {
+    getCompleteOrderList();
     setTimeout(() => {
-      getCompleteOrderList();
       setReady(false);
-    }, 200)
+    }, 100)
   }, [])
 
 

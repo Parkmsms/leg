@@ -31,24 +31,21 @@ const Orders = (props: any) => {
     return () => clearInterval(countdown);
   },);
 
-  const extensionFive = () => {
+  // const extensionFive = () => {
 
-    if (minutes >= 55) {
-      Alert.alert("60분 이상으로는 연장불가능합니다.")
-      setMinutes(60)
-      return false
-    }
-    setMinutes(minutes + 5)
-  }
+  //   if (minutes >= 55) {
+  //     Alert.alert("60분 이상으로는 연장불가능합니다.")
+  //     setMinutes(60)
+  //     return false
+  //   }
+  //   setMinutes(minutes + 5)
+  // }
 
   return (
     <>
       {t_minutes >= 5 && <Text> {t_minutes} 분</Text>}
       {t_minutes < 5 && <Text style={{ color: 'red' }}> {t_minutes} 분</Text>}
       {/* {t_minutes >= 5 ? <Text> {t_minutes}</Text> : <Text style={{ color: 'red' }}> {t_minutes}</Text>} */}
-      <TouchableOpacity onPress={extensionFive} >
-        <Ionicons name="refresh" size={20} style={{ marginLeft: 5 }} />
-      </TouchableOpacity>
     </>
   )
 }

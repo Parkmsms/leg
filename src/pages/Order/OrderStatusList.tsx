@@ -38,10 +38,10 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
   const [selectedItemId, setSelectedItemId] = useState<number>(0)
 
   useEffect(() => {
+    getOrderList();
     setTimeout(() => {
-      getOrderList();
       setReady(false);
-    }, 200)
+    }, 100)
   }, [])
 
   /*Confrim Modal Component*/
@@ -72,7 +72,7 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
     props.goStatus(param);
   }
 
-  //시간만료된 상품 종료
+  //시간만료된 상품 자동종료
   // const doFinish = async (id: number) => {
   //   const response: any = await orderFinishAPI(accessToken, id);
   //   console.log("결과", response)

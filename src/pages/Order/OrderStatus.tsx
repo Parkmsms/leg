@@ -176,21 +176,21 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
                             <Ionicons name="refresh" size={20} style={{ marginLeft: 5 }} />
                         </TouchableOpacity>
                     </View>
-                    <View>
-                    </View>
                     <View style={{ margin: 15, height: 160 }}>
                         {/* test */}
                         <ScrollView>
                             <View style={OrderWrapper.ContInfoBox}>
                                 <TouchableOpacity style={OrderWrapper.CommentBox}>
                                     <View style={OrderWrapper.Horizontal}>
-                                        <Text style={OrderWrapper.FontText}>{propData.orderAt}</Text>
+                                        <Text style={[OrderWrapper.FontText, { fontSize: 11, flex: 1 }]}>{propData.orderAt}</Text>
+                                        <Text style={{ fontSize: 11, textAlign: 'right', flex: 1 }}>주문 번호 : {orderSimple.orderNo}</Text>
                                     </View>
                                     <View style={OrderWrapper.VerticalN}>
                                         <View style={OrderWrapper.Horizontal}>
                                             <View style={OrderWrapper.CenterAlign}>
                                                 <Image
-                                                    source={{ uri: propData.storeProfile ? propData.storeProfile : 'none' }}
+                                                    source={require('../../assets/main.png')}
+                                                    // source={{ uri: propData.storeProfile ? propData.storeProfile : 'none' }}
                                                     style={{
                                                         width: 70,
                                                         height: 70,
