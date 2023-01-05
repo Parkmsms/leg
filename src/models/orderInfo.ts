@@ -14,19 +14,6 @@ export interface OrderInfo {
     isReviewed: boolean,
 }
 
-// export const intialOrderInfo: OrderInfo = {
-//     id: 0,
-//     orderAt: '',
-//     storeProfile: '',
-//     storeName: '',
-//     simpleMenu: '',
-//     finalPrice: 0,
-//     pickUpAt: '',
-//     acceptAt: '',
-//     doneAt: '',
-//     status: ''
-// }
-
 export interface DistanceInfo {
     distance: string
 }

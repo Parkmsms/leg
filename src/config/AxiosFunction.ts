@@ -552,11 +552,11 @@ export const getInProgressOrderListAPI = async (accessToken: string) => {
 };
 
 //review 사진 3개
-export const topImage3 = async (accessToken: string) => {
+export const topImage3 = async (accessToken: string, storeId: number) => {
   try {
     const result = await axios({
       method: 'get',
-      url: hosturi + '/reviews/images/top3',
+      url: hosturi + `/reviews/images/top3?storedId=${storeId}`,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
@@ -644,6 +644,22 @@ export const orderCancleAPI = async (accessToken: string, orderId: number) => {
     const result = await axios({
       method: 'post',
       url: hosturi + `/orders/${orderId}/cancel`,
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+}
+//리뷰조회
+export const getReviewAPI = async (accessToken: string, storeId: number) => {
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + `/reviews?storeId=${storeId}`,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',

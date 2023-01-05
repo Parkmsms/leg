@@ -189,8 +189,8 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
                                         <View style={OrderWrapper.Horizontal}>
                                             <View style={OrderWrapper.CenterAlign}>
                                                 <Image
-                                                    source={require('../../assets/main.png')}
-                                                    // source={{ uri: propData.storeProfile ? propData.storeProfile : 'none' }}
+                                                    // source={require('../../assets/main.png')}
+                                                    source={{ uri: propData.storeProfile ? propData.storeProfile : 'none' }}
                                                     style={{
                                                         width: 70,
                                                         height: 70,

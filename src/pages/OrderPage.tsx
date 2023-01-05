@@ -3,32 +3,47 @@ import { useWindowDimensions, Text, StyleSheet, Alert, Image } from 'react-nativ
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import OrderStatusList from './Order/OrderStatusList';
 import OrderCompleteList from './Order/OrderCompleteList';
-
+import { useIsFocused } from '@react-navigation/native';
 type OrderPageProps = {
   navigation?: any;
   route: any;
 }
 const OrderPage = ({ navigation, route }: OrderPageProps) => {
+  const isFocused = useIsFocused();
+  const [focused, setFocused] = useState<boolean>(isFocused);
 
   const layout = useWindowDimensions();
   //주문내역
   const FirstRoute = () => (
-    <OrderStatusList goStatus={goDtail} />
+    <OrderStatusList goStatus={goDtail} goRefresh={goRefresh} />
   );
   //주문 완료 내역
   const SecondRoute = () => (
-    <OrderCompleteList goReview={goReview} />
+    <OrderCompleteList goReview={goReview} goReviewItem={onReviewPage} />
   );
 
+
+  //자식페이지에서 넘겨받은 함수
   //주문 현황 페이지로 이동
   const goDtail = (param: any) => {
     navigation.navigate('OrderStatus', { param: param })
   }
-
   //리뷰 페이지로 이동
   const goReview = () => {
     navigation.navigate('ReviewPage')
   }
+  //현재화면 새로고침
+  const goRefresh = () => {
+    setFocused((val) => val = !val);
+  }
+  //test용 리뷰페이지 넘어가기
+  const onReviewPage = (storeId: number) => {
+    navigation.navigate('ReviewItem', { storeId: storeId })
+  }
+
+  useEffect(() => {
+    console.log('isFoucsed!!! =', focused)
+  }, [focused])
 
 
   const renderScene = SceneMap({

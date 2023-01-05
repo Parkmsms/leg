@@ -13,6 +13,7 @@ import { OrderInfo } from '../../models/orderInfo';
 
 type BottomPopupProps = {
   goReview: any
+  goReviewItem: any
 }
 type OrderCompleteProps = {
   route: any;
@@ -114,13 +115,31 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                   <View style={OrderWrapper.CenterAlign} >
                     <View style={OrderWrapper.ContentsBox}>
                       <View style={[OrderWrapper.Vertical, { marginLeft: 5 }]}>
-                        <Text style={OrderWrapper.FontText}>{order.orderAt}</Text>
+                        <View style={OrderWrapper.Horizontal}>
+                          <Text style={[OrderWrapper.FontText, { flex: 5 }]}>{order.orderAt}</Text>
+                          {order.status === "USER_CANCEL" &&
+                            <>
+                              <View
+                                style={[OrderWrapper.StatusButton, { flex: 2 }]}>
+                                <Text style={OrderWrapper.StatusText}>주문 취소</Text>
+                              </View>
+                            </>
+                          }
+                          {order.status === "DONE" &&
+                            <>
+                              <View
+                                style={[OrderWrapper.StatusButton, { flex: 2 }]}>
+                                <Text style={OrderWrapper.StatusText}>주문 완료</Text>
+                              </View>
+                            </>
+                          }
+                        </View>
                       </View>
                       <View style={OrderWrapper.Horizontal}>
                         <View style={OrderWrapper.CenterAlign}>
                           <Image
-                            source={require('../../assets/main.png')}
-                            // source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
+                            // source={require('../../assets/main.png')}
+                            source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
                             style={{
                               width: 90,
                               height: 90,
@@ -158,18 +177,35 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                         </View>
                       </View>
                       <View style={OrderWrapper.Horizontal}>
-                        <View
-                          style={[OrderWrapper.ActivateButton, { backgroundColor: '#3E3E3E' }]}>
-                          <Text style={OrderWrapper.ButtonText}>포장 완료</Text>
-                        </View>
-                        <TouchableOpacity
-                          style={OrderWrapper.ActivateButton}
-                          onPress={() => {
-                            props.goReview()
-                          }}>
-                          <Text style={OrderWrapper.ButtonText}>리뷰 쓰기</Text>
-                        </TouchableOpacity>
-
+                        {order.status === "USER_CANCEL" &&
+                          <>
+                            <TouchableOpacity
+                              style={OrderWrapper.ActivateButton}
+                              onPress={() => {
+                                props.goReview()
+                              }}>
+                              <Text style={OrderWrapper.ButtonText}>주문 상세</Text>
+                            </TouchableOpacity>
+                          </>
+                        }
+                        {order.status === "DONE" &&
+                          <>
+                            <TouchableOpacity
+                              onPress={() => {
+                                props.goReviewItem(order.storeId)
+                              }}
+                              style={OrderWrapper.ActivateButton}>
+                              <Text style={OrderWrapper.ButtonText}>주문 상세</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={OrderWrapper.AddPhotoButton}
+                              onPress={() => {
+                                props.goReview()
+                              }}>
+                              <Text style={OrderWrapper.AddPhotoButtonText}>리뷰 쓰기</Text>
+                            </TouchableOpacity>
+                          </>
+                        }
                       </View>
                     </View>
                   </View >
@@ -217,8 +253,8 @@ export const OrderWrapper = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignContent: 'center',
-    margin: 5,
     flex: 2,
+    margin: 5
   },
   InActivateButton: {
     backgroundColor: '#3E3E3E',
@@ -252,6 +288,51 @@ export const OrderWrapper = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     padding: 10
+  },
+
+  StatusButton: {
+    backgroundColor: '#3E3E3E',
+    borderRadius: 8,
+    width: 22,
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  StatusText: {
+    fontSize: 16,
+    fontFamily: 'Urbanist',
+    fontWeight: 'bold',
+    color: 'white',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+
+  AddPhotoButtonText: {
+    fontSize: 17,
+    fontFamily: 'Apple SD Gothic Neo',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    color: '#00C1DE',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+
+  AddPhotoButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderStyle: 'solid',
+    borderColor: '#00C1DE',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    alignContent: 'center',
+    flex: 2,
+    margin: 5
   },
 });
 

@@ -18,9 +18,12 @@ import {
   doTimer,
 } from '../../slices/time';
 import OrderConfirmPopUp from "../../components/Modal/OrderConfirmPopUp";
+import OrderAlertPopup from '../../components/Modal/OrderAlertPopUp';
+import OrderAlertPopUp from '../../components/Modal/OrderAlertPopUp';
 
 type BottomPopupProps = {
   goStatus: any
+  goRefresh: any
 }
 
 type OrderStatusListProps = {
@@ -34,8 +37,12 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
   const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg'
   const [OrderLst, setOrderLst] = useState<OrderInfo[]>([]);
   const [ready, setReady] = useState<boolean>(true);
-  const [modalOpen, setModalOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number>(0)
+  /*Modal State */
+  //confirm Modal Open
+  const [modalOpen, setModalOpen] = useState(false);
+  //alert Modal Open
+  const [alertOpen, setAlertOpen] = useState(false);
 
   useEffect(() => {
     getOrderList();
@@ -47,6 +54,7 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
   /*Confrim Modal Component*/
   const closeModal = () => {
     setModalOpen(false);
+    setAlertOpen(false);
   }
   //Modal Oepn, Set selected item Id 
   const openModal = (param: number) => {
@@ -61,7 +69,14 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
   const openCancle = async () => {
     await orderCancleAPI(accessToken, selectedItemId);
     setModalOpen(false);
+    setAlertOpen(true)
   }
+  //현재화면 새로고침
+  const refresh = () => {
+    setAlertOpen(false);
+    props.goRefresh();
+  }
+
   /*Modal End*/
 
   //상품 상세페이지 이동, redux store상태 변경 
@@ -72,13 +87,6 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
     props.goStatus(param);
   }
 
-  //시간만료된 상품 자동종료
-  // const doFinish = async (id: number) => {
-  //   const response: any = await orderFinishAPI(accessToken, id);
-  //   console.log("결과", response)
-  // }
-
-  /* Date Fomrat을 변경하기 위한 함수 */
   const dateFilter = (val: string, param?: any) => {
     if (param.date == null) {
       return '없음'
@@ -115,7 +123,6 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
           dispatch(doTimer(timeSetParam));
         }
         else {
-          // doFinish(param.id);
           dispatch(doTimer({ t_minutes: 0 }));
           result = '시간만료'
         }
@@ -174,13 +181,31 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
                   <View style={OrderWrapper.CenterAlign} >
                     <View style={OrderWrapper.ContentsBox}>
                       <View style={[OrderWrapper.Vertical, { marginLeft: 5 }]}>
-                        <Text style={OrderWrapper.FontText}>{order.orderAt}</Text>
+                        <View style={OrderWrapper.Horizontal}>
+                          <Text style={[OrderWrapper.FontText, { flex: 5 }]}>{order.orderAt}</Text>
+                          {order.status === "REQUEST" &&
+                            <>
+                              <View
+                                style={[OrderWrapper.StatusButton, { flex: 2 }]}>
+                                <Text style={OrderWrapper.StatusText}>포장 요청</Text>
+                              </View>
+                            </>
+                          }
+                          {order.status === "ACCEPT" &&
+                            <>
+                              <View
+                                style={[OrderWrapper.StatusButton, { flex: 2 }]}>
+                                <Text style={OrderWrapper.StatusText}>주문 수락</Text>
+                              </View>
+                            </>
+                          }
+                        </View>
                       </View>
                       <View style={OrderWrapper.Horizontal}>
                         <View style={OrderWrapper.CenterAlign}>
                           <Image
-                            source={require('../../assets/main.png')}
-                            // source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
+                            // source={require('../../assets/main.png')}
+                            source={{ uri: order.storeProfile ? order.storeProfile : 'none' }}
                             style={{
                               width: 90,
                               height: 90,
@@ -220,13 +245,9 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
                       <View style={OrderWrapper.Horizontal}>
                         {order.status === "REQUEST" &&
                           <>
-                            <View
-                              style={[OrderWrapper.InActivateButton, { flex: 2, margin: 5 }]}>
-                              <Text style={OrderWrapper.ButtonText}>포장 요청</Text>
-                            </View>
                             <TouchableOpacity
                               onPress={() => openModal(order.id)}
-                              style={[OrderWrapper.ActivateButton, { flex: 2, margin: 5 }]}>
+                              style={[OrderWrapper.ActivateButton]}>
                               <Text style={OrderWrapper.ButtonText}>주문 취소</Text>
                             </TouchableOpacity>
                           </>
@@ -234,23 +255,20 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
 
                         {order.status === "ACCEPT" &&
                           <>
-                            {order.pickUpAt === "시간만료" ?
-                              <TouchableOpacity
-                                onPress={() =>
-                                  goStatus(order)
-                                }
-                                style={[OrderWrapper.ActivateButton, { flex: 1 }]}>
-                                <Text style={OrderWrapper.ButtonText}>주문 완료</Text>
-                              </TouchableOpacity>
-                              :
-                              <TouchableOpacity
-                                onPress={() =>
-                                  goStatus(order)
-                                }
-                                style={[OrderWrapper.ActivateButton, { flex: 1 }]}>
-                                <Text style={OrderWrapper.ButtonText}>주문 대기</Text>
-                              </TouchableOpacity>
-                            }
+                            <TouchableOpacity
+                              onPress={() =>
+                                goStatus(order)
+                              }
+                              style={[OrderWrapper.AddPhotoButton]}>
+                              <Text style={OrderWrapper.AddPhotoButtonText}>주문 현황</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() =>
+                                goStatus(order)
+                              }
+                              style={[OrderWrapper.ActivateButton]}>
+                              <Text style={OrderWrapper.ButtonText}>주문 상세</Text>
+                            </TouchableOpacity>
                           </>
                         }
                       </View>
@@ -270,6 +288,13 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
             subTitle={`선택하신 주문을 취소하시겠습니까?`}
             openResult={openResult}
             openCancle={openCancle}
+          />
+
+          <OrderAlertPopUp
+            open={alertOpen}
+            close={closeModal}
+            title={"취소 완료"}
+            refresh={refresh}
           />
 
         </ScrollView>
@@ -313,7 +338,9 @@ export const OrderWrapper = StyleSheet.create({
     borderRadius: 10,
     height: 40,
     justifyContent: 'center',
-    alignContent: 'center'
+    alignContent: 'center',
+    margin: 5,
+    flex: 2
   },
   InActivateButton: {
     backgroundColor: '#3E3E3E',
@@ -347,6 +374,51 @@ export const OrderWrapper = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     padding: 10
+  },
+
+  StatusButton: {
+    backgroundColor: '#3E3E3E',
+    borderRadius: 8,
+    width: 22,
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  StatusText: {
+    fontSize: 16,
+    fontFamily: 'Urbanist',
+    fontWeight: 'bold',
+    color: 'white',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+
+  AddPhotoButtonText: {
+    fontSize: 17,
+    fontFamily: 'Apple SD Gothic Neo',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    color: '#00C1DE',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+
+  AddPhotoButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderStyle: 'solid',
+    borderColor: '#00C1DE',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    alignContent: 'center',
+    margin: 5,
+    flex: 2
   },
 });
 
