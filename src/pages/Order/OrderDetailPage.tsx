@@ -26,6 +26,8 @@ const OrderDetailPage = () => {
                     <Text style={[OrderWrapper.FontText, { fontSize: 20, fontWeight: 'bold', color: 'black' }]}>주문의 상태</Text>
                     <TouchableOpacity><Text style={[OrderWrapper.FontText, { fontSize: 15, fontWeight: '600', marginTop: 5 }]}>샐러디 남부터미널점</Text></TouchableOpacity>
                     <Text style={[OrderWrapper.FontText, { fontSize: 20, fontWeight: 'bold', color: 'black', marginTop: 20 }]}>주문 내역</Text>
+                    <Text style={[OrderWrapper.FontText, { fontSize: 15, fontWeight: '600', marginTop: 5 }]}>주문 일시 : 2023.01.09.. </Text>
+                    <Text style={[OrderWrapper.FontText, { fontSize: 15, fontWeight: '600', marginTop: 5 }]}>주문 번호 : LZDF!fsgsd2GDSd</Text>
                     <Test data={SECTIONS} />
                 </View>
             </View>

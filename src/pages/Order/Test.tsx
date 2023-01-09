@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet } from 'react-native'
 import Accordion from 'react-native-collapsible/Accordion';
 
 
@@ -9,7 +9,7 @@ const AccordionView = (props: any) => {
     const renderHeader = (section: any) => {
         return (
             <View >
-                <Text>{section.title}</Text>
+                <Text style={[OrderWrapper.FontText, { fontSize: 20, fontWeight: 'bold', color: 'black' }]}>{section.title}</Text>
             </View>
         );
     };
@@ -40,7 +40,6 @@ const AccordionView = (props: any) => {
         setActiveSections(activeSections);
     };
 
-
     return (
         <Accordion
             // activeSections={[0]}
@@ -51,10 +50,21 @@ const AccordionView = (props: any) => {
             renderHeader={renderHeader}
             renderContent={renderContent}
             onChange={updateSections}
+            sectionContainerStyle={{ marginTop: 20 }}
             underlayColor='rgba(0, 193, 222, 0.12)'
 
         />
     );
 }
+
+export const OrderWrapper = StyleSheet.create({
+
+    FontText: {
+        fontFamily: 'Apple SD Gothic Neo',
+        fontStyle: 'normal',
+        letterSpacing: 0.5,
+
+    }
+});
 
 export default AccordionView;
