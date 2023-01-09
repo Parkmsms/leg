@@ -170,7 +170,7 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
     <SafeAreaView style={{ flex: 1 }}>
       {ready ?
         <View style={[OrderWrapper.container, OrderWrapper.horizontal]}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="small" />
         </View>
         :
         <ScrollView>

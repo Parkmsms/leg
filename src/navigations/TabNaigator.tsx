@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Orders from '../pages/Orders';
 import MyPage from '../pages/MyPage/MyPage';
 import MainPage from '../pages/MainPage';
-import OrderStatus from '../pages/Order/OrderStatus';
+import OrderStatus from '../pages/Order/OrderStatusPage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import OrderPage from '../pages/OrderPage';
 

@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { getReviewAPI } from '../../config/AxiosFunction';
 import { Review } from '../../models/reviewInfo';
 import Stars from 'react-native-stars';
+import store from '../../store/index';
 
 type ReviewItem = {
   navigation?: any,
@@ -18,6 +19,7 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
   const [data, setData] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [offset, setOffset] = useState<number>(0);
+  const [starAvg, setStarAvg] = useState<string>('')
 
   // const page = useRef(1);
 
@@ -25,7 +27,7 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
     return (
       <View style={[MainWrapper.ContainerBox, { backgroundColor: '#f1fcfd', marginLeft: 20, marginRight: 20 }]}>
         {/* 프로필,이름,별점,등록날짜 */}
-        <Text style={[MainWrapper.FontText, { fontSize: 11, marginLeft: 10, marginBottom: 10 }]}>{item.reviewCreatedDate}</Text>
+        <Text style={[MainWrapper.FontText, { fontSize: 12, marginLeft: 10, marginBottom: 6 }]}>{dateFilter(item.reviewCreatedDate)}</Text>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Image source={{ uri: item.userProfile ? item.userProfile : 'none' }}
@@ -107,13 +109,13 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
             <View style={{ flexDirection: 'row', }}>
               <View >
                 <View style={{ flexDirection: 'row' }}>
-                  <Text style={[MainWrapper.FontText, { fontSize: 10, fontWeight: 'bold', color: 'black' }]}>사장님</Text>
-                  <Text style={[MainWrapper.FontText, { fontSize: 10, marginLeft: 3 }]}>{item.replyCreatedDate}</Text>
+                  <Text style={[MainWrapper.FontText, { fontSize: 13, fontWeight: 'bold', color: 'black' }]}>사장님</Text>
+                  <Text style={[MainWrapper.FontText, { fontSize: 12, marginLeft: 3 }]}>-{dateFilter(item.replyCreatedDate)}</Text>
                 </View>
               </View>
             </View>
             <View style={{ flexDirection: 'row' }}>
-              <Text style={{ fontSize: 10, color: 'black' }}>
+              <Text style={{ fontSize: 13, color: 'black' }}>
                 {item.reply}
               </Text>
             </View>
@@ -139,9 +141,32 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
   // }
 
   const getData = async () => {
-    const response = await getReviewAPI(accessToken, route.params?.storeId);
-    console.log("결과", response.data.content)
+    setLoading(true);
+    let sumStar = 0
+    const response = await getReviewAPI(accessToken, route.params?.storeInfo.storeId);
+
+    response.data.content.forEach((product: any) => {
+      sumStar += product.reviewStar;
+    });
+
+    setStarAvg(((sumStar / response.data.content.length).toFixed(1)))
     setData(data.concat(response.data.content.slice(offset, offset + LIMIT)))
+    setLoading(false);
+    setOffset(offset + LIMIT);
+
+  }
+
+  const dateFilter = (param: string) => {
+    let fullDate = param.toString().replace('T', ' ')
+    let dayStr = new Date(param)
+    const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
+    let week = WEEKDAY[dayStr.getDay()];
+    let year = fullDate.slice(2, 4);
+    let month = fullDate.slice(5, 7);
+    let day = fullDate.slice(8, 10);
+    let time = fullDate.slice(11, 16);
+
+    return `${year}.${month}.${day}(${week}) ${time}`
   }
 
 
@@ -161,11 +186,7 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
   // };
 
   useEffect(() => {
-    setTimeout(() => {
-      getData();
-      setOffset(offset + LIMIT);
-      setLoading(false);
-    }, 200);
+    getData();
   }, [])
 
   // here
@@ -209,18 +230,13 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
               color: 'black'
             }}>리뷰👩🏻‍💻</Text>
             <View>
+              <Text style={[MainWrapper.FontText, { fontSize: 16, fontWeight: '400', color: 'black' }]} >{route.params?.storeInfo.storeName}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: "center", }}>
                 <Icon style={{ justifyContent: 'center', alignItems: 'center' }} name="star" color={"#00C1DE"} size={12} />
-                <Icon style={{ justifyContent: 'center', alignItems: 'center' }} name="star" color={"#00C1DE"} size={12} />
-                <Icon style={{ justifyContent: 'center', alignItems: 'center' }} name="star" color={"#00C1DE"} size={12} />
-                <Icon style={{ justifyContent: 'center', alignItems: 'center' }} name="star" color={"#00C1DE"} size={12} />
-                <Icon style={{ justifyContent: 'center', alignItems: 'center' }} name="star" color={"#00C1DE"} size={12} />
+                <Text style={{ fontSize: 16, color: 'black', }}>{starAvg}</Text>
               </View>
             </View>
-            <Text style={{
-              fontSize: 16,
-              color: 'black',
-            }}>미쁘동 5.0점</Text>
+
           </View>
         </View>
       </View>
@@ -231,7 +247,7 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
         keyExtractor={(item) => String(item.id)}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.7}
-        ListFooterComponent={loading ? <ActivityIndicator size={"large"} /> : <></>}
+        ListFooterComponent={loading ? <ActivityIndicator size={"small"} /> : <></>}
       />
     </SafeAreaView>
   )

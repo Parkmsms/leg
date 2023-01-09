@@ -14,6 +14,7 @@ import { OrderInfo } from '../../models/orderInfo';
 type BottomPopupProps = {
   goReview: any
   goReviewItem: any
+  goTestPage: any
 }
 type OrderCompleteProps = {
   route: any;
@@ -104,7 +105,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
     <SafeAreaView style={{ flex: 1 }}>
       {ready ?
         <View style={[OrderWrapper.container, OrderWrapper.horizontal]}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="small" />
         </View>
         :
         <ScrollView>
@@ -182,7 +183,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                             <TouchableOpacity
                               style={OrderWrapper.ActivateButton}
                               onPress={() => {
-                                props.goReview()
+                                props.goTestPage()
                               }}>
                               <Text style={OrderWrapper.ButtonText}>주문 상세</Text>
                             </TouchableOpacity>
@@ -192,7 +193,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                           <>
                             <TouchableOpacity
                               onPress={() => {
-                                props.goReviewItem(order.storeId)
+                                props.goReviewItem(order)
                               }}
                               style={OrderWrapper.ActivateButton}>
                               <Text style={OrderWrapper.ButtonText}>주문 상세</Text>

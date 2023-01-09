@@ -19,7 +19,7 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
   );
   //주문 완료 내역
   const SecondRoute = () => (
-    <OrderCompleteList goReview={goReview} goReviewItem={onReviewPage} />
+    <OrderCompleteList goReview={goReview} goReviewItem={onReviewPage} goTestPage={goTestPage} />
   );
 
 
@@ -37,12 +37,15 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
     setFocused((val) => val = !val);
   }
   //test용 리뷰페이지 넘어가기
-  const onReviewPage = (storeId: number) => {
-    navigation.navigate('ReviewItem', { storeId: storeId })
+  const onReviewPage = (storeInfo: any) => {
+    navigation.navigate('ReviewItem', { storeInfo: storeInfo })
+  }
+
+  const goTestPage = () => {
+    navigation.navigate('OrderDetailPage')
   }
 
   useEffect(() => {
-    console.log('isFoucsed!!! =', focused)
   }, [focused])
 
 
