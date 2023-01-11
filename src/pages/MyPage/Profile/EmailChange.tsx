@@ -59,9 +59,7 @@ const ProfileChange = ({navigation}: {navigation: any}) => {
               <TextInput
                 onChangeText={value => _handleEmailChange(value)}
                 placeholder="이메일 형식에 맞춰 입력해주세요."
-                style={{fontSize: 17, fontWeight: 'bold'}}>
-                {data.email}
-              </TextInput>
+                style={{fontSize: 17, fontWeight: 'bold'}}></TextInput>
               <View>
                 <Text></Text>
               </View>

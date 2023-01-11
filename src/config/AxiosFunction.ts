@@ -477,6 +477,26 @@ export const UserPointHistoryAPI = async (accessToken: string) => {
   }
 };
 
+/* 닉네임 체크 (닉네임 변경) */
+export const checknameChange = async (
+  nickname: string,
+  accessToken: string,
+) => {
+  try {
+    const result = await axios({
+      method: 'post',
+      url: hosturi + '/users/nickname/dup',
+      // header: await AsyncStorage.getItem('session'), JWT 토큰 헤더에 담는 방법
+      data: {
+        nickname: nickname,
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
 /* 카트추가 */
 export const CartPost = async (accessToken: string, cart: any) => {
   console.log('API', cart);
