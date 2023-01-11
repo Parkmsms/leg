@@ -22,6 +22,7 @@ type UserSimpleData = {
   id: number;
   nickname: string;
   profile: string;
+  point: string;
 };
 
 const MyPage = ({navigation}: {navigation: any}) => {
@@ -71,6 +72,11 @@ const MyPage = ({navigation}: {navigation: any}) => {
     });
   };
 
+  // 알림 설정
+  const onAlarm = () => {
+    navigation.navigate('UserAlarm');
+  };
+
   // 포인트 이력
   const PointHistory = () => {
     navigation.navigate('PointHistory');
@@ -84,13 +90,13 @@ const MyPage = ({navigation}: {navigation: any}) => {
               style={{
                 borderWidth: 1,
                 borderRadius: 6,
-                left: 110,
-                top: 20,
+                left: 90,
+                top: 25,
                 padding: 1,
-                backgroundColor: '#c8c8c8',
+                backgroundColor: '#dcdcdc',
                 zIndex: 1,
               }}>
-              <Icon name="camera" size={20} color="black" />
+              <Icon name="camera" size={18} color="black" />
             </View>
             <TouchableOpacity onPress={() => ProfileImageChange()}>
               {data?.profile != null ? (
@@ -105,11 +111,16 @@ const MyPage = ({navigation}: {navigation: any}) => {
                 />
               )}
             </TouchableOpacity>
+
             <View style={{flexDirection: 'row'}}>
               <TouchableOpacity onPress={() => ProfileInfoChange()}>
                 <Text style={MyPageStyle.profileInfo}>{data?.nickname}</Text>
-                <Text>포인트 : 1,340</Text>
+                <Text>
+                  {data?.point.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  P
+                </Text>
               </TouchableOpacity>
+
               <View>
                 <TouchableOpacity onPress={() => PointHistory()}>
                   <Text style={MyPageStyle.point}>적립내역</Text>
@@ -118,44 +129,86 @@ const MyPage = ({navigation}: {navigation: any}) => {
             </View>
           </View>
         </View>
+        <View
+          style={{
+            marginTop: 15,
+            borderWidth: 8,
+            borderColor: '#E7E7E7',
+          }}></View>
         <View style={MyPageStyle.mypageBox}>
           <View style={MyPageStyle.mypageRow}>
             <View style={MyPageStyle.mypageListRow}>
-              <Icon name="megaphone-outline" size={20} color="black" />
               <TouchableOpacity
                 onPress={() => navigation.navigate('NoticeListPage')}>
                 <Text style={MyPageStyle.mypageFont}>공지사항</Text>
               </TouchableOpacity>
+              <Icon
+                name="chevron-forward-outline"
+                size={26}
+                color="black"
+                style={{left: 240, bottom: 4}}
+              />
             </View>
 
             <View style={MyPageStyle.mypageListRow}>
-              <Icon name="flash-outline" size={20} color="black" />
               <TouchableOpacity
                 onPress={() => navigation.navigate('EventList')}>
                 <Text style={MyPageStyle.mypageFont}>이벤트</Text>
               </TouchableOpacity>
+              <Icon
+                name="chevron-forward-outline"
+                size={26}
+                color="black"
+                style={{left: 255, bottom: 5}}
+              />
             </View>
 
             <View style={MyPageStyle.mypageListRow}>
-              <Icon name="bookmark-outline" size={20} color="black" />
               <TouchableOpacity
                 onPress={() => navigation.navigate('UserPicksPage')}>
                 <Text style={MyPageStyle.mypageFont}>찜한가게</Text>
               </TouchableOpacity>
+              <Icon
+                name="chevron-forward-outline"
+                size={26}
+                color="black"
+                style={{left: 240, bottom: 5}}
+              />
             </View>
 
             <View style={MyPageStyle.mypageListRow}>
-              <Icon name="search-outline" size={20} color="black" />
               <TouchableOpacity onPress={() => navigation.navigate('Inquire')}>
                 <Text style={MyPageStyle.mypageFont}>문의하기</Text>
               </TouchableOpacity>
+              <Icon
+                name="chevron-forward-outline"
+                size={26}
+                color="black"
+                style={{left: 240, bottom: 5}}
+              />
             </View>
 
             <View style={MyPageStyle.mypageListRow}>
-              <Icon name="share-social-outline" size={20} color="black" />
               <TouchableOpacity onPress={() => onShare()}>
                 <Text style={MyPageStyle.mypageFont}>앱 공유하기</Text>
               </TouchableOpacity>
+              <Icon
+                name="chevron-forward-outline"
+                size={26}
+                color="black"
+                style={{left: 220, bottom: 5}}
+              />
+            </View>
+            <View style={MyPageStyle.mypageListRow}>
+              <TouchableOpacity onPress={() => onAlarm()}>
+                <Text style={MyPageStyle.mypageFont}>알림 설정</Text>
+              </TouchableOpacity>
+              <Icon
+                name="chevron-forward-outline"
+                size={26}
+                color="black"
+                style={{left: 240, bottom: 5}}
+              />
             </View>
           </View>
         </View>
@@ -172,13 +225,14 @@ export const MyPageStyle = StyleSheet.create({
   borderBox: {
     flex: 1,
     marginTop: 55,
-    marginLeft: 20,
+    marginLeft: 15,
     marginRight: 20,
-    borderWidth: 2,
-    borderRadius: 15,
+    // borderWidth: 2,
+    // borderRadius: 15,
     borderColor: '#00C1DE',
     justifyContent: 'flex-start',
     flexDirection: 'row',
+    // backgroundColor: '#00C1DE',
   },
   borderBoxInner: {
     flexDirection: 'row',
@@ -190,10 +244,10 @@ export const MyPageStyle = StyleSheet.create({
     fontStyle: 'normal',
   },
   profileImage: {
-    marginLeft: 30,
-    marginRight: 40,
-    borderColor: '#00C1DE',
-    borderWidth: 1,
+    marginLeft: 5,
+    marginRight: 30,
+    borderColor: '#969696',
+    borderWidth: 2,
     borderRadius: 70,
     width: 80,
     height: 80,
@@ -205,8 +259,8 @@ export const MyPageStyle = StyleSheet.create({
     flexDirection: 'column',
   },
   mypageListRow: {
-    marginTop: 23,
-    marginLeft: 30,
+    marginTop: 25,
+    marginLeft: 40,
     flexDirection: 'row',
   },
   mypageFont: {
@@ -218,7 +272,7 @@ export const MyPageStyle = StyleSheet.create({
   point: {
     padding: 5,
     marginTop: 22,
-    marginLeft: 30,
+    marginLeft: 20,
     borderWidth: 1,
     borderRadius: 60,
   },

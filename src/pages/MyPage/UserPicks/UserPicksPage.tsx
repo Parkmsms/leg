@@ -1,91 +1,45 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {
-  Alert,
-  Dimensions,
   Image,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  VirtualizedList,
-  ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
-import {
-  activeLocation,
-  getAccessToken,
-  getStoreList,
-  getBannerList,
-  getFoodKindsList,
-} from '../../../config/AxiosFunction';
+import {getAccessToken, UserPicksAPI} from '../../../config/AxiosFunction';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {intialStorePrams, StoreParams} from '../../../models/listfilterInfo';
-import {Picker} from '@react-native-picker/picker';
 
-type Store = {
+/* UserPicks Data */
+type UserPicksData = {
   id: number;
+  postId: number;
   postTitle: string;
-  cookTimeAvg: number;
   storeName: string;
   storeProfile: string;
-  storeStar: string;
-  town: string;
-  distance: number;
-  foodTypes: string[];
 };
-type MainPageProps = {
-  route: any;
+
+type UserPicksNavigator = {
   navigation?: any;
+  route?: any;
 };
 
-const MainPage = ({navigation, route}: MainPageProps) => {
-  const [menuList, setmenuList] = useState<string[]>([]);
+const MainPage = ({navigation, route}: UserPicksNavigator) => {
+  const [picks, setPicks] = useState<UserPicksData[]>([]);
 
-  const [storeList, setStoreList] = useState<Store[]>([]);
-  const [active, setActive] = useState<number>(0);
-  const [params, setParams] = useState<StoreParams>(intialStorePrams);
-
-  const [ready, setReady] = useState<boolean>(true);
-  const [open, setOpen] = useState(false);
-  const [filterList, setFilterList] = useState([
-    {label: '거리순', value: '거리'},
-    {label: '정렬순', value: '정렬'},
-    {label: '별점순', value: '별점'},
-  ]);
-
-  const getList = async () => {
+  const getUserPicks = async () => {
     const accessToken = await getAccessToken('accessToken');
-    const response = await getStoreList(accessToken, params);
-    console.log('가게정보', response.data.content);
-    setStoreList(response.data.content);
-  };
-
-  const getFoodsList = async () => {
-    const accessToken = await getAccessToken('accessToken');
-    const response = await getFoodKindsList(accessToken);
-    setmenuList(response.data);
+    const response = await UserPicksAPI(accessToken);
+    setPicks(response.data.content);
+    console.log('유저픽', response.data.content);
   };
 
   useEffect(() => {
-    console.log('메인페이지 검색어', route.params?.menu);
-    if (route.params?.menu) {
-      setParams({
-        ...params,
-        keyword: route.params?.menu,
-      });
-    }
-    console.log('음식종류: ', menuList);
-    console.log('선택한 음식 종류: ', params.foodType);
-    console.log('검색 params', params);
-    setTimeout(() => {
-      getList();
-      getFoodsList();
-      setReady(false);
-    }, 2000);
-  }, [params, route.params?.menu]);
+    getUserPicks();
+    console.log('유저픽스 리스트:', picks);
+  }, []);
 
   const goDetail = (id: number, profile: string) => {
     console.log(id);
@@ -93,118 +47,83 @@ const MainPage = ({navigation, route}: MainPageProps) => {
     navigation.navigate('DetailPage', {detailId: id, profile: profile});
   };
 
-  const setMenu = (e: string) => {
-    console.log(e);
-    setParams({
-      ...params,
-      foodType: e,
-    });
-  };
-
   return (
     <SafeAreaView style={{flex: 1}}>
-      {ready ? (
-        <View style={[MainWrapper.container, MainWrapper.horizontal]}>
-          <ActivityIndicator size="large" />
-        </View>
-      ) : (
-        <View style={MainWrapper.MainContainer}>
-          <ScrollView>
-            <View style={MainWrapper.ListWrapper}>
-              <ScrollView>
-                {storeList?.map((store: Store, index: number) => {
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => goDetail(store.id, store.storeProfile)}
-                      // onPress={() => openModal(store.postId)}
+      <View style={MainWrapper.MainContainer}>
+        <ScrollView>
+          <View style={MainWrapper.ListWrapper}>
+            <ScrollView>
+              {picks?.map((picks: UserPicksData, index: number) => {
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => goDetail(picks.id, picks.storeProfile)}
+                    // onPress={() => openModal(store.postId)}
+                    style={{
+                      flexDirection: 'row',
+                      borderWidth: 2,
+                      borderRadius: 20,
+                      // borderBottomColor: 'rgba(0, 0, 0, 0.12)',
+                      marginBottom: 10,
+                      width: 360,
+                      height: 160,
+                      borderColor: 'rgba(0, 0, 0, 0.05)',
+                      paddingLeft: 10,
+                      paddingTop: 15,
+                      shadowColor: '#52006A',
+                      backgroundColor: 'white',
+                      elevation: 5,
+                    }}>
+                    <Image
+                      source={{uri: picks.storeProfile}}
                       style={{
-                        flexDirection: 'row',
-                        borderWidth: 2,
                         borderRadius: 20,
-                        // borderBottomColor: 'rgba(0, 0, 0, 0.12)',
-                        marginBottom: 10,
-                        width: 360,
-                        height: 160,
-                        borderColor: 'rgba(0, 0, 0, 0.05)',
-                        paddingLeft: 10,
-                        paddingTop: 15,
-                        shadowColor: '#52006A',
-                        backgroundColor: 'white',
-                        elevation: 5,
+                        width: 120,
+                        height: 120,
+                      }}
+                    />
+                    <View
+                      style={{
+                        flexDirection: 'column',
+                        paddingLeft: 15,
                       }}>
-                      <Image
-                        source={{uri: store.storeProfile}}
+                      <Text
                         style={{
-                          borderRadius: 20,
-                          width: 120,
-                          height: 120,
-                        }}
-                      />
+                          width: 190,
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          marginTop: 30,
+                          color: 'black',
+                        }}>
+                        {picks.postTitle}
+                      </Text>
+
                       <View
                         style={{
-                          flexDirection: 'column',
-                          paddingLeft: 15,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
                         }}>
-                        <Text
-                          style={{
-                            width: 190,
-                            fontSize: 15,
-                            fontWeight: 'bold',
-                            marginBottom: 10,
-                            color: 'black',
-                          }}>
-                          {store.postTitle}
-                        </Text>
-                        <Text
-                          style={{
-                            color: 'black',
-                            marginBottom: 10,
-                          }}>
-                          평균 조리시간 {store.cookTimeAvg}분
-                        </Text>
-                        <Text
-                          style={{
-                            fontWeight: '400',
-                            marginBottom: 10,
-                          }}>
-                          {store.town} {store.distance}m
-                        </Text>
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                          }}>
-                          <View style={{flexDirection: 'row'}}>
-                            <Text style={{marginRight: 10, color: 'black'}}>
-                              {store.storeName}
-                            </Text>
-                            <View style={{flexDirection: 'row'}}>
-                              <Icon
-                                style={{
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
-                                }}
-                                name="star"
-                                color={'#00C1DE'}
-                                size={18}
-                              />
-                              <Text style={{fontSize: 15}}>
-                                {store.storeStar}
-                              </Text>
-                            </View>
-                          </View>
-                          {/* <Icon name="bookmark-outline" size={18} /> */}
+                        <View style={{flexDirection: 'row'}}>
+                          <Text
+                            style={{
+                              marginRight: 10,
+                              marginTop: 10,
+                              color: 'black',
+                            }}>
+                            {picks.storeName}
+                          </Text>
+                          <View style={{flexDirection: 'row'}}></View>
                         </View>
+                        {/* <Icon name="bookmark-outline" size={18} /> */}
                       </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            </View>
-          </ScrollView>
-        </View>
-      )}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };

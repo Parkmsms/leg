@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { TouchableOpacity, Text, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {TouchableOpacity, Text, View} from 'react-native';
 import SignIn from '../pages/SignIn/SignInPhone';
 
 import TabNavigator from '../navigations/TabNaigator';
@@ -32,6 +32,9 @@ import Inquire from '../pages/MyPage/Inquire/Inquire';
 import ProfileChange from '../pages/MyPage/Profile/ProfileChange';
 import UserPicksPage from '../pages/MyPage/UserPicks/UserPicksPage';
 import PointHistory from '../pages/MyPage/Point/PointHistory';
+import UserAlarm from '../pages/MyPage/Alarm/UserAlarm';
+import NicknameChange from '../pages/MyPage/Profile/NicknameChange';
+import EmailChange from '../pages/MyPage/Profile/EmailChange';
 
 import CartList from '../pages/Cart/CartList';
 import OrderList from '../pages/Order/OrderList';
@@ -39,7 +42,7 @@ import OrderStatus from '../pages/Order/OrderStatusPage';
 import ReviewPage from '../pages/Review/ReviewPage';
 import ReviewItem from '../pages/Review/ReviewItem';
 import CountDownPage from '../pages/Order/CountDownPage';
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import OrderDetailPage from '../pages/Order/OrderDetailPage';
 
 const Stack = createNativeStackNavigator();
@@ -84,7 +87,7 @@ const StackNavigator = () => {
       <Stack.Screen
         name="DetailPage"
         component={DetailPage}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="DetailOptionPage"
@@ -283,7 +286,7 @@ const StackNavigator = () => {
         name="ProfileChange"
         component={ProfileChange}
         options={{
-          title: '내 정보 변경',
+          title: '내 정보 관리',
           headerTransparent: true,
           headerTitleAlign: 'center',
           headerTintColor: '#000000',
@@ -295,14 +298,18 @@ const StackNavigator = () => {
             fontFamily: 'Urbanist',
             fontWeight: 'bold',
           },
-          headerRight: () => (
-            <View style={{ marginRight: 20 }}>
-              <Text
-                style={{ fontSize: 17, fontWeight: 'bold', color: '#000000' }}>
-                저장
-              </Text>
-            </View>
-          ),
+          // headerRight: () => (
+          //   <View style={{marginRight: 20}}>
+          //     <Text
+          //       style={{
+          //         fontSize: 17,
+          //         fontWeight: 'bold',
+          //         color: '#000000',
+          //       }}>
+          //       저장
+          //     </Text>
+          //   </View>
+          // ),
         }}
       />
       <Stack.Screen
@@ -323,19 +330,74 @@ const StackNavigator = () => {
           },
         }}
       />
-
+      <Stack.Screen
+        name="UserAlarm"
+        component={UserAlarm}
+        options={{
+          title: '알림 설정',
+          headerTransparent: true,
+          headerTitleAlign: 'left',
+          headerTintColor: '#000000',
+          headerStyle: {
+            backgroundColor: '#F9FFFF',
+          },
+          headerTitleStyle: {
+            fontSize: 20,
+            fontFamily: 'Urbanist',
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="NicknameChange"
+        component={NicknameChange}
+        options={{
+          title: '닉네임 변경',
+          headerTransparent: true,
+          headerTitleAlign: 'left',
+          headerTintColor: '#000000',
+          headerStyle: {
+            backgroundColor: '#F9FFFF',
+          },
+          headerTitleStyle: {
+            fontSize: 20,
+            fontFamily: 'Urbanist',
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="EmailChange"
+        component={EmailChange}
+        options={{
+          title: '이메일 변경',
+          headerTransparent: true,
+          headerTitleAlign: 'left',
+          headerTintColor: '#000000',
+          headerStyle: {
+            backgroundColor: '#F9FFFF',
+          },
+          headerTitleStyle: {
+            fontSize: 20,
+            fontFamily: 'Urbanist',
+            fontWeight: 'bold',
+          },
+        }}
+      />
       <Stack.Screen
         name="LoginSucess"
         component={TabNavigator}
         options={{
           headerShown: false,
-        }} />
+        }}
+      />
       <Stack.Screen
         name="Home"
         component={Home}
         options={{
           headerShown: false,
-        }} />
+        }}
+      />
       <Stack.Screen
         name="SignInPhone"
         component={SignInPhone}
@@ -374,67 +436,67 @@ const StackNavigator = () => {
       <Stack.Screen
         name="SignUpAgree"
         component={SignUpAgree}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '회원가입',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //     fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }}
+        options={{headerShown: false}}
+        // options={{
+        //   title: '회원가입',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //     fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
       <Stack.Screen
         name="SignUpPhone"
         component={SignUpPhone}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '휴대폰 인증',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //    fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }}
+        options={{headerShown: false}}
+        // options={{
+        //   title: '휴대폰 인증',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //    fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
       <Stack.Screen
         name="SignUpVerify"
         component={SignUpVerify}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '휴대폰 인증',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //    fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }}
+        options={{headerShown: false}}
+        // options={{
+        //   title: '휴대폰 인증',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //    fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
       <Stack.Screen
         name="SignUpName"
         component={SignUpName}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '휴대폰 인증',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //    fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }}
+        options={{headerShown: false}}
+        // options={{
+        //   title: '휴대폰 인증',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //    fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
       <Stack.Screen
         name="CheckName"
         component={CheckName}
-        options={{ headerShown: false }}
-      // options={{
-      //   title: '휴대폰 인증',
-      //   headerTitleAlign: 'center',
-      //   headerTitleStyle: {
-      //    fontSize: 20,
-      //     fontWeight: 'bold',
-      //   }
-      // }}
+        options={{headerShown: false}}
+        // options={{
+        //   title: '휴대폰 인증',
+        //   headerTitleAlign: 'center',
+        //   headerTitleStyle: {
+        //    fontSize: 20,
+        //     fontWeight: 'bold',
+        //   }
+        // }}
       />
 
       <Stack.Screen
@@ -461,7 +523,8 @@ const StackNavigator = () => {
             fontSize: 20,
             fontWeight: 'bold',
           },
-        }} />
+        }}
+      />
 
       <Stack.Screen
         name="OrderDetailPage"

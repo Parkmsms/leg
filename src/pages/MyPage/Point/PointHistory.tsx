@@ -1,3 +1,4 @@
+import {iteratorSymbol} from 'immer/dist/internal';
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -9,34 +10,109 @@ import {
   Button,
   ScrollView,
 } from 'react-native';
-import {NoticeListAPI, getAccessToken} from '../../../config/AxiosFunction';
+import {
+  UserPointHistoryAPI,
+  getAccessToken,
+  UserSimpleAPI,
+} from '../../../config/AxiosFunction';
 
-/* 공지사항 List Data type */
-type NoticeListData = {
-  id: number; // 공지사항 ID
-  title: string; // 공지사항 제목
-  createdDate: string; // 생성일자
-  pub: boolean;
+/* UserPoint History List Data type */
+type UserPointHistoryData = {
+  id: number;
+  eventAt: string;
+  usePoint: number;
+  reward: number;
+  distance: number;
+  storeName: string;
 };
 
-/* 공지사항 Navigator type */
-type NoticeNavigator = {
+type UserSimpleData = {
+  id: number;
+  nickname: string;
+  profile: string;
+  point: string;
+};
+
+type UserPointHistoryNavigator = {
   navigation?: any;
   route?: any;
 };
 
-const NoticeListPage = ({navigation}: NoticeNavigator) => {
-  const [data, setData] = useState<NoticeListData[]>([]);
+const NoticeListPage = ({navigation}: UserPointHistoryNavigator) => {
+  const [data, setData] = useState<UserPointHistoryData[]>([]);
+  const [point, setPoint] = useState<UserSimpleData>();
 
   const GetData = async () => {
     const accessToken = await getAccessToken('accessToken');
-    const response = await NoticeListAPI(accessToken);
+    const response = await UserPointHistoryAPI(accessToken);
     console.log(response.data.content);
     setData(response.data.content);
   };
 
+  const GetUserPoint = async () => {
+    const accessToken = await getAccessToken('accessToken');
+    const response = await UserSimpleAPI(accessToken);
+    console.log(response.data);
+    setPoint(response.data);
+  };
+
+  // 포인트 리스트 경우의 수
+  const PointList = (reward: number, usePoint: number) => {
+    console.log(reward);
+    console.log(usePoint);
+    if (reward > 0 && usePoint == 0) {
+      return (
+        <Text
+          style={{
+            marginLeft: 100,
+            marginTop: 10,
+            fontSize: 22,
+            color: '#1E90FF',
+          }}>
+          + {reward}P
+        </Text>
+      );
+    } else if (reward == 0 && usePoint > 0) {
+      return (
+        <Text
+          style={{
+            marginLeft: 180,
+            marginTop: 10,
+            fontSize: 22,
+            color: '#CD1039',
+          }}>
+          - {usePoint}P
+        </Text>
+      );
+    } else if (reward > 0 && usePoint > 0) {
+      return (
+        <View>
+          <Text
+            style={{
+              marginLeft: 100,
+              marginTop: 10,
+              fontSize: 15,
+              color: '#1E90FF',
+            }}>
+            + {reward}P
+          </Text>
+          <Text
+            style={{
+              marginLeft: 100,
+              marginTop: 10,
+              fontSize: 15,
+              color: '#CD1039',
+            }}>
+            - {usePoint}P
+          </Text>
+        </View>
+      );
+    }
+  };
+
   useEffect(() => {
     GetData();
+    GetUserPoint();
   }, []);
 
   /* 공지사항 상세 페이지 이동 */
@@ -47,68 +123,39 @@ const NoticeListPage = ({navigation}: NoticeNavigator) => {
   return (
     <>
       <ScrollView style={NoticeListStyle.container}>
-        <View style={NoticeListStyle.headerArea}>
-          <Text style={{fontSize: 25, fontWeight: '900'}}>11,928원</Text>
-          <View style={NoticeListStyle.line}></View>
-        </View>
-        <View style={NoticeListStyle.listArea}>
-          <TouchableOpacity>
-            <View style={{flexDirection: 'column'}}>
-              <Text style={NoticeListStyle.listWrite}>2022.12.27</Text>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={NoticeListStyle.listTitle}>원 할머니 보쌈</Text>
-                <Text
-                  style={{
-                    marginLeft: 180,
-                    marginTop: 10,
-                    fontSize: 22,
-                    color: '#1E90FF',
-                  }}>
-                  + 800원
-                </Text>
-              </View>
-              <Text>사용</Text>
-            </View>
+        <View>
+          <View style={NoticeListStyle.headerArea}>
+            <Text style={{fontSize: 25, fontWeight: '900'}}>
+              {point?.point.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}P
+            </Text>
             <View style={NoticeListStyle.line}></View>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <View style={{flexDirection: 'column'}}>
-              <Text style={NoticeListStyle.listWrite}>2022.12.20</Text>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={NoticeListStyle.listTitle}>미스터 피자</Text>
-                <Text
-                  style={{
-                    marginLeft: 180,
-                    marginTop: 10,
-                    fontSize: 22,
-                    color: '#CD1039',
-                  }}>
-                  - 2,000원
-                </Text>
-              </View>
-              <Text>적립</Text>
-            </View>
-            <View style={NoticeListStyle.line}></View>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <View style={{flexDirection: 'column'}}>
-              <Text style={NoticeListStyle.listWrite}>2022.12.01</Text>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={NoticeListStyle.listTitle}>김영섭 초밥</Text>
-                <Text
-                  style={{
-                    marginLeft: 180,
-                    marginTop: 10,
-                    fontSize: 22,
-                    color: '#1E90FF',
-                  }}>
-                  + 500원
-                </Text>
-              </View>
-              <Text>적립</Text>
-            </View>
-            <View style={NoticeListStyle.line}></View>
-          </TouchableOpacity>
+          </View>
+          <View style={NoticeListStyle.listArea}>
+            {data.map((item: UserPointHistoryData) => (
+              <TouchableOpacity>
+                <View style={{flexDirection: 'column'}}>
+                  <Text style={NoticeListStyle.listWrite}>
+                    {item.eventAt.substring(0, 10)}
+                  </Text>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text style={NoticeListStyle.listTitle}>
+                      {item.storeName}
+                    </Text>
+                    <View>{PointList(item.reward, item.usePoint)}</View>
+                    <View></View>
+                  </View>
+                  {item.reward <= 0 ? (
+                    <Text>사용</Text>
+                  ) : item.usePoint <= 0 ? (
+                    <Text>적립</Text>
+                  ) : (
+                    <Text>적립 및 사용</Text>
+                  )}
+                </View>
+                <View style={NoticeListStyle.line}></View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </ScrollView>
     </>

@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { Agree } from '../models/agreeInfo';
-import { Device } from '../models/deviceInfo';
-import { PostLocation } from '../models/locationInfo';
-import { StoreParams } from '../models/listfilterInfo';
+import {Agree} from '../models/agreeInfo';
+import {Device} from '../models/deviceInfo';
+import {PostLocation} from '../models/locationInfo';
+import {StoreParams} from '../models/listfilterInfo';
 
 const hosturi = 'http://0giri.com/api';
 
@@ -442,9 +442,44 @@ export const UserNicknameChangeAPI = async (
   }
 };
 
+/* 유저 픽 */
+export const UserPicksAPI = async (accessToken: string) => {
+  try {
+    const result = await axios({
+      method: 'get',
+      url: hosturi + '/picks',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    console.log(result);
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/* 유저 포인트 이력 */
+export const UserPointHistoryAPI = async (accessToken: string) => {
+  try {
+    const result = await axios({
+      method: 'get', // GET
+      url: hosturi + '/orders/points', // URL
+      headers: {
+        'content-type': 'application/json',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
 /* 카트추가 */
 export const CartPost = async (accessToken: string, cart: any) => {
-  console.log("API", cart);
+  console.log('API', cart);
   try {
     const result = await axios({
       method: 'POST', // POST
@@ -462,7 +497,7 @@ export const CartPost = async (accessToken: string, cart: any) => {
 };
 
 export const CartGet = async (accessToken: string, cartId: number) => {
-  console.log("API cartId", cartId);
+  console.log('API cartId', cartId);
   try {
     const result = await axios({
       method: 'get', // GET
@@ -470,7 +505,7 @@ export const CartGet = async (accessToken: string, cartId: number) => {
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
-      }
+      },
     });
     return result;
   } catch (err) {
@@ -590,7 +625,10 @@ export const getDistanceAPI = async (
   }
 };
 
-export const getOrderSimpleAPI = async (accessToken: string, orderId: number,) => {
+export const getOrderSimpleAPI = async (
+  accessToken: string,
+  orderId: number,
+) => {
   try {
     const result = await axios({
       method: 'get',
@@ -620,7 +658,7 @@ export const getCouponList = async (accessToken: string) => {
   } catch (err) {
     throw err;
   }
-}
+};
 
 //박문수 주문완료처리 api
 export const orderFinishAPI = async (accessToken: string, orderId: number) => {
@@ -637,7 +675,7 @@ export const orderFinishAPI = async (accessToken: string, orderId: number) => {
   } catch (err) {
     throw err;
   }
-}
+};
 //주문 취소 api
 export const orderCancleAPI = async (accessToken: string, orderId: number) => {
   try {
@@ -653,7 +691,7 @@ export const orderCancleAPI = async (accessToken: string, orderId: number) => {
   } catch (err) {
     throw err;
   }
-}
+};
 //리뷰조회
 export const getReviewAPI = async (accessToken: string, storeId: number) => {
   try {
@@ -669,4 +707,4 @@ export const getReviewAPI = async (accessToken: string, storeId: number) => {
   } catch (err) {
     throw err;
   }
-}
+};

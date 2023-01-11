@@ -46,11 +46,13 @@ const NoticeDetailPage = ({navigation, route}: NoticeNavigator) => {
             </Text>
             <View style={NoticeDetailStyle.NoticeDetailline}></View>
             <View>
-              {data?.banner.length > 0 ? (
+              {data?.banner == null ? (
+                <View></View>
+              ) : (
                 <Image
                   style={NoticeDetailStyle.NoticeDetailBanner}
                   source={{uri: data?.banner}}></Image>
-              ) : null}
+              )}
             </View>
           </View>
           <View style={NoticeDetailStyle.NoticeDetailMargin}>
