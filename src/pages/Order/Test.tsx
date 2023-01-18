@@ -20,6 +20,13 @@ const AccordionView = (props: any) => {
         );
     };
 
+    const filterPrice = (param:number) => {
+
+        return ( 
+            param.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        )
+    }
+
     const renderContent = (section: any) => {
         return (
             <SafeAreaView >
@@ -39,7 +46,7 @@ const AccordionView = (props: any) => {
                             {section.price?.map((item: any, index: number) => {
                                 return (
                                     <Text style={OrderWrapper.rightText} key={index}>
-                                        {item}
+                                        {filterPrice(item)}원
                                     </Text>
                                 )
                             })}
@@ -52,7 +59,7 @@ const AccordionView = (props: any) => {
                             <Text style={[OrderWrapper.FontText, { fontWeight: 'bold', color: 'black' }]}>총 상품 금액</Text>
                         </View>
                         <View style={OrderWrapper.vertical}>
-                            <Text style={OrderWrapper.rightText}>{section.fullPrice}</Text>
+                            <Text style={OrderWrapper.rightText}>{filterPrice(section.fullPrice)}원</Text>
                         </View>
                     </View>
 
@@ -63,8 +70,8 @@ const AccordionView = (props: any) => {
                             <Text style={OrderWrapper.FontText}>할인(포인트)</Text>
                         </View>
                         <View style={OrderWrapper.vertical}>
-                            <Text style={OrderWrapper.rightText}>{section.couponDiscPrice}</Text>
-                            <Text style={OrderWrapper.rightText}>{section.pointDiscPrice}</Text>
+                            <Text style={OrderWrapper.rightText}>{filterPrice(section.couponDiscPrice)}원</Text>
+                            <Text style={OrderWrapper.rightText}>{filterPrice(section.pointDiscPrice)}원</Text>
                         </View>
                     </View>
 
@@ -75,14 +82,14 @@ const AccordionView = (props: any) => {
                             <Text style={OrderWrapper.FontText}>결제방식</Text>
                         </View>
                         <View style={OrderWrapper.vertical}>
-                            <Text style={[OrderWrapper.rightText, { fontWeight: 'bold', color: 'black' }]}>{section.payAmount}</Text>
+                            <Text style={[OrderWrapper.rightText, { fontWeight: 'bold', color: 'black' }]}>{filterPrice(section.payAmount)}원</Text>
                             <Text style={OrderWrapper.rightText}>{section.payMethod}</Text>
                         </View>
                     </View>
-
+                 
                     {/* 주문자정보 */}
                     <View style={OrderWrapper.columnElement}>
-                        <Text style={[OrderWrapper.FontText, { fontSize: 15, fontWeight: 'bold', color: 'black' }]}>주문자 정보</Text>
+                        <Text style={[OrderWrapper.FontText, { fontWeight: 'bold', color: 'black' }]}>주문자 정보</Text>
                         <View style={OrderWrapper.horizontal}>
                             <View style={OrderWrapper.vertical}>
                                 <Text style={OrderWrapper.FontText}>닉네임</Text>

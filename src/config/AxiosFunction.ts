@@ -728,3 +728,29 @@ export const getReviewAPI = async (accessToken: string, storeId: number) => {
     throw err;
   }
 };
+
+export const SaveReviewAPI = async (accessToken: string, picture: any, reqDto:any) => {
+  console.log("pictureInfo = ",picture)
+  const formData = new FormData();
+  formData.append('images',{uri:picture.url , name:picture.fileName, type:picture.type});
+  formData.append('reqDto',reqDto)
+
+  console.log("formDataInfo = ",formData)
+  try {
+    const result = await axios({
+      method: 'post',
+      url: hosturi + '/reviews',
+      headers: {
+        'content-type': 'multipart/form-data',
+        Authorization: accessToken ? 'Bearer ' + accessToken : '',
+      },
+      transformRequest: (data, headers) => {
+        return data;
+      },
+      data:formData
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};

@@ -24,7 +24,7 @@ type OrderCompleteProps = {
 const width = Dimensions.get('window').width;
 
 const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompleteProps) => {
-  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg'
+  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzM0Mjg5NjAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.3VZvbwQVoPOEIvC9iOlNLf3Nb9LZ1IwR9ye89SgzEhH1Rc1w-7QWFCvLsQ_fAffoO6h-Tf8BanmBjakgLSL4gQ'
   const [OrderCompeteLst, setOrderCompeteLst] = useState<OrderInfo[]>([]);
   const [ready, setReady] = useState<boolean>(true);
 
@@ -201,7 +201,7 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                             <TouchableOpacity
                               style={OrderWrapper.AddPhotoButton}
                               onPress={() => {
-                                props.goReview()
+                                props.goReview(order)
                               }}>
                               <Text style={OrderWrapper.AddPhotoButtonText}>리뷰 쓰기</Text>
                             </TouchableOpacity>

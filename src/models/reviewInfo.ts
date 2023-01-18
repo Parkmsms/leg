@@ -3,7 +3,7 @@ export interface ReviewInfo {
   star: number,
   comment: string,
   pictureUrl: {
-    name: string;
+    fileName: string;
     type: string;
     uri: string;
     height: number;
@@ -17,7 +17,7 @@ export const initialReviewInfo: ReviewInfo = {
   star: 0,
   comment: '',
   pictureUrl: {
-    name: '',
+    fileName: '',
     type: '',
     uri: '',
     height: 0,

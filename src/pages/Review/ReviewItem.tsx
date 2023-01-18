@@ -14,7 +14,7 @@ type ReviewItem = {
 const width = Dimensions.get('window').width;
 const ReviewItem = ({ navigation, route }: ReviewItem) => {
   const LIMIT = 10;
-  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg'
+  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzM0Mjg5NjAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.3VZvbwQVoPOEIvC9iOlNLf3Nb9LZ1IwR9ye89SgzEhH1Rc1w-7QWFCvLsQ_fAffoO6h-Tf8BanmBjakgLSL4gQ'
   // const [ready, setReady] = useState<boolean>(true);
   const [data, setData] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -30,7 +30,7 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
         <Text style={[MainWrapper.FontText, { fontSize: 12, marginLeft: 10, marginBottom: 6 }]}>{dateFilter(item.reviewCreatedDate)}</Text>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Image source={{ uri: item.userProfile ? item.userProfile : 'none' }}
+            <Image source={{ uri: item.userProfile ? item.userProfile :'../../assets/main.png' }}
               // <Image source={require('../../assets/main.png')}
               style={{ width: 38, height: 38, borderRadius: 37.5 }} />
           </View>
@@ -56,8 +56,8 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
         <View style={{ alignItems: 'center', marginTop: 20 }}>
           <Image
             style={{
-              width: 150,
-              height: 150,
+              width: 300,
+              height: 250,
               resizeMode: 'contain',
               overflow: 'hidden'
             }}
@@ -276,8 +276,10 @@ const MainWrapper = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: 'grey'
+    borderBottomWidth: 1,
+    borderBottomLeftRadius:20,
+    borderBottomRightRadius:20,
+    borderColor: 'rgba(0, 0, 0, 0.25)'
   },
 
   ReviewPageHeaderFrame: {

@@ -24,6 +24,7 @@ import OrderAlertPopUp from '../../components/Modal/OrderAlertPopUp';
 type BottomPopupProps = {
   goStatus: any
   goRefresh: any
+  goTestPage:any
 }
 
 type OrderStatusListProps = {
@@ -34,7 +35,7 @@ const width = Dimensions.get('window').width;
 const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderStatusListProps) => {
   const dispatch = useDispatch();
   //임시 accessToken 
-  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzIyOTQ2MDAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.IrcHhRVSYtyu5txFOhcgF-4oYLlCi7TQd7v5hGPxJaGEJOcOuB1X3jUQR88FU68foc6FMPw_UASxRiBaclkplg'
+  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzM0Mjg5NjAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.3VZvbwQVoPOEIvC9iOlNLf3Nb9LZ1IwR9ye89SgzEhH1Rc1w-7QWFCvLsQ_fAffoO6h-Tf8BanmBjakgLSL4gQ'
   const [OrderLst, setOrderLst] = useState<OrderInfo[]>([]);
   const [ready, setReady] = useState<boolean>(true);
   const [selectedItemId, setSelectedItemId] = useState<number>(0)
@@ -68,6 +69,7 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
   //OrderConfirmPopUp confrim Modal에서 취소 확인 클릭 시 
   const openCancle = async () => {
     await orderCancleAPI(accessToken, selectedItemId);
+    
     setModalOpen(false);
     setAlertOpen(true)
   }
@@ -247,9 +249,17 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
                           <>
                             <TouchableOpacity
                               onPress={() => openModal(order.id)}
-                              style={[OrderWrapper.ActivateButton]}>
-                              <Text style={OrderWrapper.ButtonText}>주문 취소</Text>
+                              style={[OrderWrapper.cancleButton]}>
+                              <Text style={OrderWrapper.cancleButtonText}>주문 취소</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() =>
+                                props.goTestPage()
+                              }
+                              style={[OrderWrapper.ActivateButton]}>
+                              <Text style={OrderWrapper.ButtonText}>주문 상세</Text>
+                            </TouchableOpacity>
+                            
                           </>
                         }
 
@@ -264,7 +274,7 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
                             </TouchableOpacity>
                             <TouchableOpacity
                               onPress={() =>
-                                goStatus(order)
+                                props.goTestPage()
                               }
                               style={[OrderWrapper.ActivateButton]}>
                               <Text style={OrderWrapper.ButtonText}>주문 상세</Text>
@@ -341,6 +351,30 @@ export const OrderWrapper = StyleSheet.create({
     alignContent: 'center',
     margin: 5,
     flex: 2
+  },
+  cancleButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderStyle: 'solid',
+    borderColor: '#ee5960',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    alignContent: 'center',
+    margin: 5,
+    flex: 2
+  },
+  cancleButtonText: {
+    fontSize: 17,
+    fontFamily: 'Apple SD Gothic Neo',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    color: '#ee5960',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
   },
   InActivateButton: {
     backgroundColor: '#3E3E3E',
