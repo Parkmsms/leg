@@ -6,11 +6,11 @@ import { ReviewInfo, initialReviewInfo } from "../../models/reviewInfo";
 import Icon from 'react-native-vector-icons/Ionicons';
 import Stars from 'react-native-stars';
 import BottomSheet from "../../components/Modal/BottomSheet";
-import { getAccessToken ,SaveReviewAPI} from "../../config/AxiosFunction";
+import { getAccessToken, SaveReviewAPI } from "../../config/AxiosFunction";
 import useDidMountEffect from "../../config/useDidMountEffect";
 //MIT Lisense from https://www.npmjs.com/package/react-native-image-resizer
 import ImageResizer from 'react-native-image-resizer';
-import RNFetchBlob from 'rn-fetch-blob'
+import axios from "axios";
 
 type ReviewWriteProps = {
   route: any;
@@ -22,7 +22,7 @@ let FormData = require('form-data');
 
 const width = Dimensions.get('window').width;
 const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
-  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzM0Mjg5NjAsInN1YiI6IjExIiwidG9rZW5UeXBlIjp0cnVlLCJhY2NvdW50VHlwZSI6IlVTRVIiLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU0VSIn1dfQ.3VZvbwQVoPOEIvC9iOlNLf3Nb9LZ1IwR9ye89SgzEhH1Rc1w-7QWFCvLsQ_fAffoO6h-Tf8BanmBjakgLSL4gQ'
+  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzQ2OTM4NTEsInN1YiI6IjAxODVlMmNjLTEzMjQtMzNmMy03YmU2LTdiZTJhN2NhMTAwYyIsInRva2VuVHlwZSI6dHJ1ZSwiYWNjb3VudFR5cGUiOiJVU0VSIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfVVNFUiJ9LHsiYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XX0.dzHS6LunE_yGA6RgT8b9_dgrDq623rlIjb89CavtQgMKl-N1IhVvl72SwmrQtSvmZYNfLKQpagFlKX6CDPnW9w'
   const [inputReview, setInputReview] = useState<string>('');
   const [photo, setPhoto] = useState<any>('');
   const [request, setRequest] = useState<ReviewInfo>(initialReviewInfo)
@@ -36,80 +36,74 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
   useEffect(() => {
     console.log(route.params)
   }, [])
-  
+
 
   const selectPhoto = () => {
     setModalVisible(true);
   }
   const saveReview = async () => {
-    console.log(request,route.params?.orderId)
+    console.log(request, route.params?.orderId)
     // const accessToken = await getAccessToken('accessToken');
 
     await ImageResizer.createResizedImage(
-      request.pictureUrl.uri, 240, 240, 'JPEG', 30, 0)
-    .then((response) => {
+      request.pictureUrl.uri, 240, 240, 'JPEG', 50, 0)
+      .then((response) => {
 
-      //formData
-      const formData = new FormData();
+        //formData
+        const file = new FormData();
 
-      let data = {
-        orderId:route.params?.orderId,
-        star:request.star,
-        comment:request.comment
-      }
-      const json_data = JSON.stringify(data);
-      const reqDto = new Blob([json_data], { type: "application/json" });
-      // const reqDto = JSON.stringify(data);
-      
-      formData.append('images',{
-        uri:response.uri,
-        type:request.pictureUrl.type,
-        name:response.name
+        //ImageInfo
+        let imageInfo = {
+          uri: response.uri,
+          type: request.pictureUrl.type,
+          name: response.name
+        }
+        file.append("images", imageInfo);
+
+        //blob setting 
+        let data = {
+          orderId: route.params?.orderId,
+          comment: request.comment,
+          star: request.star,
+          images: [response.name]
+        }
+
+        console.log("test1", data)
+        // const blob = new Blob([JSON.stringify(data)], { type: "application/json", lastModified: 0 })
+
+        //fetch
+        // fetch('http://0giri.com/api/reviews', {
+        //   method: 'post',
+        //   body: formData,
+        //   headers: {
+        //     'Content-Type': 'multipart/form-data',
+        //     Authorization: accessToken ? 'Bearer ' + accessToken : '',
+        //   },
+        // }).then(res => res.json())
+        //   .then((res) => {
+        //     console.log(`${JSON.stringify(res)}! , image 업로드`)
+
+        //   })
+        //   .catch(err => {
+        //     console.log("catch 에러", err)
+        //   })
+
+        const headers = { Authorization: accessToken ? 'Bearer ' + accessToken : '', }
+
+        axios.post('http://0giri.com/api/reviews', data, { headers: headers })
+          .then(res => {
+            const presignedUrl = res.data;
+            console.log(presignedUrl);
+            uploadImageToS3(presignedUrl, file);
+          }).catch(err => {
+            console.log("first", err)
+          })
       });
-
-      formData.append('reqDto',reqDto);
-
-      //axios
-      // const response = await SaveReviewAPI (accessToken,request.pictureUrl,reqDto);
-      // console.log("saveReviewInfo ======>",re sponse)
-
-      //fetch
-      fetch('http://0giri.com/api/reviews', { 
-        method:'post',
-        body:formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: accessToken ? 'Bearer ' + accessToken : '',
-        },
-        }).then(res => res.json())
-        .then((res) => {
-          console.log(`${JSON.stringify(res)}! , image 업로드`)
-
-        })
-        .catch(err => {
-        console.log("catch 에러",err)
-        })
-      
-
-      //RNFetchBlob
-      // RNFetchBlob.fetch('POST', 'http://0giri.com/api/reviews', {
-      //   accept: 'application/json',
-      //   Authorization: accessToken ? 'Bearer ' + accessToken : '',
-      //   'content-type': 'multipart/form-data',
-      // }, [
-      //   { name : 'Images', filename : response.name, type:request.pictureUrl.type, data: RNFetchBlob.wrap(response.uri) },
-      //   { name : 'reqDto', data : JSON.stringify(reqDto)},
-      // ]).then((resp) => {
-      //   console.log("결과 =", resp)
-      //   // ...
-      // }).catch((err) => {
-      //   console.log("에러 =", err)
-      //   // ...
-      // })
-
-
-    });
-
+  }
+  const uploadImageToS3 = (url: string, file: any) => {
+    axios.put(url, file)
+      .then((res) => console.log(res))
+      .catch((err) => console.error("second", err));
   }
 
   const goTakePhoto = async () => {

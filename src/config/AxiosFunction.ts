@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {Agree} from '../models/agreeInfo';
-import {Device} from '../models/deviceInfo';
-import {PostLocation} from '../models/locationInfo';
-import {StoreParams} from '../models/listfilterInfo';
+import { Agree } from '../models/agreeInfo';
+import { Device } from '../models/deviceInfo';
+import { PostLocation } from '../models/locationInfo';
+import { StoreParams } from '../models/listfilterInfo';
 
 const hosturi = 'http://0giri.com/api';
 
@@ -729,13 +729,17 @@ export const getReviewAPI = async (accessToken: string, storeId: number) => {
   }
 };
 
-export const SaveReviewAPI = async (accessToken: string, picture: any, reqDto:any) => {
-  console.log("pictureInfo = ",picture)
+export const SaveReviewAPI = async (accessToken: string, picture: any, data: any) => {
   const formData = new FormData();
-  formData.append('images',{uri:picture.url , name:picture.fileName, type:picture.type});
-  formData.append('reqDto',reqDto)
+  formData.append('images', { uri: picture.url, name: picture.fileName, type: picture.type });
 
-  console.log("formDataInfo = ",formData)
+  const dataString = JSON.stringify(data);
+  const blob = new Blob([dataString], { type: "application/json", lastModified: 0 })
+
+  //Blob jsonObj Append
+  formData.append('reqDto', blob);
+
+
   try {
     const result = await axios({
       method: 'post',
@@ -747,7 +751,7 @@ export const SaveReviewAPI = async (accessToken: string, picture: any, reqDto:an
       transformRequest: (data, headers) => {
         return data;
       },
-      data:formData
+      data: formData
     });
     return result;
   } catch (err) {
