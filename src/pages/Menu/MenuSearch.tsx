@@ -12,7 +12,7 @@ const MenuSearch = ({ navigation, route }: MenuSearch) => {
     const { text } = e.nativeEvent;
     console.log("검색어:", text);
 
-    navigation.navigate('LoginSucess', { menu: text })
+    navigation.navigate('LoginSuccess', { menu: text })
   }
 
   return (

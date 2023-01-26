@@ -65,7 +65,7 @@ const SignInVerify = ({ navigation, route }: SignInVerify) => {
           if (response.status === 200)
             await AsyncStorage.setItem('accessToken', response.data.accessToken);
           await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
-          navigation.navigate('LoginSucess')
+          navigation.navigate('LoginSuccess')
         } catch (err) {
           console.log(err);
 

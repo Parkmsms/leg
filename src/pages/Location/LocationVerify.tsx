@@ -97,7 +97,7 @@ const LocationVerify = ({ navigation, route }: LocationVerify) => {
     console.log(response.data);
     try {
       openModal();
-      navigation.navigate('LoginSucess');
+      navigation.navigate('LoginSuccess');
     } catch (err) {
       console.log(err);
     }
