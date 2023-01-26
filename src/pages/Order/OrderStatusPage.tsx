@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Dimensions, ActivityIndicator } from "react-native";
 import OrderResultPopUp from "../../components/Modal/OrderResultPopUp";
-import { getDistanceAPI, getOrderSimpleAPI, orderFinishAPI } from '../../config/AxiosFunction';
+import { getDistanceAPI, getOrderSimpleAPI, orderFinishAPI, getAccessToken } from '../../config/AxiosFunction';
 import { DistanceInfo, initialDistanceInfo, initialOrderSmpInfo, OrderSmpInfo, OrderFinishInfo, initialOrderFinishInfo } from '../../models/orderInfo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { OrderInfo } from '../../models/orderInfo';
@@ -39,7 +39,6 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
 
     const t_minutes = useSelector(selectMinutesinfo);
 
-    const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzQ2OTM4NTEsInN1YiI6IjAxODVlMmNjLTEzMjQtMzNmMy03YmU2LTdiZTJhN2NhMTAwYyIsInRva2VuVHlwZSI6dHJ1ZSwiYWNjb3VudFR5cGUiOiJVU0VSIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfVVNFUiJ9LHsiYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XX0.dzHS6LunE_yGA6RgT8b9_dgrDq623rlIjb89CavtQgMKl-N1IhVvl72SwmrQtSvmZYNfLKQpagFlKX6CDPnW9w'
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [resultOpen, setResultOpen] = useState(false);
     const [distances, setDistances] = useState<DistanceInfo>(initialDistanceInfo);
@@ -72,17 +71,9 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     }
     //Order Finish API => Result Modal Open
     const openResult = async () => {
+        const accessToken = await getAccessToken('accessToken');
         const response = await orderFinishAPI(accessToken, propData.id);
         setOrderFinish(response.data)
-        //test용
-        // setOrderFinish({
-        //     id: 0,
-        //     finalPrice: 0,
-        //     distance: 0,
-        //     maxRewardRatio: 0,
-        //     maxRewardDistance: 0,
-        //     reward: 0
-        // })
 
         setConfirmOpen(false);
         setResultOpen(true);
@@ -120,6 +111,7 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     }
 
     const getDistance = async (param: any) => {
+        const accessToken = await getAccessToken('accessToken');
         const response2: any = await getDistanceAPI(accessToken,
             {
                 lng: param.longitude,
@@ -132,6 +124,7 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
 
     //OrderStatus컴포넌트 화면구성 데이터 바인딩
     const getOrderSimple = async () => {
+        const accessToken = await getAccessToken('accessToken');
         const response3: any = await getOrderSimpleAPI(accessToken, propData.id);
         setOrderSimple({
             ...response3.data,
@@ -146,7 +139,6 @@ const OrderStatus = ({ navigation, route }: OrderStatusProps) => {
     }, [])
 
     return (
-
         <SafeAreaView style={OrderWrapper.MainContainer}>
             {ready ?
                 <View style={[OrderWrapper.container, OrderWrapper.horizontal]}>

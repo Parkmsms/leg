@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TouchableOpacity, Text, View } from 'react-native';
 import SignIn from '../pages/SignIn/SignInPhone';
@@ -47,10 +47,17 @@ import OrderDetailPage from '../pages/Order/OrderDetailPage';
 
 const Stack = createNativeStackNavigator();
 
-const StackNavigator = () => {
+
+
+const StackNavigator = (prop: any) => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
+
+  useLayoutEffect(() => {
+    console.log("Panting 이전 prop =", prop)
+  }, [])
+
   return (
-    <Stack.Navigator initialRouteName="LoginSucess">
+    <Stack.Navigator initialRouteName={prop == true ? "LoginSuccess" : "Home"}>
       {/* <Stack.Screen
         name="MainPage"
         component={MainPage}
@@ -385,7 +392,7 @@ const StackNavigator = () => {
         }}
       />
       <Stack.Screen
-        name="LoginSucess"
+        name="LoginSuccess"
         component={TabNavigator}
         options={{
           headerShown: false,

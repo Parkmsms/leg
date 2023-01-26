@@ -60,7 +60,7 @@ const Home = ({ navigation }: HomeProps) => {
                         console.log("error", error);
                         setToken("device_Token");
                     })
-                }, 5000);
+                }, 1000);
 
             } else {
                 //ios 알림 권한 요청

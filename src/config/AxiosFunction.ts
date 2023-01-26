@@ -204,6 +204,7 @@ export const activeLocation = async (accessToken: string) => {
     });
     return result;
   } catch (err) {
+    console.log("activeLocation Err", err)
     throw err;
   }
 };
@@ -224,6 +225,7 @@ export const getStoreList = async (
     });
     return result;
   } catch (err) {
+    console.log("StoreList err", err)
     throw err;
   }
 };
@@ -256,6 +258,7 @@ export const getFoodKindsList = async (accessToken: string) => {
     });
     return result;
   } catch (err) {
+    console.log("FoodKindList err", err)
     throw err;
   }
 };

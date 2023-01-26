@@ -58,16 +58,11 @@ type Banner = {
 
 const MainPage = ({ navigation, route }: MainPageProps) => {
   const [myLocation, setMyLocation] = useState<MyLocation>();
-  // const menuList = ['전체', '한식', '중식', '일식', '분식'];
   const [menuList, setmenuList] = useState<string[]>([]);
   const [bannerList, setBannerList] = useState<Banner[]>([]);
   const [storeList, setStoreList] = useState<Store[]>([]);
   const [active, setActive] = useState<number>(0);
   const [params, setParams] = useState<StoreParams>(intialStorePrams);
-  // const [modalOpen, setModalOpen] = useState(false);
-  // const [detaiId, setDetailId] = useState<number>(0);
-
-  // const [filterType, setFiterType] = useState<string>('거리순');
   const [ready, setReady] = useState<boolean>(true);
   const [open, setOpen] = useState(false);
   const [filterList, setFilterList] = useState([
@@ -91,7 +86,6 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
   const getList = async () => {
     const accessToken = await getAccessToken('accessToken');
     const response = await getStoreList(accessToken, params);
-    console.log("가게정보", response.data.content);
     setStoreList(response.data.content)
   }
 
@@ -109,16 +103,14 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
         keyword: route.params?.menu
       })
     }
-    console.log("음식종류: ", menuList);
-    console.log("선택한 음식 종류: ", params.foodType);
-    console.log("검색 params", params);
+
     setTimeout(() => {
       getLocation()
       getBanner()
       getList()
       getFoodsList()
       setReady(false)
-    }, 2000)
+    }, 1000)
 
   }, [params, route.params?.menu])
 
@@ -187,21 +179,8 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
               <Icon name='notifications-outline' size={25} color="black" />
             </View>
           </View>
-          {/* <View style={MainWrapper.BannerWrapper}> */}
-          {/* <Carousel
-            data={bannerList}
-            sliderWidth={200}
-            itemWidth={200}
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => { Alert.alert("배너 클릭") }}>
-                  <Image source={{ uri: item.image }} />
-                </TouchableOpacity>
-              )
-            }
-            }
-          /> */}
+
+          {/* 배너 */}
           <View style={{ width: width * 0.9, height: height * 0.8, }}>
             <ScrollView
               pagingEnabled
@@ -223,7 +202,6 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
                 )
               })}
             </ScrollView>
-
           </View>
           <View style={{ justifyContent: 'center', height: height * 0.1, flexDirection: 'row', alignSelf: 'center' }}>
             {bannerList.map((banner: Banner, index: number) => {
@@ -235,9 +213,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
             })}
           </View>
 
-          {/* <Image source={require('../assets/banner.png')} ></Image> */}
-          {/* </View> */}
-          <View style={MainWrapper.Horizon}></View>
+          {/* 카테고리 */}
           <View style={{ width: width * 0.9, height: height * 0.2 }}>
             <ScrollView
               pagingEnabled
@@ -269,27 +245,10 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
               )}
             </ScrollView>
           </View>
+
+          {/* 메뉴_박문수 */}
           <View style={MainWrapper.ListHeaderWrapper}>
             <Text style={MainWrapper.header}>우리동네 포장맛집 🍽</Text>
-            {/* <DropDownPicker
-            multiple={false}
-            items={filterList}
-            value={filterType}
-            setValue={setFiterType}
-            open={open}
-            setOpen={setOpen}
-            setItems={setFilterList}
-            containerStyle={{ width: 100, height: 40 }}
-            // badgeStyle={{ width: 10 }}
-            // labelStyle={{ width: 10 }}
-            // disabledStyle={{ width: 10 }}
-            // listItemContainerStyle={{ width: 40 }}
-            style={{ width: 100, height: 40 }}
-            // arrowIconContainerStyle={{ width: 10, height: 10 }}
-            // arrowIconStyle={{ width: 10, height: 10 }}
-            onChangeValue={() => handleChangeFilter}
-          /> */}
-
             <View style={{ display: 'flex', flexDirection: 'row', width: 100 }}>
               <Picker
                 mode="dropdown"
@@ -469,7 +428,6 @@ const MainWrapper = StyleSheet.create({
     paddingRight: 5
   },
   ListHeaderWrapper: {
-    width: 350,
     paddingTop: 10,
     flex: 4,
     flexDirection: "row",
@@ -485,7 +443,6 @@ const MainWrapper = StyleSheet.create({
   },
   ListWrapper: {
     paddingTop: 10,
-    flex: 4,
   }
 })
 export default MainPage;

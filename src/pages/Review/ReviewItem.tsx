@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Alert, Image, Modal, Dimensions, StyleSheet, Text, Button, TouchableOpacity, View, FlatList, SafeAreaView, ListRenderItemInfo, ActivityIndicator } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { getReviewAPI } from '../../config/AxiosFunction';
+import { getReviewAPI, getAccessToken } from '../../config/AxiosFunction';
 import { Review } from '../../models/reviewInfo';
 import Stars from 'react-native-stars';
 import store from '../../store/index';
@@ -14,7 +14,7 @@ type ReviewItem = {
 const width = Dimensions.get('window').width;
 const ReviewItem = ({ navigation, route }: ReviewItem) => {
   const LIMIT = 10;
-  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzQ2OTM4NTEsInN1YiI6IjAxODVlMmNjLTEzMjQtMzNmMy03YmU2LTdiZTJhN2NhMTAwYyIsInRva2VuVHlwZSI6dHJ1ZSwiYWNjb3VudFR5cGUiOiJVU0VSIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfVVNFUiJ9LHsiYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XX0.dzHS6LunE_yGA6RgT8b9_dgrDq623rlIjb89CavtQgMKl-N1IhVvl72SwmrQtSvmZYNfLKQpagFlKX6CDPnW9w'
+
   // const [ready, setReady] = useState<boolean>(true);
   const [data, setData] = useState<Review[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -141,6 +141,7 @@ const ReviewItem = ({ navigation, route }: ReviewItem) => {
   // }
 
   const getData = async () => {
+    const accessToken = await getAccessToken('accessToken');
     setLoading(true);
     let sumStar = 0
     const response = await getReviewAPI(accessToken, route.params?.storeInfo.storeId);

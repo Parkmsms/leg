@@ -8,6 +8,6 @@ export interface StoreParams {
 export const intialStorePrams: StoreParams = {
   foodType: "전체",
   keyword: "",
-  sort: "거리순",
+  sort: "거리",
   lastId: 0,
 }

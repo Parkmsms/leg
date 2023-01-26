@@ -18,7 +18,6 @@ import {
   doTimer,
 } from '../../slices/time';
 import OrderConfirmPopUp from "../../components/Modal/OrderConfirmPopUp";
-import OrderAlertPopup from '../../components/Modal/OrderAlertPopUp';
 import OrderAlertPopUp from '../../components/Modal/OrderAlertPopUp';
 
 type BottomPopupProps = {
@@ -32,14 +31,13 @@ type OrderStatusListProps = {
   navigation?: any;
 }
 const width = Dimensions.get('window').width;
+
+//진행중인 주문 리스트
 const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderStatusListProps) => {
   const dispatch = useDispatch();
-  //임시 accessToken 
-  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzQ2OTM4NTEsInN1YiI6IjAxODVlMmNjLTEzMjQtMzNmMy03YmU2LTdiZTJhN2NhMTAwYyIsInRva2VuVHlwZSI6dHJ1ZSwiYWNjb3VudFR5cGUiOiJVU0VSIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfVVNFUiJ9LHsiYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XX0.dzHS6LunE_yGA6RgT8b9_dgrDq623rlIjb89CavtQgMKl-N1IhVvl72SwmrQtSvmZYNfLKQpagFlKX6CDPnW9w'
   const [OrderLst, setOrderLst] = useState<OrderInfo[]>([]);
   const [ready, setReady] = useState<boolean>(true);
   const [selectedItemId, setSelectedItemId] = useState<number>(0)
-  /*Modal State */
   //confirm Modal Open
   const [modalOpen, setModalOpen] = useState(false);
   //alert Modal Open
@@ -49,25 +47,24 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
     getOrderList();
     setTimeout(() => {
       setReady(false);
-    }, 100)
+    }, 1000)
   }, [])
 
-  /*Confrim Modal Component*/
+
   const closeModal = () => {
     setModalOpen(false);
     setAlertOpen(false);
   }
-  //Modal Oepn, Set selected item Id 
   const openModal = (param: number) => {
     setSelectedItemId(param)
     setModalOpen(true);
   }
-  //Do not action
   const openResult = () => {
     console.log("Do not anything")
   }
   //OrderConfirmPopUp confrim Modal에서 취소 확인 클릭 시 
   const openCancle = async () => {
+    const accessToken = await getAccessToken('accessToken');
     await orderCancleAPI(accessToken, selectedItemId);
 
     setModalOpen(false);
@@ -79,10 +76,9 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
     props.goRefresh();
   }
 
-  /*Modal End*/
-
   //상품 상세페이지 이동, redux store상태 변경 
   const goStatus = async (param: any) => {
+    const accessToken = await getAccessToken('accessToken');
     const response: any = await getInProgressOrderListAPI(accessToken);
     const findResult = response.data.content.find((val: { id: number }) => val.id === param.id);
     dateFilter('pickUpAt', { date: findResult.pickUpAt });
@@ -146,6 +142,7 @@ const OrderStatusList = (props: BottomPopupProps, { navigation, route }: OrderSt
   const getOrderList = async () => {
     // const accessToken = await getAccessToken('accessToken');
     //임시 accessToken값
+    const accessToken = await getAccessToken('accessToken');
     const response: any = await getInProgressOrderListAPI(accessToken);
 
     for (const key in response.data.content) {

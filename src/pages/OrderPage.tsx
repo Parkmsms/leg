@@ -15,7 +15,7 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
   const layout = useWindowDimensions();
   //주문내역
   const FirstRoute = () => (
-    <OrderStatusList goStatus={goDtail} goRefresh={goRefresh} goTestPage={goTestPage}/>
+    <OrderStatusList goStatus={goDtail} goRefresh={goRefresh} goTestPage={goTestPage} />
   );
   //주문 완료 내역
   const SecondRoute = () => (
@@ -29,8 +29,8 @@ const OrderPage = ({ navigation, route }: OrderPageProps) => {
     navigation.navigate('OrderStatus', { param: param })
   }
   //리뷰 페이지로 이동
-  const goReview = (param:any) => {
-    navigation.navigate('ReviewPage', {orderId : param.id})
+  const goReview = (param: any) => {
+    navigation.navigate('ReviewPage', { orderId: param.id })
   }
   //현재화면 새로고침
   const goRefresh = () => {

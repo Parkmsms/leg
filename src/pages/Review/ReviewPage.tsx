@@ -22,7 +22,6 @@ let FormData = require('form-data');
 
 const width = Dimensions.get('window').width;
 const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
-  const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWciLCJpYXQiOjE2NzQ2OTM4NTEsInN1YiI6IjAxODVlMmNjLTEzMjQtMzNmMy03YmU2LTdiZTJhN2NhMTAwYyIsInRva2VuVHlwZSI6dHJ1ZSwiYWNjb3VudFR5cGUiOiJVU0VSIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfVVNFUiJ9LHsiYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XX0.dzHS6LunE_yGA6RgT8b9_dgrDq623rlIjb89CavtQgMKl-N1IhVvl72SwmrQtSvmZYNfLKQpagFlKX6CDPnW9w'
   const [inputReview, setInputReview] = useState<string>('');
   const [photo, setPhoto] = useState<any>('');
   const [request, setRequest] = useState<ReviewInfo>(initialReviewInfo)
@@ -42,8 +41,7 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
     setModalVisible(true);
   }
   const saveReview = async () => {
-    console.log(request, route.params?.orderId)
-    // const accessToken = await getAccessToken('accessToken');
+    const accessToken = await getAccessToken('accessToken');
 
     await ImageResizer.createResizedImage(
       request.pictureUrl.uri, 240, 240, 'JPEG', 50, 0)

@@ -12,7 +12,6 @@ const Router = () => {
     const refreshToken = await AsyncStorage.getItem('refreshToken');
     console.log("refreshToken", refreshToken);
 
-
     const token = await AsyncStorage.getItem('accessToken');
     console.log("accessToken", token);
     if (token) {
@@ -20,21 +19,15 @@ const Router = () => {
     } else {
       setIsLog(false)
     }
-
   }
 
   useEffect(() => {
-    AsyncStorage.removeItem('accessToken');
-    AsyncStorage.removeItem('refreshToken');
     getToken()
   })
 
   return (
     <NavigationContainer>
-      {isLog ?
-        <TabNavigator />
-        : <StackNavigator />
-      }
+      <StackNavigator prop={isLog} />
     </NavigationContainer>
   )
 }
