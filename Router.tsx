@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from '@react-navigation/native';
 import TabNavigator from "./src/navigations/TabNaigator";
 import StackNavigator from "./src/navigations/StackNavigator";
+import LoginSuccessNavigator from "./src/navigations/LoginSuccessNavigator";
 
 
 const Router = () => {
@@ -27,7 +28,8 @@ const Router = () => {
 
   return (
     <NavigationContainer>
-      <StackNavigator prop={isLog} />
+      {isLog == true && <LoginSuccessNavigator />}
+      {isLog == false && <StackNavigator />}
     </NavigationContainer>
   )
 }

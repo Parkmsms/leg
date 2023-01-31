@@ -49,14 +49,14 @@ const Stack = createNativeStackNavigator();
 
 
 
-const StackNavigator = () => {
+const LoginSuccessNavigator = () => {
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   useLayoutEffect(() => {
   }, [])
 
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="LoginSuccess">
       {/* <Stack.Screen
         name="MainPage"
         component={MainPage}
@@ -549,4 +549,4 @@ const StackNavigator = () => {
   );
 };
 
-export default StackNavigator;
+export default LoginSuccessNavigator;

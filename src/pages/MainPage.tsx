@@ -34,10 +34,10 @@ type MyLocation = {
 type Store = {
   id: number;
   postTitle: string;
-  cookTimeAvg: number;
+  minCookTime: number;
   storeName: string;
   storeProfile: string;
-  storeStar: string;
+  star: number;
   town: string;
   distance: number;
   foodTypes: string[];
@@ -86,6 +86,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
   const getList = async () => {
     const accessToken = await getAccessToken('accessToken');
     const response = await getStoreList(accessToken, params);
+    console.log("storeList", response.data)
     setStoreList(response.data.content)
   }
 
@@ -110,7 +111,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
       getList()
       getFoodsList()
       setReady(false)
-    }, 1000)
+    }, 2000)
 
   }, [params, route.params?.menu])
 
@@ -119,15 +120,6 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
     console.log(profile);
     navigation.navigate('DetailPage', { detailId: id, profile: profile })
   }
-
-  // const openModal = (id: number) => {
-  //   setModalOpen(true);
-  //   setDetailId(id);
-  // }
-
-  // const closeModal = () => {
-  //   setModalOpen(false);
-  // }
 
   const setMenu = (e: string) => {
     console.log(e);
@@ -246,17 +238,15 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
             </ScrollView>
           </View>
 
-          {/* 메뉴_박문수 */}
+          {/* 메뉴헤더_박문수 */}
           <View style={MainWrapper.ListHeaderWrapper}>
             <Text style={MainWrapper.header}>우리동네 포장맛집 🍽</Text>
             <View style={{ display: 'flex', flexDirection: 'row', width: 100 }}>
               <Picker
-                mode="dropdown"
                 selectedValue={params.sort}
                 onValueChange={(item) => handleChangeFilter(item)}
                 style={{
                   width: 130,
-                  height: 10,
                   margin: -10
                 }}
               >
@@ -268,6 +258,8 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
             </View>
             {/* <Image source={require('../assets/filter.png')}></Image> */}
           </View>
+
+          {/* 메뉴 */}
           <View style={MainWrapper.ListWrapper}>
             <ScrollView>
               {storeList?.map((store: Store, index: number) => {
@@ -275,64 +267,70 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
                   <TouchableOpacity key={index}
                     onPress={() => goDetail(store.id, store.storeProfile)}
                     // onPress={() => openModal(store.postId)}
-                    style={{
-                      flexDirection: 'row',
-                      borderWidth: 2,
-                      borderRadius: 20,
-                      // borderBottomColor: 'rgba(0, 0, 0, 0.12)',
-                      marginBottom: 10,
-                      width: 360,
-                      height: 160,
-                      borderColor: 'rgba(0, 0, 0, 0.05)',
-                      paddingLeft: 10,
-                      paddingTop: 15,
-                      shadowColor: '#52006A',
-                      backgroundColor: 'white',
-                      elevation: 5,
-                    }}>
+                    style={MainWrapper.itemBox}>
                     <Image
-                      source={{ uri: store.storeProfile }}
+                      // source={{ uri: store.storeProfile }}
+                      source={require('../assets/banner.png')}
                       style={{
                         borderRadius: 20,
-                        width: 120, height: 120
+                        width: 100, height: 100,
+                        justifyContent: "center"
                       }}
+                      resizeMode="stretch"
                     />
+                    {/* 여기부터 텍스트 */}
                     <View
                       style={{
                         flexDirection: 'column',
-                        paddingLeft: 15,
+                        paddingLeft: 10,
+                        marginLeft: 10
                       }}>
-                      <Text style={{
-                        width: 190,
-                        fontSize: 15,
-                        fontWeight: 'bold',
-                        marginBottom: 10,
-                        color: 'black'
-                      }}>{store.postTitle}</Text>
-                      <Text style={{
-                        color: 'black',
-                        marginBottom: 10,
-                      }}>평균 조리시간 {store.cookTimeAvg}분</Text>
-                      <Text style={{
-                        fontWeight: '400',
-                        marginBottom: 10,
-                      }}>{store.town} {store.distance}m</Text>
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <View style={{ flexDirection: 'row' }}>
-                          <Text style={{ marginRight: 10, color: 'black' }}>{store.storeName}</Text>
-                          <View style={{ flexDirection: 'row' }}>
-                            <Icon style={{ justifyContent: 'center', alignItems: 'center' }} name="star" color={"#00C1DE"} size={18} />
-                            <Text style={{ fontSize: 15, }}>{store.storeStar}</Text>
-                          </View>
-                        </View>
-                        {/* <Icon name="bookmark-outline" size={18} /> */}
+                      <View style={{ flex: 1 }}>
+                        <Text style={[MainWrapper.basicFont, {
+                          fontSize: 14,
+                          fontWeight: 'bold',
+                          color: '#000000',
+                          width: width * 0.5,
+                          marginBottom: 5
+
+                        }]}
+                          numberOfLines={2}
+                          ellipsizeMode="tail"
+                        >
+                          {store.postTitle}
+                        </Text>
+                        <Text style={[MainWrapper.basicFont, {
+                          fontSize: 12,
+                          fontWeight: '500',
+                          color: '#000000',
+                          marginBottom: 5
+                        }]}>평균 조리시간 {store.minCookTime}분
+                        </Text>
+                        <Text style={[MainWrapper.basicFont, {
+                          fontSize: 12,
+                          fontWeight: '500',
+                          color: '#7A7A7A',
+                          marginBottom: 5
+                        }]}>{store.town} {store.distance}m
+                        </Text>
                       </View>
-
+                      <View style={{ flexDirection: 'row' }}>
+                        <Text style={[MainWrapper.basicFont, {
+                          fontSize: 10,
+                          fontWeight: '500',
+                          color: '#000000',
+                          marginRight: 6,
+                        }]}>
+                          {store.storeName}
+                        </Text>
+                        <View style={{ flexDirection: 'row', }}>
+                          <Icon style={{ justifyContent: 'center', alignItems: 'center' }} name="star" color={"#00C1DE"} size={12} />
+                          <Text style={{ fontSize: 10, }}>{store.star}</Text>
+                        </View>
+                      </View>
+                      {/* <Icon name="bookmark-outline" size={18} /> */}
                     </View>
-
-
                   </TouchableOpacity>
-
                 )
               })}
             </ScrollView>
@@ -362,6 +360,7 @@ const MainWrapper = StyleSheet.create({
     // alignContent: 'center',
     // padding: 10,
     paddingLeft: 10,
+    paddingRight: 10
     // paddingRight: 10,
   },
   HeadeWrapper: {
@@ -403,7 +402,6 @@ const MainWrapper = StyleSheet.create({
     borderBottomColor: 'green',
     // borderBottomWidth: 1,
     lineHeight: 1,
-    margin: 10
   },
   TagWrapper: {
     paddingTop: 10,
@@ -429,7 +427,6 @@ const MainWrapper = StyleSheet.create({
   },
   ListHeaderWrapper: {
     paddingTop: 10,
-    flex: 4,
     flexDirection: "row",
     justifyContent: 'space-between'
   },
@@ -442,7 +439,25 @@ const MainWrapper = StyleSheet.create({
     color: 'black',
   },
   ListWrapper: {
-    paddingTop: 10,
+    paddingTop: 30,
+  },
+  itemBox: {
+    flexDirection: 'row',
+    borderRadius: 20,
+    borderEndWidth: 0.03,
+    borderLeftWidth: 0.03,
+    borderRightWidth: 0.03,
+    marginBottom: 10,
+    height: 140,
+    padding: 20,
+    shadowColor: 'grey',
+    backgroundColor: 'white',
+    elevation: 5,
+  },
+  basicFont: {
+    fontFamily: 'Apple SD Gothic Neo',
+    fontStyle: 'normal',
+    letterSpacing: 0.1,
   }
 })
 export default MainPage;
