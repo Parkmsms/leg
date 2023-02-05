@@ -1,13 +1,14 @@
 import CheckBox from "@react-native-community/checkbox";
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { getAccessToken, getStoreMenu2 } from "../../config/AxiosFunction";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View,Dimensions } from "react-native";
+import { getAccessToken, getSmallMenu } from "../../config/AxiosFunction";
 import { initialStoreMenu1, StoreMenu1 } from "../../models/storemenu";
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
 import { RoundedCheckbox, PureRoundedCheckbox } from "react-native-rounded-checkbox";
 import Icon from "react-native-vector-icons/Entypo";
 import AntIcon from "react-native-vector-icons/AntDesign";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RadioButton } from 'react-native-paper';
 
 type DetailOptionPageProps = {
   route: any;
@@ -28,6 +29,7 @@ type StoreMenuOption = {
   image?: string;
   isExausted?: boolean;
 }
+const width = Dimensions.get('window').width;
 
 const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   const [storeMenu, setStoreMenu] = useState<StoreMenu1>(initialStoreMenu1);
@@ -41,16 +43,16 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   const [contentLimit, setContentlimit] = useState<number>(20);
   let sum = 0;
   const [radioButtons, setRadioButtons] = useState<StoreMenuOption[]>([]);
+  const [checked, setChecked] = React.useState('first');
   // const initialMenuOpiton: StoreMenuOption[] = {
   //   return MenuOption.forEach((element) => { element.smallItems });
   // }
   // const radioButtonsData: RadioButtonProps[] = initialMenuOpiton();
 
 
-
   const getMenuOption = async () => {
     const accessToken = await getAccessToken('accessToken');
-    const response = await getStoreMenu2(accessToken, route.params?.storeId, route.params?.menu.id);
+    const response = await getSmallMenu(accessToken, route.params?.storeId, route.params?.menu.id);
     console.log("메뉴세부선택: ", response.data);
     setMenuOption(response.data);
 
@@ -184,50 +186,31 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   }
   return (
     <View style={DetailOptionWrapper.MainContainer}>
-
-      <View style={{ flexDirection: 'column' }}>
-        <View style={{ flexDirection: 'row', padding: 10 }}>
+      <View style={DetailOptionWrapper.SubWrap}>
+        <View style={{ flexDirection: 'row',}}>
           <View style={DetailOptionWrapper.MenuTitle}>
-            <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>{storeMenu.bigItem}</Text>
-            <Text style={{ fontSize: 15, paddingTop: 10 }}>
-              {toggleEllipsis(storeMenu.description, contentLimit).string}
-              <View style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}>
-                <TouchableOpacity
-                  onPress={() => onClickMore(storeMenu.description)}>
-                  {toggleEllipsis(storeMenu.description, contentLimit).isShowMore
-                    &&
-                    <Text style={{ margin: -10 }}>... 더보기</Text>
-                  }
-                </TouchableOpacity>
-              </View>
+            <Text style={[DetailOptionWrapper.textFont,{ color:'#000000',fontWeight:'bold', fontSize:16} ]}>{storeMenu.bigItem}</Text>
+            <Text style={[DetailOptionWrapper.textFont,{fontSize:11,marginTop:10}]} 
+              numberOfLines={3}
+              ellipsizeMode="tail"
+              // onPress={handleLine}
+              >
+              {storeMenu.description}
             </Text>
           </View>
-          <View style={{ flex: 1, padding: 10 }}>
-            <Image style={{ borderRadius: 30, height: 100, resizeMode: 'cover' }} source={{ uri: storeMenu.image ? storeMenu.image : 'null' }} />
-          </View>
         </View>
-
         <View style={{
           flexDirection: 'row',
-          paddingLeft: 20,
-          paddingRight: 20,
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          marginTop: 20
         }}>
-          <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>가격</Text>
-          <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>{totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
+          <Text style={DetailOptionWrapper.bigFont}>가격</Text>
+          <Text style={[DetailOptionWrapper.bigFont,{color:'#667085'}]}>{totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
           {/* <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>{storeMenu.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text> */}
         </View>
-
-        <View style={{ flexDirection: 'row', padding: 20, justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View style={{ height: 50, justifyContent: 'center', alignContent: 'center' }}>
-            <Text style={{
-              color: 'black', fontSize: 20, fontWeight: 'bold',
-              alignSelf: 'center', alignItems: 'center', textAlign: 'center',
-              justifyContent: 'center', alignContent: 'center'
-            }}>수량</Text>
+            <Text style={DetailOptionWrapper.bigFont}>수량</Text>
           </View>
           <View style={{
             flexDirection: 'row', display: 'flex', justifyContent: 'space-between', alignSelf: 'center', alignItems: 'center', alignContent: 'center'
@@ -237,7 +220,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
               disabled={totalAmount === 1 ? true : false}>
               <AntIcon name="minuscircleo" size={20} style={{ color: '#00C1DE' }} />
             </TouchableOpacity>
-            <Text style={{ fontSize: 20, color: 'black', padding: 10 }}>
+            <Text style={[DetailOptionWrapper.bigFont,{marginLeft:10,marginRight:10}]}>
               {totalAmount}
             </Text>
             <TouchableOpacity
@@ -245,6 +228,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
               <AntIcon name="pluscircleo" size={20} style={{ color: '#00C1DE' }} />
             </TouchableOpacity>
           </View>
+          
 
           {/* <TouchableOpacity
             style={{ borderWidth: 1, borderRadius: 50, height: 50, width: 200, justifyContent: 'center', alignContent: 'center' }}>
@@ -260,21 +244,32 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
                 <Text onPress={plusAmount}
                   style={{ fontSize: 30 }}>+</Text>
               </TouchableOpacity>
-
             </View>
-
           </TouchableOpacity> */}
         </View>
       </View>
-
-
-      <View style={{
-        flex: 0.1,
-        borderStyle: 'solid',
-        borderBottomWidth: 1,
-        borderColor: 'lightgray',
-        width: '100%',
-      }}></View>
+      <View style={{backgroundColor:'rgba(0, 193, 222, 0.12);' ,width:width,height:45, flexDirection:'row', 
+          position:'relative', padding:14, justifyContent:'center'}}>
+          <Text style={{flex:5, color: '#3E3E3E', fontSize:12,fontFamily:'Urbanist',fontWeight:'bold'}}>일회용품 선택</Text>
+          <Text style={{flex:1,color:'#00C1DE',fontSize:11, fontWeight:'bold'}}>필수 선택</Text>
+      </View>
+      {/* 일회용품선택 */}
+      <View style={[DetailOptionWrapper.SubWrap,{paddingTop:14,justifyContent:'center'}]}>
+          <RadioButton.Item
+            label="O"
+            value="first"
+            color="#00C1DE"
+            status={ checked === 'first' ? 'checked' : 'unchecked' }
+            onPress={() => setChecked('first')}
+          />
+          <RadioButton.Item
+            label="X"
+            value="second"
+            color="#00C1DE"
+            status={ checked === 'second' ? 'checked' : 'unchecked' }
+            onPress={() => setChecked('second')}
+          />
+      </View>
 
       <View style={DetailOptionWrapper.MenuOption}>
         <ScrollView style={{ flexDirection: 'column' }}>
@@ -326,14 +321,15 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
 
 
         </ScrollView>
-        <View style={{
+        {/* <View style={{
           flex: 0.5,
           borderStyle: 'solid',
           borderBottomWidth: 1,
           borderColor: 'lightgray',
           width: '100%',
-        }}></View>
+        }}></View> */}
       </View>
+
 
       <View style={DetailOptionWrapper.footer}>
         {/* <View style={{ height: 50, paddingLeft: 20, justifyContent: 'center', alignContent: 'center' }}>
@@ -349,8 +345,8 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
           </Text>
         </TouchableOpacity> */}
         <TouchableOpacity onPress={goBack}
-          style={{ backgroundColor: '#00C1DE', borderRadius: 10, height: 50, width: 350, justifyContent: 'center', alignContent: 'center' }}>
-          <Text style={{ fontSize: 20, color: 'white', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>포장 카트에 담기</Text>
+          style={DetailOptionWrapper.ActivateButton}>
+          <Text style={DetailOptionWrapper.ButtonText}>포장 카트에 담기</Text>
         </TouchableOpacity>
       </View>
 
@@ -365,7 +361,6 @@ const DetailOptionWrapper = StyleSheet.create({
   },
   MenuTitle: {
     flex: 1,
-    padding: 20,
     flexDirection: 'column'
   },
   MenuOption: {
@@ -380,6 +375,44 @@ const DetailOptionWrapper = StyleSheet.create({
     alignContent: 'center',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+  },
+  ButtonText: {
+    fontSize: 20,
+    fontFamily: 'Urbanist',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  ActivateButton: {
+    backgroundColor: '#00C1DE',
+    borderRadius: 12,
+    height: 54,
+    justifyContent: 'center',
+    alignContent: 'center',
+    width: width * 0.8
+},
+  textFont:{
+    fontFamily:'Urbanist',
+    fontStyle:'normal',
+    color:'#828282'
+  },
+  bigFont:{
+    fontFamily:'Urbanist',
+    fontStyle:'normal',
+    color:'#000000',
+    fontWeight:'bold',
+    fontSize:16
+  },
+  SubWrap:{
+    flexDirection: 'column',
+    paddingLeft:20,
+    paddingTop:20,
+    paddingRight:20
   }
 })
 export default DetailOptionPage;

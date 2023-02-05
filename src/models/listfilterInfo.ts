@@ -1,13 +1,13 @@
 export interface StoreParams {
   foodType: string;
-  keyword: string;
+  search: string;
   sort: string;
   lastId: number;
 }
 
 export const intialStorePrams: StoreParams = {
   foodType: "전체",
-  keyword: "",
-  sort: "거리",
+  search: "",
+  sort: "DISTANCE",
   lastId: 0,
 }

@@ -1,5 +1,5 @@
 export interface StoreInfo {
-  postImages: string[];
+  storeImages: string[];
   storeName: string;
   storeStar: number;
   postTitle: string;
@@ -12,7 +12,7 @@ export interface StoreInfo {
 }
 
 export const initialStoreInfo: StoreInfo = {
-  postImages: [""],
+  storeImages: [""],
   storeName: "",
   storeStar: 0,
   postTitle: "",

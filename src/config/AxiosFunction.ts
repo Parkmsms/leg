@@ -283,7 +283,7 @@ export const getStoreMenu1 = async (accessToken: string, id: number) => {
   try {
     const result = await axios({
       method: 'get',
-      url: hosturi + '/posts/' + id + '/menu',
+      url: hosturi + `/menu?storeId=${id}`,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
@@ -291,19 +291,21 @@ export const getStoreMenu1 = async (accessToken: string, id: number) => {
     });
     return result;
   } catch (err) {
-    throw err;
+    throw console.log("대메뉴불러오기 에러",err);
   }
 };
 
-export const getStoreMenu2 = async (
+export const getSmallMenu = async (
   accessToken: string,
   storeId: number,
   menuId: number,
 ) => {
   try {
+    console.log("가게번호:",storeId);
+    console.log("메뉴번호",menuId)
     const result = await axios({
       method: 'get',
-      url: hosturi + '/posts/' + storeId + '/menu/' + menuId,
+      url: hosturi + `/menu/${menuId}?storeId=${storeId}`,
       headers: {
         'content-type': 'application/json',
         Authorization: accessToken ? 'Bearer ' + accessToken : '',
@@ -611,6 +613,7 @@ export const getInProgressOrderListAPI = async (accessToken: string) => {
 
 //review 사진 3개
 export const topImage3 = async (accessToken: string, storeId: number) => {
+  console.log("storeId=",storeId)
   try {
     const result = await axios({
       method: 'get',
@@ -622,7 +625,7 @@ export const topImage3 = async (accessToken: string, storeId: number) => {
     });
     return result;
   } catch (err) {
-    throw err;
+    throw console.log("error 입니다",err);
   }
 };
 

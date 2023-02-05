@@ -194,13 +194,22 @@ const CompleteList = (props: BottomPopupProps, { navigation, route }: OrderCompl
                               style={OrderWrapper.ActivateButton}>
                               <Text style={OrderWrapper.ButtonText}>주문 상세</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
+                            {order.isReviewed === true && 
+                              <View
+                              style={OrderWrapper.AddPhotoButton}>
+                              <Text style={OrderWrapper.AddPhotoButtonText}>리뷰 완료</Text>
+                              </View>
+                            }
+                            {order.isReviewed === false && 
+                              <TouchableOpacity
                               style={OrderWrapper.AddPhotoButton}
                               onPress={() => {
                                 props.goReview(order)
                               }}>
                               <Text style={OrderWrapper.AddPhotoButtonText}>리뷰 쓰기</Text>
-                            </TouchableOpacity>
+                              </TouchableOpacity>
+                            }
+                            
                           </>
                         }
                       </View>

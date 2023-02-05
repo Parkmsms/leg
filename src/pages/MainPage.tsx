@@ -9,6 +9,9 @@ import { intialStorePrams, StoreParams } from "../models/listfilterInfo";
 // import Carousel from 'react-native-snap-carousel';
 import { Picker } from '@react-native-picker/picker';
 import DetailPopup from "./Menu/DetailPopUp";
+import LinearGradient from 'react-native-linear-gradient';
+
+
 
 const { width } = Dimensions.get('window');
 const height = width * 0.6;
@@ -101,7 +104,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
     if (route.params?.menu) {
       setParams({
         ...params,
-        keyword: route.params?.menu
+        search: route.params?.menu
       })
     }
 
@@ -173,13 +176,14 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
           </View>
 
           {/* 배너 */}
-          <View style={{ width: width * 0.9, height: height * 0.8, }}>
+          <View style={{alignItems:"center"}}>
+          <View style={{ width: width * 0.9, }}>
             <ScrollView
               pagingEnabled
               horizontal
               onScroll={onPictureChange}
               showsHorizontalScrollIndicator={false}
-              style={{ width: width * 0.9, height, }}>
+              style={{ width: width * 0.9 }}>
               {bannerList.map((banner: Banner, index: number) => {
                 return (
                   <Image
@@ -204,6 +208,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
               )
             })}
           </View>
+          </View>
 
           {/* 카테고리 */}
           <View style={{ width: width * 0.9, height: height * 0.2 }}>
@@ -213,27 +218,39 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
               showsHorizontalScrollIndicator={false}
               style={{ width: width, height: height * 0.2 }}>
               {menuList?.map((menu: string, index: number) =>
-                <TouchableOpacity
+                  <TouchableOpacity
                   key={index}
-                  style={{
-                    // display: 'flex',
-                    // maxWidth: 120,
-                    minWidth: 70,
-                    // width: 80,
-                    height: 30,
-                    backgroundColor: params.foodType === menu ? '#00C1DE' : '#E8E8E8',
-                    // backgroundColor: 'rgba(27, 147, 234, 0.93)',
-                    borderRadius: 30,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginRight: 3
-                  }}
                   onPress={e => setMenu(menu)}
-                >
-                  <View style={{ alignSelf: 'center', padding: 5 }}>
-                    <Text style={MainWrapper.menutext}>{menu}</Text>
+                  >
+                  <LinearGradient colors= { params.foodType === menu? ['#AFD1E7',
+                  '#03BDDF',
+                  '#0AB1E2',
+                  '#0FA7E5',
+                  '#10A6E5',
+                  '#159EE7',
+                  '#1898E9',
+                  '#1996E9',
+                  '#1996E9',
+                  '#1997E9',
+                  '#1898E8',
+                  '#1898E8',
+                  '#1998E9',
+                  '#1997E9',
+                  '#1997E9',
+                  '#1997E9',
+                  '#1A96E9',
+                  '#1A96E9',
+                  '#1A95E9',
+                  '#1A88D8'
+                  ]:
+                  ['#E8E8E8','#E8E8E8','#E8E8E8']
+                } style={{ borderRadius: 30,
+                      justifyContent: "center",alignItems: "center", marginRight: 5, minWidth: 70,  height: 30,}}>
+                    <View style={{ alignSelf: 'center', padding: 5 }}>
+                    <Text style={params.foodType === menu? MainWrapper.menutext : MainWrapper.menutext2}>{menu}</Text>
                   </View>
-                </TouchableOpacity>
+                  </LinearGradient>
+                  </TouchableOpacity>
               )}
             </ScrollView>
           </View>
@@ -247,7 +264,8 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
                 onValueChange={(item) => handleChangeFilter(item)}
                 style={{
                   width: 130,
-                  margin: -10
+                  margin: -10,
+                  color:'#888888'
                 }}
               >
                 <Picker.Item label="거리순" value={"거리순"} />
@@ -269,8 +287,7 @@ const MainPage = ({ navigation, route }: MainPageProps) => {
                     // onPress={() => openModal(store.postId)}
                     style={MainWrapper.itemBox}>
                     <Image
-                      // source={{ uri: store.storeProfile }}
-                      source={require('../assets/banner.png')}
+                      source={{ uri: store.storeProfile }}
                       style={{
                         borderRadius: 20,
                         width: 100, height: 100,
@@ -419,9 +436,22 @@ const MainWrapper = StyleSheet.create({
     marginRight: 3
   },
   menutext: {
-    color: "#000",
-    fontWeight: "bold",
-    fontSize: 15,
+    color: "white",
+    fontWeight: "700",
+    fontFamily:'Apple SD Gothic Neo',
+    fontStyle:'normal',
+    fontSize: 12.5,
+    letterSpacing:1.0,
+    paddingLeft: 5,
+    paddingRight: 5
+  },
+  menutext2: {
+    color: "#7D7D7D",
+    fontWeight: "700",
+    fontFamily:'Apple SD Gothic Neo',
+    fontStyle:'normal',
+    fontSize: 12.5,
+    letterSpacing:1.0,
     paddingLeft: 5,
     paddingRight: 5
   },
@@ -444,15 +474,14 @@ const MainWrapper = StyleSheet.create({
   itemBox: {
     flexDirection: 'row',
     borderRadius: 20,
-    borderEndWidth: 0.03,
-    borderLeftWidth: 0.03,
-    borderRightWidth: 0.03,
-    marginBottom: 10,
     height: 140,
     padding: 20,
     shadowColor: 'grey',
+    borderTopWidth:0.05,
+    borderBottomWidth:0.05,
+    marginBottom:5,
     backgroundColor: 'white',
-    elevation: 5,
+    elevation: 6,
   },
   basicFont: {
     fontFamily: 'Apple SD Gothic Neo',

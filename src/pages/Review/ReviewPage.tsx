@@ -46,15 +46,14 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
     await ImageResizer.createResizedImage(
       request.pictureUrl.uri, 240, 240, 'JPEG', 50, 0)
       .then((response) => {
-
+         
         //formData
         const file = new FormData();
 
         //ImageInfo
         let imageInfo = {
-          uri: response.uri,
-          type: request.pictureUrl.type,
-          name: response.name
+          uri: response.uri, // 
+          type: request.pictureUrl.type,  // image/JPEG
         }
         file.append("images", imageInfo);
 
@@ -90,7 +89,7 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
 
         axios.post('http://0giri.com/api/reviews', data, { headers: headers })
           .then(res => {
-            const presignedUrl = res.data;
+            const presignedUrl = res.data[0].preSignedUrl
             console.log(presignedUrl);
             uploadImageToS3(presignedUrl, file);
           }).catch(err => {
@@ -98,8 +97,9 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
           })
       });
   }
+
   const uploadImageToS3 = (url: string, file: any) => {
-    axios.put(url, file)
+    axios.put(url,{Headers:"multipart/form-data"}, file)
       .then((res) => console.log(res))
       .catch((err) => console.error("second", err));
   }
