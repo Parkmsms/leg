@@ -1,11 +1,13 @@
 import { combineReducers ,configureStore} from "@reduxjs/toolkit";
 import userSlice from "../slices/user";
 import timeSlice from '../slices/time'
+import itemSlice from "../slices/item"
 
 
 const rootReducer = combineReducers({
   user: userSlice.reducer,
-  time : timeSlice
+  time : timeSlice,
+  item : itemSlice
 });
 
 

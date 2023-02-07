@@ -12,6 +12,7 @@ import { RoundedCheckbox } from "react-native-rounded-checkbox";
 import { Fontisto } from "@expo/vector-icons";
 import SelectDropdown from 'react-native-select-dropdown'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { useSelector, useDispatch } from 'react-redux';
 
 type DetailPageProps = {
   route: any;
@@ -39,6 +40,7 @@ const initialStoreMenu = {
   bigItems: []
 }
 const DetailPage = ({ navigation, route }: DetailPageProps) => {
+  const dispatch = useDispatch();
   const [storeMenu, setStroeMenu] = useState<StoreMenu[]>([]);
   const [storeInfo, setStoreInfo] = useState<StoreInfo>(initialStoreInfo);
   const [active, setActive] = useState<number>(0);
@@ -160,7 +162,7 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
     console.log(isFocused);
 
     if (isFocused) {
-      LoadCartList();
+      // LoadCartList();
     }
 
   }, [isFocused])
@@ -195,38 +197,38 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
     setDescriptionlimit(str.length);
   }
 
-  const LoadCartList = async () => {
-    const storeInfo = await AsyncStorage.getItem('storeInfo');
-    if (storeInfo) {
-      console.log("Cart StoreInfo", storeInfo);
-      setSelectStore(JSON.parse(storeInfo));
-    }
-    const storeId = await AsyncStorage.getItem('storeId');
-    if (storeId) {
-      setSelectId(JSON.parse(storeId));
-    }
-    const profile = await AsyncStorage.getItem('profile');
-    if (profile) {
-      setSelectProfile(JSON.parse(profile));
-    }
-    const menu = await AsyncStorage.getItem('menu');
-    if (menu) {
-      setSelectStoreMenu(JSON.parse(menu));
-    }
-    const smallItem = await AsyncStorage.getItem('smallItem');
-    if (smallItem) {
-      console.log("Cart SmallItem", smallItem);
-      setRadioButtons(JSON.parse(smallItem));
-    }
-    const totalAmount = await AsyncStorage.getItem('totalAmount');
-    if (totalAmount) {
-      setSelectTotalAmount(JSON.parse(totalAmount));
-    }
-    const totalPrice = await AsyncStorage.getItem('totalPrice');
-    if (totalPrice) {
-      setSelectTotalPrice(JSON.parse(totalPrice));
-    }
-  }
+  // const LoadCartList = async () => {
+  //   const storeInfo = await AsyncStorage.getItem('storeInfo');
+  //   if (storeInfo) {
+  //     console.log("Cart StoreInfo", storeInfo);
+  //     setSelectStore(JSON.parse(storeInfo));
+  //   }
+  //   const storeId = await AsyncStorage.getItem('storeId');
+  //   if (storeId) {
+  //     setSelectId(JSON.parse(storeId));
+  //   }
+  //   const profile = await AsyncStorage.getItem('profile');
+  //   if (profile) {
+  //     setSelectProfile(JSON.parse(profile));
+  //   }
+  //   const menu = await AsyncStorage.getItem('menu');
+  //   if (menu) {
+  //     setSelectStoreMenu(JSON.parse(menu));
+  //   }
+  //   const smallItem = await AsyncStorage.getItem('smallItem');
+  //   if (smallItem) {
+  //     console.log("Cart SmallItem", smallItem);
+  //     setRadioButtons(JSON.parse(smallItem));
+  //   }
+  //   const totalAmount = await AsyncStorage.getItem('totalAmount');
+  //   if (totalAmount) {
+  //     setSelectTotalAmount(JSON.parse(totalAmount));
+  //   }
+  //   const totalPrice = await AsyncStorage.getItem('totalPrice');
+  //   if (totalPrice) {
+  //     setSelectTotalPrice(JSON.parse(totalPrice));
+  //   }
+  // }
 
   const handlePick = async () => {
     console.log("click");

@@ -9,6 +9,11 @@ import Icon from "react-native-vector-icons/Entypo";
 import AntIcon from "react-native-vector-icons/AntDesign";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RadioButton } from 'react-native-paper';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  editItemList,
+  selectCartItemList
+} from '../../slices/item';
 
 type DetailOptionPageProps = {
   route: any;
@@ -32,6 +37,9 @@ type StoreMenuOption = {
 const width = Dimensions.get('window').width;
 
 const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
+  const dispatch = useDispatch();
+  const cartItemList = useSelector(selectCartItemList);
+
   const [storeMenu, setStoreMenu] = useState<StoreMenu1>(initialStoreMenu1);
   const [MenuOption, setMenuOption] = useState<StoreMenuDetail[]>([]);
   // const [detailMenu, setDetailMenu] = useState<StoreMenuOption[]>([]);
@@ -146,15 +154,30 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   //   console.log("smallItems", radioButtons);
   // }, [MenuOption])
 
-  const setCart = async () => {
+  const setCart =  () => {
     console.log("카트에 담는 radioButtons", radioButtons);
-    await AsyncStorage.setItem('storeInfo', JSON.stringify(route.params?.storeInfo));
-    await AsyncStorage.setItem('storeId', JSON.stringify(route.params?.storeId));
-    await AsyncStorage.setItem('profile', JSON.stringify(route.params?.profile));
-    await AsyncStorage.setItem('menu', JSON.stringify(route.params?.menu));
-    await AsyncStorage.setItem('smallItem', JSON.stringify(radioButtons));
-    await AsyncStorage.setItem('totalAmount', JSON.stringify(totalAmount));
-    await AsyncStorage.setItem('totalPrice', JSON.stringify(totalPrice));
+    // await AsyncStorage.setItem('storeInfo', JSON.stringify(route.params?.storeInfo));
+    // await AsyncStorage.setItem('storeId', JSON.stringify(route.params?.storeId));
+    // await AsyncStorage.setItem('profile', JSON.stringify(route.params?.profile));
+    // await AsyncStorage.setItem('menu', JSON.stringify(route.params?.menu));
+    // await AsyncStorage.setItem('smallItem', JSON.stringify(radioButtons));
+    // await AsyncStorage.setItem('totalAmount', JSON.stringify(totalAmount));
+    // await AsyncStorage.setItem('totalPrice', JSON.stringify(totalPrice));
+    //route.params?.menu 랑 totalPrice를 보내면 됌
+     /*redux dispatch => reducer 작동 */
+     const testParam = {
+      bigItem :route.params?.menu.bigItem,
+      description:route.params?.menu.description,
+      id:route.params?.menu.id,
+      image:route.params?.menu.image,
+      isExhausted:route.params?.menu.isExhausted,
+      price:totalPrice
+     }
+     console.log("test1232131",testParam)
+     console.log("test",cartItemList)
+     const setCartParam = cartItemList.push(testParam)
+   
+    dispatch(editItemList(setCartParam));
   }
   const goBack = async () => {
     setCart();
@@ -168,6 +191,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
     //   amount: totalAmount,
     //   price: totalPrice
     // })
+
   }
   const minusAmount = () => {
     setTotalAmount(totalAmount - 1);

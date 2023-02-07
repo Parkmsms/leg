@@ -4,6 +4,7 @@ import { CartPost, getAccessToken } from "../../config/AxiosFunction";
 import { initialStoreInfo, StoreInfo } from "../../models/storeInfo";
 import { initialStoreMenu1, StoreMenu1 } from "../../models/storemenu";
 import CheckBox from "@react-native-community/checkbox";
+import { useSelector, useDispatch } from 'react-redux';
 import { RoundedCheckbox, PureRoundedCheckbox } from "react-native-rounded-checkbox";
 import Icon from "react-native-vector-icons/Entypo";
 
@@ -38,6 +39,7 @@ type Cart = {
   totalPrice: number;
 }
 const CartList = ({ navigation, route }: CartListPageProps) => {
+  const dispatch = useDispatch();
   const [storeInfo, setStoreInfo] = useState<StoreInfo>(initialStoreInfo);
   const [storeMenu, setStoreMenu] = useState<StoreMenu1>(initialStoreMenu1);
   const [radioButtons, setRadioButtons] = useState<StoreMenuOption[]>([]);
