@@ -46,7 +46,15 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
     await ImageResizer.createResizedImage(
       request.pictureUrl.uri, 240, 240, 'JPEG', 50, 0)
       .then((response) => {
+        console.log("response",response);
+
+        const getBlob = async (fileUri: string) => {
+          const resp = await fetch(fileUri);
+          const imageBody = await resp.blob();
+          return imageBody;
+        };
          
+        console.log("getBlob Test", getBlob(response.uri))
         //formData
         const file = new FormData();
 
@@ -56,6 +64,8 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
           type: request.pictureUrl.type,  // image/JPEG
         }
         file.append("images", imageInfo);
+
+
 
         //blob setting 
         let data = {
@@ -91,17 +101,19 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
           .then(res => {
             const presignedUrl = res.data[0].preSignedUrl
             console.log(presignedUrl);
-            uploadImageToS3(presignedUrl, file);
+            uploadImageToS3(presignedUrl, getBlob(response.uri));
           }).catch(err => {
             console.log("first", err)
           })
-      });
+        }
+        );
   }
 
   const uploadImageToS3 = (url: string, file: any) => {
-    axios.put(url,{Headers:"multipart/form-data"}, file)
+    axios.put(url, file)
       .then((res) => console.log(res))
-      .catch((err) => console.error("second", err));
+      .catch((err) => 
+      console.log("second", err));
   }
 
   const goTakePhoto = async () => {

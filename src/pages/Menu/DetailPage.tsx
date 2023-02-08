@@ -224,13 +224,7 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
 
   const goCart = () => {
     navigation.navigate('CartList', {
-      storeInfo: selectStore,
-      postId: selectId,
-      profile: selectProfile,
-      menu: selectStoreMenu,
       smallItem: radioButtons,
-      amount: selectTotalAmount,
-      price: selectTotalPrice
     })
   }
   return (

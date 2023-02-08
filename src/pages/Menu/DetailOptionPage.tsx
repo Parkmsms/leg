@@ -63,28 +63,8 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
     setMenuOption(response.data);
 
   }
-  // const onPressRadioButton = (radioButtonsArray: RadioButtonProps[]) => {
-  //   console.log("선택", radioButtonsArray[0].id);
-  //   console.log("radioButtons", radioButtons.some((radio) => console.log("뭐지", radio)));
-
-  //   // if(radioButtons.some((radio: StoreMenuOption) => radio === radioButtonsArray.map(selected => selected.id)))
-
-  //   if (radioButtons.some((radio) => radio.id === radioButtonsArray[0].id)) {
-  //     console.log("선택한것만 남고 나머지 제거");
-  //     setRadioButtons(radioButtons.filter((radio) => radio.id !== radioButtonsArray[0].id))
-  //   } else {
-  //     console.log("추가");
-  //     const id = radioButtonsArray[0].id;
-  //     setRadioButtons(radioButtonsArray);
-  //   }
-  //   // setRadioButtons()
-  //   // setRadioButtons(radioButtonsArray)
-  // }
 
   const onChecked = (choose: StoreMenuOption) => {
-    console.log("선택한 ID", choose.id);
-
-
     if (checkList.some((item: number) => item === choose.id)) {
       console.log("제거");
       console.log(checkList.filter((item: number) => item !== choose.id));
@@ -99,10 +79,6 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   }
 
   useEffect(() => {
-    console.log("가게 정보", route.params?.storeInfo);
-    console.log("가게 프로필", route.params?.profile);
-    console.log("가게 ID", route.params?.storeId);
-    console.log("radioButtons", radioButtons);
     // const sum :number = radioButtons.reduce((stack:StoreMenuOption, el:StoreMenuOption)=> {
     //   return stack.price + el.price;
     // }, 0)
@@ -121,48 +97,14 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
 
     if (route.params?.storeId && route.params?.menu) {
       getMenuOption()
-      console.log("상위메뉴:", route.params?.menu);
       setStoreMenu(route.params?.menu)
     }
   }, [route, radioButtons, sum, totalAmount, storeMenu])
 
-  // useEffect(() => {
-  //   if (MenuOption[0]) {
-  //     console.log("첫번째 id", MenuOption[0].smallItems[0].id);
-  //     setCheckList(checkList.concat(MenuOption[0].smallItems[0].id));
-  //   }
-
-  // }, [MenuOption])
-
-  // useEffect(() => {
-  //   setCheckList(checkList.concat(MenuOption[0].smallItems[0].id));
-  // }, [MenuOption])
-
-  // useEffect(() => {
-  //   MenuOption.map((small) => small.smallItems.forEach((element) => {
-  //     arr = arr.concat(element)
-  //   }))
-  //   console.log("smallItems", arr);
-  // }, [MenuOption, arr])
-
-  // useEffect(() => {
-  //   MenuOption.map((small) =>
-  //     setRadioButtons(small.smallItems)
-  //   )
-  //   console.log("smallItems", radioButtons);
-  // }, [MenuOption])
+ 
 
   const setCart = () => {
     console.log("카트에 담는 radioButtons", radioButtons);
-    // await AsyncStorage.setItem('storeInfo', JSON.stringify(route.params?.storeInfo));
-    // await AsyncStorage.setItem('storeId', JSON.stringify(route.params?.storeId));
-    // await AsyncStorage.setItem('profile', JSON.stringify(route.params?.profile));
-    // await AsyncStorage.setItem('menu', JSON.stringify(route.params?.menu));
-    // await AsyncStorage.setItem('smallItem', JSON.stringify(radioButtons));
-    // await AsyncStorage.setItem('totalAmount', JSON.stringify(totalAmount));
-    // await AsyncStorage.setItem('totalPrice', JSON.stringify(totalPrice));
-    //route.params?.menu 랑 totalPrice를 보내면 됌
-    /*redux dispatch => reducer 작동 */
     const testParam = {
       'storeNm': route.params?.storeInfo.storeName,
       'bigItem': route.params?.menu.bigItem,

@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View ,SafeAreaView, Dimensions, ScrollView } from "react-native";
 import { CartPost, getAccessToken } from "../../config/AxiosFunction";
 import { initialStoreInfo, StoreInfo } from "../../models/storeInfo";
 import { initialStoreMenu1, StoreMenu1 } from "../../models/storemenu";
@@ -13,8 +13,9 @@ type CartListPageProps = {
   navigation?: any;
 }
 type StoreMenuOption = {
+  bigItem:string,
+  storeNm:string;
   id: number;
-  smallItem?: string;
   description?: string;
   price: number;
   image?: string;
@@ -38,6 +39,9 @@ type Cart = {
   postId: number;
   totalPrice: number;
 }
+
+const width = Dimensions.get('window').width;
+
 const CartList = ({ navigation, route }: CartListPageProps) => {
   const dispatch = useDispatch();
   const [storeInfo, setStoreInfo] = useState<StoreInfo>(initialStoreInfo);
@@ -111,60 +115,18 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
     })
   }
   useEffect(() => {
-    console.log("가게정보", route.params?.storeInfo);
-    console.log("가게ID", route.params?.postId);
-    // console.log("가게 프로필", route.params?.profile);
-    console.log("메뉴", route.params?.menu);
+ 
     console.log("세부메뉴아이템 ", route.params?.smallItem);
-    console.log("총개수", route.params?.amount);
-    console.log("총가격", route.params?.price);
-    console.log("cart", cart);
 
-    //storeInfo 설정
-    setStoreInfo(route.params?.storeInfo);
-    // 대메뉴 설정
-    setStoreMenu(route.params?.menu);
     //세부메뉴아이템 설정
     setRadioButtons(route.params?.smallItem);
 
-    // console.log(checkList.filter((check: number) => check === storeMenu.id));
-    // console.log(checkList.some((check) => check === storeMenu.id));
-
-
-
-    // postCart();
 
   }, [checkList]);
 
   return (
     <View style={CartWrapper.MainContainer}>
 
-      {/* <View style={{
-        flex: 1,
-        // justifyContent: 'flex-start',
-        padding: 20,
-        flexDirection: 'row',
-      }}>
-        <Image
-          source={{ uri: route.params?.profile }}
-          style={{
-            resizeMode: 'contain',
-            borderRadius: 20,
-            width: 70,
-            height: 70
-          }}
-        />
-        <Text style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          alignContent: 'center',
-          padding: 20,
-          fontSize: 15,
-          color: 'black',
-          fontWeight: 'bold'
-        }}>{storeInfo.storeName}</Text>
-      </View> */}
       <View style={CartWrapper.Horizon}>
         <CheckBox
           nativeID="all"
@@ -194,128 +156,115 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
         flexDirection: 'column',
         padding: 20
       }}>
-        {storeMenu === undefined ?
+        {storeMenu === undefined &&
           <View style={{ justifyContent: 'center', alignContent: 'center' }}>
             <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', color: 'black' }}>
               메뉴를 추가해주세요!
             </Text>
           </View>
-          :
-          <>
-            <View style={{
-              flexDirection: 'row'
-            }}>
-              {/* <CheckBox
-              nativeID=""
-              onCheckColor="#00C1DE"
-              style={{margin: 1}}
-              disabled={false}
-              onValueChange={(e: any) => setEventCheckBox(e)}
-              value={storeMenu.id}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAgreeHandler(e)}
-            /> */}
-
-              <View style={{
-                justifyContent: 'center',
-                alignContent: 'center',
-                paddingRight: 20
-              }}>
-                <CheckBox
-                  // nativeID="all"
-                  style={{ margin: 1, paddingRight: 20 }}
-                  onCheckColor="#00C1DE"
-                  disabled={false}
-                  onValueChange={() => onChecked(storeMenu.id)}
-                  value={checkList.some((check: number) => check === storeMenu.id) ? true : false}
-                // onChange={() => onChecked(storeMenu.id)}
-                />
-              </View>
-
-              {/* <RoundedCheckbox
-                          onPress={() => onChecked(storeMenu.id)}
-                          isChecked={false}
-                          checkedColor={checkList.filter((check: number) => check === storeMenu.id) ? "#00C1DE" : "transparent"}
-                        >
-                          <Icon
-                            size={15}
-                            name="check"
-                            color={checkList.filter((check: number) => check === storeMenu.id) ? "#fdfdfd" : "transparent"}
-                          />
-                        </RoundedCheckbox> */}
-
-              <Image
-                source={{ uri: storeMenu.image ? storeMenu.image : 'null' }}
-                style={{
-                  resizeMode: 'contain',
-                  borderRadius: 20,
-                  width: 100,
-                  height: 80
-                }}
-              ></Image>
-
-              <View style={{ paddingLeft: 20 }}>
-                <Text
-                  style={{
-                    fontSize: 15,
-                    color: 'black',
-                    fontWeight: 'bold',
-                  }}
-                >{storeMenu.bigItem}</Text>
-                {/* <Text>가격: {storeMenu.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text> */}
-                <Text style={{ paddingTop: 5, fontSize: 15, color: 'gray' }}
-                >옵션: {radioButtons.map((radio => radio.description))}
-                  {radioButtons.map((radio) => radio.smallItem)}
-                </Text>
-                <Text style={{ paddingTop: 5, fontSize: 20, color: 'black' }}>{route.params?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
-              </View>
-
-              <View style={{
-                justifyContent: 'center',
-                alignContent: 'center',
-                paddingLeft: 20
-              }}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    color: 'black',
-                    fontWeight: 'bold',
-                    justifyContent: 'center',
-                    alignContent: 'center'
-                  }}>{route.params?.amount}개</Text>
-              </View>
-
-
-            </View>
-            <View style={{
-              flex: 0.1,
-              borderStyle: 'solid',
-              borderBottomWidth: 1,
-              borderColor: 'gray',
-              width: '100%',
-              justifyContent: 'center',
-              alignContent: 'center'
-            }}></View>
-
-            <View style={{ flexDirection: "row", padding: 10 }}>
-              <View>
-                <Text style={{ paddingBottom: 5, fontSize: 15, fontWeight: 'bold' }}>상품금액: {route.params?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
-                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>할인금액: 0원</Text>
-              </View>
-              <View style={{
-                paddingLeft: 70,
-                justifyContent: 'center',
-                alignContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'row'
-              }}>
-                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>결제 예상: </Text>
-                <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#00C1DE' }}>{route.params?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
-              </View>
-            </View>
-          </>
-
         }
+        {storeMenu !== undefined && radioButtons.length !== 0 &&
+            radioButtons?.map((cartItem: StoreMenuOption, index: number) => {
+              return (
+                <SafeAreaView style={CartWrapper.MainContainer} key={index}>
+                  <View style={CartWrapper.CenterAlign} >
+                    <View style={CartWrapper.ContentsBox}>
+                      <View style={[CartWrapper.Vertical, { marginLeft: 5 }]}>
+                        <View style={CartWrapper.Horizontal}>
+                        </View>
+                      </View>
+                      <View style={CartWrapper.Horizontal}>
+                        <View style={{
+                          justifyContent: 'center',
+                          alignContent: 'center',
+                          paddingRight: 5
+                          }}>
+                          <CheckBox
+                            // nativeID="all"
+                            style={{ margin: 1, paddingRight: 20 }}
+                            onCheckColor="#00C1DE"
+                            tintColors={{ true: '#00C1DE', false: 'black' }}
+                            disabled={false}
+                            onValueChange={() => onChecked(storeMenu.id)}
+                            value={checkList.some((check: number) => check === storeMenu.id) ? true : false}
+                          // onChange={() => onChecked(storeMenu.id)}
+                          />
+                        </View>
+                        <View style={CartWrapper.CenterAlign}>
+                          <Image
+                            // source={require('../../assets/main.png')}
+                            source={{ uri: cartItem.image ? cartItem.image : 'none' }}
+                            style={{
+                              width: 90,
+                              height: 90,
+                              aspectRatio: 1.1,
+                              borderRadius:18,
+                              resizeMode: 'stretch'
+                            }}
+                          />
+                        </View>
+                        <View
+                          style={[CartWrapper.Vertical, {
+                            marginLeft: 10,
+                            padding: 15
+                          }]}>
+                          <Text style={[CartWrapper.FontText,
+                          {
+                            fontSize: 15,
+                            marginBottom: 10,
+                            color: '#000000',
+                            fontWeight: 'bold'
+                          }]}>{cartItem.storeNm}</Text>
 
+                          <Text style={[CartWrapper.FontText,
+                          {
+                            marginBottom: 10,
+                            color: '#000000',
+                            fontWeight: '500',
+                          }]}>{cartItem.bigItem}</Text>
+                          <Text style={[CartWrapper.FontText,
+                          {
+                            color: '#00C1DE',
+                            fontWeight: '600',
+                          }]}>
+                            {cartItem.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={{
+                      flex: 0.1,
+                      borderStyle: 'solid',
+                      borderBottomWidth: 1,
+                      borderColor: 'gray',
+                      width: '100%',
+                      justifyContent: 'center',
+                      alignContent: 'center'
+                    }}></View>
+
+                    <View style={{ flexDirection: "row", padding: 10 }}>
+                      <View>
+                        <Text style={{ paddingBottom: 5, fontSize: 15, fontWeight: 'bold' }}>상품금액:원</Text>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>할인금액: 0원</Text>
+                      </View>
+                      <View style={{
+                        paddingLeft: 70,
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'row'
+                      }}>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>결제 예상: </Text>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#00C1DE' }}>원</Text>
+                      </View>
+                    </View>
+                    </View>
+                    
+                  </View >
+              </SafeAreaView>
+              )}
+            )}
+
+          
 
       </View>
 
@@ -332,7 +281,9 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
         <TouchableOpacity
           onPress={goOrder}
           style={{ backgroundColor: '#00C1DE', borderRadius: 10, height: 50, width: 350, justifyContent: 'center', alignContent: 'center' }}>
-          <Text style={{ fontWeight: '700', fontFamily: 'Urbanist', fontSize: 20, color: 'white', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>{route.params?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원 주문하기</Text>
+          <Text style={{ fontWeight: '700', fontFamily: 'Urbanist', fontSize: 20, color: 'white', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>
+            {/* {route.params?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} */}
+            원 주문하기</Text>
         </TouchableOpacity>
       </View>
     </View >
@@ -341,7 +292,7 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
 const CartWrapper = StyleSheet.create({
   MainContainer: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#F3F3F3'
   },
   Horizon: {
     width: '100%',
@@ -354,6 +305,139 @@ const CartWrapper = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignContent: 'center'
-  }
+  },
+  CenterAlign: {
+    justifyContent: "center",
+    alignItems: 'center',
+  },
+  ContentsBox: {
+    borderWidth: 1,
+    width: width,
+    marginTop: 20,
+    sborderRadius: 1,
+    paddingLeft: 26,
+    paddingRight: 26,
+    paddingTop: 15,
+    paddingBottom: 15,
+    borderColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: 'white',
+  },
+  Vertical: {
+    flexDirection: 'column'
+  },
+  Horizontal: {
+    flexDirection: 'row'
+  },
+  ActivateButton: {
+    backgroundColor: '#00C1DE',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    alignContent: 'center',
+    margin: 5,
+    flex: 2
+  },
+  cancleButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderStyle: 'solid',
+    borderColor: '#ee5960',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    alignContent: 'center',
+    margin: 5,
+    flex: 2
+  },
+  cancleButtonText: {
+    fontSize: 17,
+    fontFamily: 'Apple SD Gothic Neo',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    color: '#ee5960',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  InActivateButton: {
+    backgroundColor: '#3E3E3E',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  ButtonText: {
+    fontSize: 17,
+    fontFamily: 'Urbanist',
+    fontWeight: 'bold',
+    color: 'white',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  FontText: {
+    fontFamily: 'Apple SD Gothic Neo',
+    fontStyle: 'normal',
+    letterSpacing: 0.5,
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: 'background-color: rgba(0, 0, 0, 0.01)'
+  },
+  horizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10
+  },
+
+  StatusButton: {
+    backgroundColor: '#3E3E3E',
+    borderRadius: 8,
+    width: 22,
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  StatusText: {
+    fontSize: 16,
+    fontFamily: 'Urbanist',
+    fontWeight: 'bold',
+    color: 'white',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+
+  AddPhotoButtonText: {
+    fontSize: 17,
+    fontFamily: 'Apple SD Gothic Neo',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    color: '#00C1DE',
+    alignSelf: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+
+  AddPhotoButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderStyle: 'solid',
+    borderColor: '#00C1DE',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    alignContent: 'center',
+    margin: 5,
+    flex: 2
+  },
 })
 export default CartList;
