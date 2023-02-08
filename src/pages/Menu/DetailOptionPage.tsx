@@ -1,6 +1,6 @@
 import CheckBox from "@react-native-community/checkbox";
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View,Dimensions } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions } from "react-native";
 import { getAccessToken, getSmallMenu } from "../../config/AxiosFunction";
 import { initialStoreMenu1, StoreMenu1 } from "../../models/storemenu";
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
@@ -11,8 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RadioButton } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  editItemList,
-  selectCartItemList
+  pushCartList,
 } from '../../slices/item';
 
 type DetailOptionPageProps = {
@@ -38,7 +37,6 @@ const width = Dimensions.get('window').width;
 
 const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   const dispatch = useDispatch();
-  const cartItemList = useSelector(selectCartItemList);
 
   const [storeMenu, setStoreMenu] = useState<StoreMenu1>(initialStoreMenu1);
   const [MenuOption, setMenuOption] = useState<StoreMenuDetail[]>([]);
@@ -154,7 +152,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   //   console.log("smallItems", radioButtons);
   // }, [MenuOption])
 
-  const setCart =  () => {
+  const setCart = () => {
     console.log("카트에 담는 radioButtons", radioButtons);
     // await AsyncStorage.setItem('storeInfo', JSON.stringify(route.params?.storeInfo));
     // await AsyncStorage.setItem('storeId', JSON.stringify(route.params?.storeId));
@@ -164,33 +162,24 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
     // await AsyncStorage.setItem('totalAmount', JSON.stringify(totalAmount));
     // await AsyncStorage.setItem('totalPrice', JSON.stringify(totalPrice));
     //route.params?.menu 랑 totalPrice를 보내면 됌
-     /*redux dispatch => reducer 작동 */
-     const testParam = {
-      bigItem :route.params?.menu.bigItem,
-      description:route.params?.menu.description,
-      id:route.params?.menu.id,
-      image:route.params?.menu.image,
-      isExhausted:route.params?.menu.isExhausted,
-      price:totalPrice
-     }
-     console.log("test1232131",testParam)
-     console.log("test",cartItemList)
-     const setCartParam = cartItemList.push(testParam)
-   
-    dispatch(editItemList(setCartParam));
+    /*redux dispatch => reducer 작동 */
+    const testParam = {
+      'storeNm': route.params?.storeInfo.storeName,
+      'bigItem': route.params?.menu.bigItem,
+      'description': route.params?.menu.description,
+      'id': route.params?.menu.id,
+      'image': route.params?.menu.image,
+      'isExhausted': route.params?.menu.isExhausted,
+      'price': totalPrice
+    }
+
+    // const setCartParam = cartItemList.push(testParam)
+
+    dispatch(pushCartList(testParam));
   }
-  const goBack = async () => {
+  const goBack = () => {
     setCart();
     navigation.goBack();
-    // navigation.navigate('CartList', {
-    //   storeInfo: route.params?.storeInfo,
-    //   postId: route.params?.storeId,
-    //   profile: route.params?.profile,
-    //   menu: route.params?.menu,
-    //   smallItem: radioButtons,
-    //   amount: totalAmount,
-    //   price: totalPrice
-    // })
 
   }
   const minusAmount = () => {
@@ -211,14 +200,14 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   return (
     <View style={DetailOptionWrapper.MainContainer}>
       <View style={DetailOptionWrapper.SubWrap}>
-        <View style={{ flexDirection: 'row',}}>
+        <View style={{ flexDirection: 'row', }}>
           <View style={DetailOptionWrapper.MenuTitle}>
-            <Text style={[DetailOptionWrapper.textFont,{ color:'#000000',fontWeight:'bold', fontSize:16} ]}>{storeMenu.bigItem}</Text>
-            <Text style={[DetailOptionWrapper.textFont,{fontSize:11,marginTop:10}]} 
+            <Text style={[DetailOptionWrapper.textFont, { color: '#000000', fontWeight: 'bold', fontSize: 16 }]}>{storeMenu.bigItem}</Text>
+            <Text style={[DetailOptionWrapper.textFont, { fontSize: 11, marginTop: 10 }]}
               numberOfLines={3}
               ellipsizeMode="tail"
-              // onPress={handleLine}
-              >
+            // onPress={handleLine}
+            >
               {storeMenu.description}
             </Text>
           </View>
@@ -229,7 +218,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
           marginTop: 20
         }}>
           <Text style={DetailOptionWrapper.bigFont}>가격</Text>
-          <Text style={[DetailOptionWrapper.bigFont,{color:'#667085'}]}>{totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
+          <Text style={[DetailOptionWrapper.bigFont, { color: '#667085' }]}>{totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
           {/* <Text style={{ color: 'black', fontSize: 20, fontWeight: 'bold' }}>{storeMenu.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text> */}
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -244,7 +233,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
               disabled={totalAmount === 1 ? true : false}>
               <AntIcon name="minuscircleo" size={20} style={{ color: '#00C1DE' }} />
             </TouchableOpacity>
-            <Text style={[DetailOptionWrapper.bigFont,{marginLeft:10,marginRight:10}]}>
+            <Text style={[DetailOptionWrapper.bigFont, { marginLeft: 10, marginRight: 10 }]}>
               {totalAmount}
             </Text>
             <TouchableOpacity
@@ -252,7 +241,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
               <AntIcon name="pluscircleo" size={20} style={{ color: '#00C1DE' }} />
             </TouchableOpacity>
           </View>
-          
+
 
           {/* <TouchableOpacity
             style={{ borderWidth: 1, borderRadius: 50, height: 50, width: 200, justifyContent: 'center', alignContent: 'center' }}>
@@ -272,27 +261,29 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
           </TouchableOpacity> */}
         </View>
       </View>
-      <View style={{backgroundColor:'rgba(0, 193, 222, 0.12);' ,width:width,height:45, flexDirection:'row', 
-          position:'relative', padding:14, justifyContent:'center'}}>
-          <Text style={{flex:5, color: '#3E3E3E', fontSize:12,fontFamily:'Urbanist',fontWeight:'bold'}}>일회용품 선택</Text>
-          <Text style={{flex:1,color:'#00C1DE',fontSize:11, fontWeight:'bold'}}>필수 선택</Text>
+      <View style={{
+        backgroundColor: 'rgba(0, 193, 222, 0.12);', width: width, height: 45, flexDirection: 'row',
+        position: 'relative', padding: 14, justifyContent: 'center'
+      }}>
+        <Text style={{ flex: 5, color: '#3E3E3E', fontSize: 12, fontFamily: 'Urbanist', fontWeight: 'bold' }}>일회용품 선택</Text>
+        <Text style={{ flex: 1, color: '#00C1DE', fontSize: 11, fontWeight: 'bold' }}>필수 선택</Text>
       </View>
       {/* 일회용품선택 */}
-      <View style={[DetailOptionWrapper.SubWrap,{paddingTop:14,justifyContent:'center'}]}>
-          <RadioButton.Item
-            label="O"
-            value="first"
-            color="#00C1DE"
-            status={ checked === 'first' ? 'checked' : 'unchecked' }
-            onPress={() => setChecked('first')}
-          />
-          <RadioButton.Item
-            label="X"
-            value="second"
-            color="#00C1DE"
-            status={ checked === 'second' ? 'checked' : 'unchecked' }
-            onPress={() => setChecked('second')}
-          />
+      <View style={[DetailOptionWrapper.SubWrap, { paddingTop: 14, justifyContent: 'center' }]}>
+        <RadioButton.Item
+          label="O"
+          value="first"
+          color="#00C1DE"
+          status={checked === 'first' ? 'checked' : 'unchecked'}
+          onPress={() => setChecked('first')}
+        />
+        <RadioButton.Item
+          label="X"
+          value="second"
+          color="#00C1DE"
+          status={checked === 'second' ? 'checked' : 'unchecked'}
+          onPress={() => setChecked('second')}
+        />
       </View>
 
       <View style={DetailOptionWrapper.MenuOption}>
@@ -419,24 +410,24 @@ const DetailOptionWrapper = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     width: width * 0.8
-},
-  textFont:{
-    fontFamily:'Urbanist',
-    fontStyle:'normal',
-    color:'#828282'
   },
-  bigFont:{
-    fontFamily:'Urbanist',
-    fontStyle:'normal',
-    color:'#000000',
-    fontWeight:'bold',
-    fontSize:16
+  textFont: {
+    fontFamily: 'Urbanist',
+    fontStyle: 'normal',
+    color: '#828282'
   },
-  SubWrap:{
+  bigFont: {
+    fontFamily: 'Urbanist',
+    fontStyle: 'normal',
+    color: '#000000',
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  SubWrap: {
     flexDirection: 'column',
-    paddingLeft:20,
-    paddingTop:20,
-    paddingRight:20
+    paddingLeft: 20,
+    paddingTop: 20,
+    paddingRight: 20
   }
 })
 export default DetailOptionPage;

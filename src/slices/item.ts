@@ -2,24 +2,29 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-
-const initialState = {
-  cartItemList:[]
+const initialState: any = {
+  cartItemList: []
 };
-
 export const item = createSlice({
   name: 'item',
   initialState,
-
   reducers: {
     //상품 상태 변경 ( 추가, 삭제)
-    editItemList: (state, action) => {
-      state.cartItemList = action.payload.cartItemList
+
+    //카트에 상품 추가
+    pushCartList: (state = initialState, action) => {
+      state.cartItemList.push(action.payload)
     },
+    //카트에 상품 삭제
+    deleteCartList: (state, action) => {
+      state.cartItemList.splice(action.payload)
+      //아예다제거
+      // state.cartItemList.slice();
+    }
   },
 
 });
-export const { editItemList } = item.actions;
+export const { pushCartList } = item.actions;
 
 export const selectCartItemList = (state: any) => state.item.cartItemList;
 
