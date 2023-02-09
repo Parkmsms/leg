@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View ,SafeAreaView, Dimensions, ScrollView } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, Dimensions, ScrollView } from "react-native";
 import { CartPost, getAccessToken } from "../../config/AxiosFunction";
 import { initialStoreInfo, StoreInfo } from "../../models/storeInfo";
 import { initialStoreMenu1, StoreMenu1 } from "../../models/storemenu";
@@ -13,13 +13,16 @@ type CartListPageProps = {
   navigation?: any;
 }
 type StoreMenuOption = {
-  bigItem:string,
-  storeNm:string;
+  bigItem: string,
+  storeId: number,
+  storeNm: string;
   id: number;
   description?: string;
   price: number;
   image?: string;
   isExausted?: boolean;
+  totalAmount: number;
+  itemSize: string;
 }
 
 type PostCart = {
@@ -115,11 +118,16 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
     })
   }
   useEffect(() => {
- 
+
     console.log("세부메뉴아이템 ", route.params?.smallItem);
 
     //세부메뉴아이템 설정
     setRadioButtons(route.params?.smallItem);
+
+    //총액 계산
+    setTotalPrice(route.params?.smallItem.map((item: any) => item.price).reduce((prev: any, curr: any) => prev + curr, 0))
+
+
 
 
   }, [checkList]);
@@ -127,10 +135,10 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
   return (
     <View style={CartWrapper.MainContainer}>
 
-      <View style={CartWrapper.Horizon}>
+      <View style={[CartWrapper.Horizon, { backgroundColor: 'white' }]}>
         <CheckBox
           nativeID="all"
-          style={{ margin: 1 }}
+          style={{ margin: 3 }}
           onCheckColor="#00C1DE"
           disabled={false}
           onValueChange={allCheck}
@@ -143,18 +151,10 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
         }}>
           전체 선택 ( {checkList.length} / {checkList.length} )</Text>
       </View>
-      <View style={{
-        flex: 0.1,
-        borderStyle: 'solid',
-        borderBottomWidth: 2,
-        borderColor: 'lightgray',
-        width: '100%',
-      }}></View>
 
       <View style={{
         flex: 5,
         flexDirection: 'column',
-        padding: 20
       }}>
         {storeMenu === undefined &&
           <View style={{ justifyContent: 'center', alignContent: 'center' }}>
@@ -163,7 +163,8 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
             </Text>
           </View>
         }
-        {storeMenu !== undefined && radioButtons.length !== 0 &&
+        <ScrollView>
+          {storeMenu !== undefined && radioButtons.length !== 0 &&
             radioButtons?.map((cartItem: StoreMenuOption, index: number) => {
               return (
                 <SafeAreaView style={CartWrapper.MainContainer} key={index}>
@@ -178,7 +179,7 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                           justifyContent: 'center',
                           alignContent: 'center',
                           paddingRight: 5
-                          }}>
+                        }}>
                           <CheckBox
                             // nativeID="all"
                             style={{ margin: 1, paddingRight: 20 }}
@@ -195,10 +196,10 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                             // source={require('../../assets/main.png')}
                             source={{ uri: cartItem.image ? cartItem.image : 'none' }}
                             style={{
-                              width: 90,
-                              height: 90,
+                              width: 80,
+                              height: 80,
                               aspectRatio: 1.1,
-                              borderRadius:18,
+                              borderRadius: 18,
                               resizeMode: 'stretch'
                             }}
                           />
@@ -216,12 +217,16 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                             fontWeight: 'bold'
                           }]}>{cartItem.storeNm}</Text>
 
+
                           <Text style={[CartWrapper.FontText,
                           {
                             marginBottom: 10,
                             color: '#000000',
                             fontWeight: '500',
-                          }]}>{cartItem.bigItem}</Text>
+                          }]}>{cartItem.bigItem} {cartItem.itemSize} x {cartItem.totalAmount} </Text>
+
+
+
                           <Text style={[CartWrapper.FontText,
                           {
                             color: '#00C1DE',
@@ -232,39 +237,41 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                         </View>
                       </View>
                       <View style={{
-                      flex: 0.1,
-                      borderStyle: 'solid',
-                      borderBottomWidth: 1,
-                      borderColor: 'gray',
-                      width: '100%',
-                      justifyContent: 'center',
-                      alignContent: 'center'
-                    }}></View>
-
-                    <View style={{ flexDirection: "row", padding: 10 }}>
-                      <View>
-                        <Text style={{ paddingBottom: 5, fontSize: 15, fontWeight: 'bold' }}>상품금액:원</Text>
-                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>할인금액: 0원</Text>
-                      </View>
-                      <View style={{
-                        paddingLeft: 70,
+                        flex: 0.1,
+                        borderStyle: 'solid',
+                        borderBottomWidth: 1,
+                        borderColor: 'gray',
+                        width: '100%',
                         justifyContent: 'center',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        flexDirection: 'row'
-                      }}>
-                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>결제 예상: </Text>
-                        <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#00C1DE' }}>원</Text>
+                        alignContent: 'center'
+                      }}></View>
+
+                      <View style={{ flexDirection: "row", padding: 10 }}>
+                        <View>
+                          <Text style={{ paddingBottom: 5, fontSize: 15, fontWeight: 'bold' }}>상품금액: {cartItem.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
+                          <Text style={{ fontSize: 15, fontWeight: 'bold' }}>할인금액: 0원</Text>
+                        </View>
+                        <View style={{
+                          paddingLeft: 35,
+                          justifyContent: 'center',
+                          alignContent: 'center',
+                          alignItems: 'center',
+                          flexDirection: 'row'
+                        }}>
+                          <Text style={{ fontSize: 15, fontWeight: 'bold' }}>결제 예상: </Text>
+                          <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#00C1DE' }}> {cartItem.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
+                        </View>
                       </View>
                     </View>
-                    </View>
-                    
-                  </View >
-              </SafeAreaView>
-              )}
-            )}
 
-          
+                  </View >
+                </SafeAreaView>
+              )
+            }
+            )}
+        </ScrollView>
+
+
 
       </View>
 
@@ -283,7 +290,7 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
           style={{ backgroundColor: '#00C1DE', borderRadius: 10, height: 50, width: 350, justifyContent: 'center', alignContent: 'center' }}>
           <Text style={{ fontWeight: '700', fontFamily: 'Urbanist', fontSize: 20, color: 'white', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>
             {/* {route.params?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')} */}
-            원 주문하기</Text>
+            {totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원 주문하기</Text>
         </TouchableOpacity>
       </View>
     </View >
@@ -292,7 +299,7 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
 const CartWrapper = StyleSheet.create({
   MainContainer: {
     flex: 1,
-    backgroundColor: '#F3F3F3'
+    backgroundColor: '#EFEFEF'
   },
   Horizon: {
     width: '100%',
@@ -313,7 +320,7 @@ const CartWrapper = StyleSheet.create({
   ContentsBox: {
     borderWidth: 1,
     width: width,
-    marginTop: 20,
+    marginTop: 5,
     sborderRadius: 1,
     paddingLeft: 26,
     paddingRight: 26,

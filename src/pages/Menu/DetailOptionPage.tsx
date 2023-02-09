@@ -1,6 +1,6 @@
 import CheckBox from "@react-native-community/checkbox";
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, Alert } from "react-native";
 import { getAccessToken, getSmallMenu } from "../../config/AxiosFunction";
 import { initialStoreMenu1, StoreMenu1 } from "../../models/storemenu";
 import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
@@ -50,6 +50,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   let sum = 0;
   const [radioButtons, setRadioButtons] = useState<StoreMenuOption[]>([]);
   const [checked, setChecked] = React.useState('first');
+  const [checked2, setChecked2] = React.useState<any>();
   // const initialMenuOpiton: StoreMenuOption[] = {
   //   return MenuOption.forEach((element) => { element.smallItems });
   // }
@@ -65,14 +66,13 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   }
 
   const onChecked = (choose: StoreMenuOption) => {
+
     if (checkList.some((item: number) => item === choose.id)) {
-      console.log("제거");
       console.log(checkList.filter((item: number) => item !== choose.id));
       // 선택한 id와 같지 않은것을 걸러내 
       setCheckList(checkList.filter((item: number) => item !== choose.id));
       setRadioButtons(radioButtons.filter((radio: StoreMenuOption) => radio.id !== choose.id));
     } else {
-      console.log("추가");
       setCheckList(checkList.concat(choose.id));
       setRadioButtons(radioButtons.concat(choose));
     }
@@ -85,9 +85,8 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
     // setTotalPrice(sum);
     if (radioButtons.length !== 0) {
       for (let i = 0; i < radioButtons.length; i++) {
-        console.log("옵션가격", radioButtons[i].price);
+        console.log("옵션정보", radioButtons[i]);
         sum = (storeMenu.price + radioButtons[i].price) * totalAmount;
-        console.log("sum", sum);
         setTotalPrice(sum);
       }
     } else if (radioButtons.length == 0) {
@@ -99,19 +98,29 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
       getMenuOption()
       setStoreMenu(route.params?.menu)
     }
+    console.log("이후", checkList);
+    if (checkList.length >= 1) {
+      checkList.shift();
+      setCheckList(checkList);
+    }
+
+
   }, [route, radioButtons, sum, totalAmount, storeMenu])
 
- 
+
 
   const setCart = () => {
     console.log("카트에 담는 radioButtons", radioButtons);
     const testParam = {
+      'storeId': route.params?.storeId,
       'storeNm': route.params?.storeInfo.storeName,
       'bigItem': route.params?.menu.bigItem,
+      'itemSize': radioButtons[0].smallItem,
       'description': route.params?.menu.description,
       'id': route.params?.menu.id,
       'image': route.params?.menu.image,
       'isExhausted': route.params?.menu.isExhausted,
+      'totalAmount': totalAmount,
       'price': totalPrice
     }
 
@@ -183,24 +192,6 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
               <AntIcon name="pluscircleo" size={20} style={{ color: '#00C1DE' }} />
             </TouchableOpacity>
           </View>
-
-
-          {/* <TouchableOpacity
-            style={{ borderWidth: 1, borderRadius: 50, height: 50, width: 200, justifyContent: 'center', alignContent: 'center' }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-              <TouchableOpacity
-                onPress={minusAmount}
-                disabled={totalAmount === 1 ? true : false}
-              ><Text style={{ fontSize: 30, color: totalAmount === 1 ? 'blue' : 'black' }}>-</Text></TouchableOpacity>
-              <Text style={{ fontSize: 15, color: 'black', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>
-                {totalAmount}
-              </Text>
-              <TouchableOpacity>
-                <Text onPress={plusAmount}
-                  style={{ fontSize: 30 }}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity> */}
         </View>
       </View>
       <View style={{
@@ -227,7 +218,6 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
           onPress={() => setChecked('second')}
         />
       </View>
-
       <View style={DetailOptionWrapper.MenuOption}>
         <ScrollView style={{ flexDirection: 'column' }}>
           {MenuOption.filter(option => option.checkLimit === -1).map((option: StoreMenuDetail, index: number) => {
@@ -236,7 +226,6 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
                 <Text style={{ padding: 10, fontSize: 17, fontWeight: 'bold', color: 'black' }}>
                   {option.smallCategory} (한개만 선택해주세요!)
                 </Text>
-
                 {option.smallItems.map((item: StoreMenuOption, index) => {
                   return (
                     <View key={index} style={{
@@ -244,23 +233,18 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
                       alignItems: 'center',
                       alignContent: 'center',
                       padding: 10,
-                      // justifyContent: 'space-between',
                     }}>
-                      {/* <RadioGroup
-                        radioButtons={[item]}
-                        onPress={onPressRadioButton}
-                      /> */}
-                      <RoundedCheckbox
-                        onPress={() => onChecked(item)}
-                        isChecked={false}
-                        checkedColor={checkList.filter((check: number) => check === item.id) ? "#00C1DE" : "transparent"}
-                      >
-                        <Icon
-                          size={15}
-                          name="check"
-                          color={checkList.filter((check: number) => check === item.id) ? "#fdfdfd" : "transparent"}
-                        />
-                      </RoundedCheckbox>
+                      <RadioButton.Item
+                        label=""
+                        value="dd"
+                        color="#00C1DE"
+                        status={checked2 === item.id ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                          onChecked(item);
+                          setChecked2(item.id)
+                        }
+                        }
+                      />
                       <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.smallItem}</Text>
                       {/* <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.description}</Text> */}
                       <Text style={{ paddingLeft: 50, color: 'black' }}>{item.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
@@ -270,43 +254,14 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
               </View>
             )
           })}
-          {/* <Text>{MenuOption.filter(option => option.checkLimit === 1).map(option => option.items.length)}</Text> */}
-          {/* <Text>
-            {MenuOption.filter(option =>
-              option.checkLimit === 1).map(option => option.items.map(item => item.name))}
-          </Text> */}
-
-
         </ScrollView>
-        {/* <View style={{
-          flex: 0.5,
-          borderStyle: 'solid',
-          borderBottomWidth: 1,
-          borderColor: 'lightgray',
-          width: '100%',
-        }}></View> */}
       </View>
-
-
       <View style={DetailOptionWrapper.footer}>
-        {/* <View style={{ height: 50, paddingLeft: 20, justifyContent: 'center', alignContent: 'center' }}>
-          <Text style={{
-            color: 'black', fontSize: 20, fontWeight: 'bold',
-            alignSelf: 'center', alignItems: 'center', textAlign: 'center'
-          }}>가격</Text>
-        </View>
-        <TouchableOpacity onPress={goCart}
-          style={{ backgroundColor: '#00C1DE', borderRadius: 10, height: 50, width: 250, justifyContent: 'center', alignContent: 'center' }}>
-          <Text style={{ fontSize: 20, color: 'white', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>
-          {totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원 담기
-          </Text>
-        </TouchableOpacity> */}
         <TouchableOpacity onPress={goBack}
           style={DetailOptionWrapper.ActivateButton}>
           <Text style={DetailOptionWrapper.ButtonText}>포장 카트에 담기</Text>
         </TouchableOpacity>
       </View>
-
     </View>
   )
 }
