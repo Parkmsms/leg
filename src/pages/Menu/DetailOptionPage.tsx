@@ -115,7 +115,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
       'storeId': route.params?.storeId,
       'storeNm': route.params?.storeInfo.storeName,
       'bigItem': route.params?.menu.bigItem,
-      'itemSize': radioButtons[0].smallItem,
+      'itemSize': radioButtons[0]?.smallItem,
       'description': route.params?.menu.description,
       'id': route.params?.menu.id,
       'image': route.params?.menu.image,
@@ -129,9 +129,13 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
     dispatch(pushCartList(testParam));
   }
   const goBack = () => {
-    setCart();
-    navigation.goBack();
-
+    if(MenuOption.length!==0 && checked2===undefined){
+      Alert.alert("옵션을 선택해주세요")
+    }
+    else{
+      setCart();
+      navigation.goBack();
+    }
   }
   const minusAmount = () => {
     setTotalAmount(totalAmount - 1);
@@ -202,29 +206,55 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
         <Text style={{ flex: 1, color: '#00C1DE', fontSize: 11, fontWeight: 'bold' }}>필수 선택</Text>
       </View>
       {/* 일회용품선택 */}
-      <View style={[DetailOptionWrapper.SubWrap, { paddingTop: 14, justifyContent: 'center' }]}>
-        <RadioButton.Item
-          label="O"
-          value="first"
-          color="#00C1DE"
-          status={checked === 'first' ? 'checked' : 'unchecked'}
-          onPress={() => setChecked('first')}
-        />
-        <RadioButton.Item
-          label="X"
+      <View style={{
+            flexDirection: "row",
+            alignItems: 'center',
+            alignContent: 'center',
+            paddingLeft:25,
+            paddingRight:25
+          }}>
+          <View style={{flex:5}}>
+            <Text>O</Text>
+          </View>
+          <View style={{flex:1}}>
+            <RadioButton.Item
+                label=""
+                value="first"
+                color="#00C1DE"
+                status={checked === 'first' ? 'checked' : 'unchecked'}
+                onPress={() => setChecked('first')}
+              />
+          </View>
+      </View>
+      <View style={{
+            flexDirection: "row",
+            alignItems: 'center',
+            alignContent: 'center',
+            paddingLeft:25,
+            paddingRight:25
+          }}>
+          <View style={{flex:5}}>
+            <Text>X</Text>
+          </View>
+          <View style={{flex:1}}>
+          <RadioButton.Item
+          label=""
           value="second"
           color="#00C1DE"
           status={checked === 'second' ? 'checked' : 'unchecked'}
           onPress={() => setChecked('second')}
         />
+          </View>
       </View>
-      <View style={DetailOptionWrapper.MenuOption}>
+      
+      
+      <View style={DetailOptionWrapper.MenuOption}> 
         <ScrollView style={{ flexDirection: 'column' }}>
           {MenuOption.filter(option => option.checkLimit === -1).map((option: StoreMenuDetail, index: number) => {
             return (
               <View key={index}>
-                <Text style={{ padding: 10, fontSize: 17, fontWeight: 'bold', color: 'black' }}>
-                  {option.smallCategory} (한개만 선택해주세요!)
+                <Text style={[DetailOptionWrapper.textFont, { color: '#000000', fontWeight: 'bold', fontSize: 16 }]}>
+                  {option.smallCategory}
                 </Text>
                 {option.smallItems.map((item: StoreMenuOption, index) => {
                   return (
@@ -232,8 +262,15 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
                       flexDirection: "row",
                       alignItems: 'center',
                       alignContent: 'center',
-                      padding: 10,
+                      paddingLeft:10,
+                      paddingRight:10
                     }}>
+                      <View style={{flex:5,flexDirection:'row'}}>
+                      <Text style={{  color: 'black'  }}>{item.smallItem}</Text>
+                      {/* <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.description}</Text> */}
+                      <Text style={{ color: 'black',}}>({item.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원)</Text>
+                      </View>
+                      <View style={{flex:1}}>
                       <RadioButton.Item
                         label=""
                         value="dd"
@@ -245,9 +282,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
                         }
                         }
                       />
-                      <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.smallItem}</Text>
-                      {/* <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.description}</Text> */}
-                      <Text style={{ paddingLeft: 50, color: 'black' }}>{item.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</Text>
+                      </View>
                     </View>
                   )
                 })}
@@ -277,12 +312,13 @@ const DetailOptionWrapper = StyleSheet.create({
   },
   MenuOption: {
     flex: 4,
-    padding: 10
+    padding: 14
   },
   footer: {
     flex: 1,
     flexDirection: 'row',
     padding: 10,
+    marginBottom:20,
     justifyContent: 'center',
     alignContent: 'center',
     borderTopLeftRadius: 30,

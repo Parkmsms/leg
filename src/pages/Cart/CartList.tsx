@@ -52,7 +52,7 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
   const [radioButtons, setRadioButtons] = useState<StoreMenuOption[]>([]);
   const [cart, setCart] = useState<PostCart>();
   const [request, setRequest] = useState<Item[]>([]);
-  const [isAllChecked, setIsAllChecked] = useState(false);
+  const [isAllChecked, setIsAllChecked] = useState(true);
   const [checkList, setCheckList] = useState<number[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
@@ -74,12 +74,16 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
   //     amount: route.params?.amount
   //   ]);
   // }, [])
-  const allCheck = () => {
-
+  const allCheck = (e:any) => {
+    if(e){
+      let test= radioButtons.map(radio => radio.id)
+      setCheckList(test)
+    }else{
+      setCheckList([])
+    }
   }
   const onChecked = (id: number) => {
     console.log("선택한 ID", id);
-
 
     if (checkList.some((item: number) => item === id)) {
       console.log("제거");
@@ -118,18 +122,24 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
     })
   }
   useEffect(() => {
-
     console.log("세부메뉴아이템 ", route.params?.smallItem);
-
     //세부메뉴아이템 설정
     setRadioButtons(route.params?.smallItem);
-
     //총액 계산
-    setTotalPrice(route.params?.smallItem.map((item: any) => item.price).reduce((prev: any, curr: any) => prev + curr, 0))
-
-
-
-
+    if(checkList.length ===0 ){
+      // setTotalPrice(route.params?.smallItem.map((item: any) => item.price).reduce((prev: any, curr: any) => prev + curr, 0))
+      setTotalPrice(0);
+    }else{
+      let selectFullPrice = 0;
+      let checkItemPrice = [];
+      for(var j=0; j<checkList.length; j++){
+        checkItemPrice.push(radioButtons.filter((item)=>item.id === checkList[j]).map((item)=>item.price));
+      }
+      for(var i in checkItemPrice){
+        selectFullPrice += checkItemPrice[i][0];
+      }
+      setTotalPrice(selectFullPrice);
+    }
   }, [checkList]);
 
   return (
@@ -141,15 +151,15 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
           style={{ margin: 3 }}
           onCheckColor="#00C1DE"
           disabled={false}
-          onValueChange={allCheck}
-          value={isAllChecked}
+          onValueChange={(e)=>allCheck(e)}
+          value={checkList.length === radioButtons.length ? true : false}
         // onChange={allAgreeHnalder} 
         />
         <Text style={{
           fontSize: 15, fontWeight: 'bold', color: 'black',
           fontFamily: 'Apple SD Gothic Neo'
         }}>
-          전체 선택 ( {checkList.length} / {checkList.length} )</Text>
+          전체 선택</Text>
       </View>
 
       <View style={{
@@ -186,8 +196,8 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                             onCheckColor="#00C1DE"
                             tintColors={{ true: '#00C1DE', false: 'black' }}
                             disabled={false}
-                            onValueChange={() => onChecked(storeMenu.id)}
-                            value={checkList.some((check: number) => check === storeMenu.id) ? true : false}
+                            onValueChange={() => onChecked(cartItem.id)}
+                            value={checkList.includes(cartItem.id) ? true : false}
                           // onChange={() => onChecked(storeMenu.id)}
                           />
                         </View>
@@ -216,17 +226,12 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                             color: '#000000',
                             fontWeight: 'bold'
                           }]}>{cartItem.storeNm}</Text>
-
-
                           <Text style={[CartWrapper.FontText,
                           {
                             marginBottom: 10,
                             color: '#000000',
                             fontWeight: '500',
                           }]}>{cartItem.bigItem} {cartItem.itemSize} x {cartItem.totalAmount} </Text>
-
-
-
                           <Text style={[CartWrapper.FontText,
                           {
                             color: '#00C1DE',
@@ -263,20 +268,13 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                         </View>
                       </View>
                     </View>
-
                   </View >
                 </SafeAreaView>
               )
             }
             )}
         </ScrollView>
-
-
-
       </View>
-
-
-
       <View style={{ flex: 0.7, flexDirection: 'row', padding: 20, justifyContent: 'center', alignContent: 'center' }}>
         {/* <View style={{ height: 50, justifyContent: 'center', alignContent: 'center' }}>
           <Text style={{

@@ -577,11 +577,7 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
                   <Text style={{
                     color: '#00C1DE',
                     fontWeight: 'bold',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    alignContent: 'center',
-                    textAlign: 'center',
-                    position: 'absolute'
+                    position: 'absolute',
                   }}>
                     {radioButtons.length}
                   </Text>

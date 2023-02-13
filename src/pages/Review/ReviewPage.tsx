@@ -1,5 +1,5 @@
 import React, { useEffect, useState, } from "react";
-import { Keyboard, Alert, Button, PermissionsAndroid, Dimensions, Image, Linking, NativeScrollEvent, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
+import { Keyboard, Alert, Button, PermissionsAndroid, Dimensions, Image, Platform, NativeSyntheticEvent, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 // import { SaveReviewAPI, getAccessToken } from "../../config/AxiosFunction";
 import { ReviewInfo, initialReviewInfo } from "../../models/reviewInfo";
@@ -42,32 +42,22 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
   }
   const saveReview = async () => {
     const accessToken = await getAccessToken('accessToken');
+    const headers = { Authorization: accessToken ? 'Bearer ' + accessToken : '', }
 
     await ImageResizer.createResizedImage(
       request.pictureUrl.uri, 240, 240, 'JPEG', 50, 0)
       .then((response) => {
         console.log("response",response);
-
-        const getBlob = async (fileUri: string) => {
-          const resp = await fetch(fileUri);
-          const imageBody = await resp.blob();
-          return imageBody;
-        };
-         
-        console.log("getBlob Test", getBlob(response.uri))
         //formData
-        const file = new FormData();
+        const formData: FormData = new FormData();
 
         //ImageInfo
-        let imageInfo = {
-          uri: response.uri, // 
-          type: request.pictureUrl.type,  // image/JPEG
-        }
-        file.append("images", imageInfo);
+        formData.append('file',{
+          name:response.name,
+          uri: Platform.OS === 'ios' ? response.uri.replace('file://','') : response.uri,
+          type:request.pictureUrl.type
+        })
 
-
-
-        //blob setting 
         let data = {
           orderId: route.params?.orderId,
           comment: request.comment,
@@ -75,33 +65,11 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
           images: [response.name]
         }
 
-        console.log("test1", data)
-        // const blob = new Blob([JSON.stringify(data)], { type: "application/json", lastModified: 0 })
-
-        //fetch
-        // fetch('http://0giri.com/api/reviews', {
-        //   method: 'post',
-        //   body: formData,
-        //   headers: {
-        //     'Content-Type': 'multipart/form-data',
-        //     Authorization: accessToken ? 'Bearer ' + accessToken : '',
-        //   },
-        // }).then(res => res.json())
-        //   .then((res) => {
-        //     console.log(`${JSON.stringify(res)}! , image 업로드`)
-
-        //   })
-        //   .catch(err => {
-        //     console.log("catch 에러", err)
-        //   })
-
-        const headers = { Authorization: accessToken ? 'Bearer ' + accessToken : '', }
-
         axios.post('http://0giri.com/api/reviews', data, { headers: headers })
           .then(res => {
             const presignedUrl = res.data[0].preSignedUrl
             console.log(presignedUrl);
-            uploadImageToS3(presignedUrl, getBlob(response.uri));
+            uploadImageToS3(presignedUrl, formData);
           }).catch(err => {
             console.log("first", err)
           })
@@ -109,8 +77,12 @@ const ReviewPage = ({ isClicked, navigation, route }: ReviewWriteProps) => {
         );
   }
 
-  const uploadImageToS3 = (url: string, file: any) => {
-    axios.put(url, file)
+  const uploadImageToS3 = (url: string, formData: FormData) => {
+    // const header = {headers : { 'Content-type':'multipart/form-data'}};
+
+    console.log("url", url, "\nfile", formData)
+
+    axios.put(url, formData)
       .then((res) => console.log(res))
       .catch((err) => 
       console.log("second", err));
