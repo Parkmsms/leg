@@ -397,8 +397,6 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
                 {/* 카테고리 필터링 */}
                 <SelectDropdown
                   data={bigCategory}
-                  // defaultValueByIndex={1}
-                  // defaultValue={'Egypt'}
                   onSelect={(selectedItem, index) => {
                     console.log(selectedItem, index);
                   }}
