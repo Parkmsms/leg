@@ -66,7 +66,6 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   }
 
   const onChecked = (choose: StoreMenuOption) => {
-
     if (checkList.some((item: number) => item === choose.id)) {
       console.log(checkList.filter((item: number) => item !== choose.id));
       // 선택한 id와 같지 않은것을 걸러내 

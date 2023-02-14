@@ -4,9 +4,12 @@ import { CartPost, getAccessToken } from "../../config/AxiosFunction";
 import { initialStoreInfo, StoreInfo } from "../../models/storeInfo";
 import { initialStoreMenu1, StoreMenu1 } from "../../models/storemenu";
 import CheckBox from "@react-native-community/checkbox";
-import { useSelector, useDispatch } from 'react-redux';
 import { RoundedCheckbox, PureRoundedCheckbox } from "react-native-rounded-checkbox";
 import Icon from "react-native-vector-icons/Entypo";
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  deleteCartList,
+} from '../../slices/item';
 
 type CartListPageProps = {
   route: any;
@@ -56,24 +59,6 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
   const [checkList, setCheckList] = useState<number[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
-  // const postCart = async () => {
-  //   const accessToken = await getAccessToken('accessToken');
-  //   const response = await CartPost(
-  //     accessToken,
-  //     route.params?.postId,
-  //     request
-  //   );
-  //   // setCart(response.data);
-  // }
-
-  // useEffect(() => {
-  //   request.push()
-  //   setRequest([
-  //     bigItemId: storeMenu.id,
-  //     smallItemIds: radioButtons.map(radio => radio.id),
-  //     amount: route.params?.amount
-  //   ]);
-  // }, [])
   const allCheck = (e:any) => {
     if(e){
       let test= radioButtons.map(radio => radio.id)
@@ -112,6 +97,11 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
       totalPrice: route.params?.price
     })
   }
+  const delCart = (item:number) => {
+    console.log("delete Click")
+    dispatch(deleteCartList(item));
+  }
+
   const goOrder = () => {
     navigation.navigate('OrderList', {
       storeInfo: storeInfo,
@@ -240,6 +230,12 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                             {cartItem.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
                           </Text>
                         </View>
+                        <TouchableOpacity 
+                        onPress={ () => delCart(cartItem.id)}
+                        style={{marginLeft:50}}
+                        >
+                          <Text>X</Text>
+                        </TouchableOpacity>
                       </View>
                       <View style={{
                         flex: 0.1,

@@ -17,14 +17,15 @@ export const item = createSlice({
     },
     //카트에 상품 삭제
     deleteCartList: (state, action) => {
-      state.cartItemList.splice(action.payload)
+      // state.cartItemList.splice(action.payload)
+      state.cartItemList.filter((cart:any)=> cart.id !== action.payload.id)
       //아예다제거
       // state.cartItemList.slice();
     }
   },
 
 });
-export const { pushCartList } = item.actions;
+export const { pushCartList,deleteCartList } = item.actions;
 
 export const selectCartItemList = (state: any) => state.item.cartItemList;
 
