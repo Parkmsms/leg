@@ -134,9 +134,10 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
         console.log("다른상점임 ..")
         Alert.alert("같은 상점의 상품만 카트에 담을 수 있습니다.")
       }
-      else if (cartItemList.map((item: any) => item.id).includes(route.params?.menu.id)) {
-        Alert.alert("중복담기 불가능합니다!", route.params?.menu.bigItem)
-      } else {
+      // else if (cartItemList.map((item: any) => item.id).includes(route.params?.menu.id)) {
+      //   Alert.alert("중복담기 불가능합니다!", route.params?.menu.bigItem)
+      // } 
+      else {
         setCart();
         navigation.goBack();
       }

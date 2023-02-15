@@ -97,11 +97,12 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
       totalPrice: route.params?.price
     })
   }
-  const delCart = (item:number) => {
+  const delCart = (item:number,price:number) => {
     console.log("delete Click")
-    setRadioButtons(radioButtons.filter((radio: StoreMenuOption) => radio.id !== item));
+    let payload = {item:item,price:price}
+    setRadioButtons(radioButtons.filter((radio: StoreMenuOption) =>  radio.price !== price&& radio.id === item  ));
     // setCheckList(checkList.filter((item: number) => item !== item));
-    dispatch(deleteCartList(item));
+    dispatch(deleteCartList(payload));
   }
 
   const goOrder = () => {
@@ -233,7 +234,7 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                           </Text>
                         </View>
                         <TouchableOpacity 
-                        onPress={ () => delCart(cartItem.id)}
+                        onPress={ () => delCart(cartItem.id,cartItem.price)}
                         style={{marginLeft:1,position:'absolute',left:width*0.85}}
                         >
                           <Text style={[CartWrapper.FontText,{fontSize:16}]}>✖</Text>

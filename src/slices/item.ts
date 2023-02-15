@@ -14,42 +14,13 @@ export const item = createSlice({
 
     //카트에 상품 추가
     pushCartList: (state = initialState, action) => {
-      // console.log(action.payload);
-      // for (let i in state.cartList.length) {
-      //   if (state.cartList[i].includes(action.payload.id)) {
-      //     state.cartItemList.splice(i, 1)
-      //     state.cartItemList.push({
-      //       'storeId': action.payload.id,
-      //       'storeNm': action.payload.storeName,
-      //       'bigItem': route.params?.menu.bigItem,
-      //       'itemSize': radioButtons[0]?.smallItem,
-      //       'description': route.params?.menu.description,
-      //       'id': route.params?.menu.id,
-      //       'image': route.params?.menu.image,
-      //       'isExhausted': route.params?.menu.isExhausted,
-      //       'totalAmount': totalAmount,
-      //       'price': totalPrice
-      //     })
-      //   }
-
-      // 'storeId': route.params?.storeId,
-      // 'storeNm': route.params?.storeInfo.storeName,
-      // 'bigItem': route.params?.menu.bigItem,
-      // 'itemSize': radioButtons[0]?.smallItem,
-      // 'description': route.params?.menu.description,
-      // 'id': route.params?.menu.id,
-      // 'image': route.params?.menu.image,
-      // 'isExhausted': route.params?.menu.isExhausted,
-      // 'totalAmount': totalAmount,
-      // 'price': totalPrice
-
-      // }
       state.cartItemList.push(action.payload)
     },
     //카트에 상품 삭제
     deleteCartList: (state, action) => {
+      console.log("삭제페이로드",action.payload)
       state.cartItemList.forEach((item: any, index: number) => {
-        if (item.id === action.payload) {
+        if (item.id === action.payload.item && item.price === action.payload.price) {
           state.cartItemList.splice(index, 1);
         }
       })
