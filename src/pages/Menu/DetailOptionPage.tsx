@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RadioButton } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
 import {
+  selectCartItemList,
   pushCartList,
 } from '../../slices/item';
 
@@ -37,7 +38,7 @@ const width = Dimensions.get('window').width;
 
 const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   const dispatch = useDispatch();
-
+  const cartItemList = useSelector(selectCartItemList);
   const [storeMenu, setStoreMenu] = useState<StoreMenu1>(initialStoreMenu1);
   const [MenuOption, setMenuOption] = useState<StoreMenuDetail[]>([]);
   // const [detailMenu, setDetailMenu] = useState<StoreMenuOption[]>([]);
@@ -102,13 +103,12 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
       checkList.shift();
       setCheckList(checkList);
     }
-
-
   }, [route, radioButtons, sum, totalAmount, storeMenu])
 
 
 
   const setCart = () => {
+
     console.log("카트에 담는 radioButtons", radioButtons);
     const testParam = {
       'storeId': route.params?.storeId,
@@ -123,17 +123,23 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
       'price': totalPrice
     }
 
-    // const setCartParam = cartItemList.push(testParam)
-
     dispatch(pushCartList(testParam));
   }
   const goBack = () => {
-    if(MenuOption.length!==0 && checked2===undefined){
+    if (MenuOption.length !== 0 && checked2 === undefined) {
       Alert.alert("옵션을 선택해주세요")
     }
-    else{
-      setCart();
-      navigation.goBack();
+    else {
+      if (cartItemList.length >= 1 && !cartItemList.map((item: any) => item.storeId).includes(route.params?.storeId)) {
+        console.log("다른상점임 ..")
+        Alert.alert("같은 상점의 상품만 카트에 담을 수 있습니다.")
+      }
+      else if (cartItemList.map((item: any) => item.id).includes(route.params?.menu.id)) {
+        Alert.alert("중복담기 불가능합니다!", route.params?.menu.bigItem)
+      } else {
+        setCart();
+        navigation.goBack();
+      }
     }
   }
   const minusAmount = () => {
@@ -206,48 +212,48 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
       </View>
       {/* 일회용품선택 */}
       <View style={{
-            flexDirection: "row",
-            alignItems: 'center',
-            alignContent: 'center',
-            paddingLeft:25,
-            paddingRight:25
-          }}>
-          <View style={{flex:5}}>
-            <Text>O</Text>
-          </View>
-          <View style={{flex:1}}>
-            <RadioButton.Item
-                label=""
-                value="first"
-                color="#00C1DE"
-                status={checked === 'first' ? 'checked' : 'unchecked'}
-                onPress={() => setChecked('first')}
-              />
-          </View>
+        flexDirection: "row",
+        alignItems: 'center',
+        alignContent: 'center',
+        paddingLeft: 25,
+        paddingRight: 25
+      }}>
+        <View style={{ flex: 5 }}>
+          <Text>O</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <RadioButton.Item
+            label=""
+            value="first"
+            color="#00C1DE"
+            status={checked === 'first' ? 'checked' : 'unchecked'}
+            onPress={() => setChecked('first')}
+          />
+        </View>
       </View>
       <View style={{
-            flexDirection: "row",
-            alignItems: 'center',
-            alignContent: 'center',
-            paddingLeft:25,
-            paddingRight:25
-          }}>
-          <View style={{flex:5}}>
-            <Text>X</Text>
-          </View>
-          <View style={{flex:1}}>
+        flexDirection: "row",
+        alignItems: 'center',
+        alignContent: 'center',
+        paddingLeft: 25,
+        paddingRight: 25
+      }}>
+        <View style={{ flex: 5 }}>
+          <Text>X</Text>
+        </View>
+        <View style={{ flex: 1 }}>
           <RadioButton.Item
-          label=""
-          value="second"
-          color="#00C1DE"
-          status={checked === 'second' ? 'checked' : 'unchecked'}
-          onPress={() => setChecked('second')}
-        />
-          </View>
+            label=""
+            value="second"
+            color="#00C1DE"
+            status={checked === 'second' ? 'checked' : 'unchecked'}
+            onPress={() => setChecked('second')}
+          />
+        </View>
       </View>
-      
-      
-      <View style={DetailOptionWrapper.MenuOption}> 
+
+
+      <View style={DetailOptionWrapper.MenuOption}>
         <ScrollView style={{ flexDirection: 'column' }}>
           {MenuOption.filter(option => option.checkLimit === -1).map((option: StoreMenuDetail, index: number) => {
             return (
@@ -261,26 +267,26 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
                       flexDirection: "row",
                       alignItems: 'center',
                       alignContent: 'center',
-                      paddingLeft:10,
-                      paddingRight:10
+                      paddingLeft: 10,
+                      paddingRight: 10
                     }}>
-                      <View style={{flex:5,flexDirection:'row'}}>
-                      <Text style={{  color: 'black'  }}>{item.smallItem}</Text>
-                      {/* <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.description}</Text> */}
-                      <Text style={{ color: 'black',}}>({item.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원)</Text>
+                      <View style={{ flex: 5, flexDirection: 'row' }}>
+                        <Text style={{ color: 'black' }}>{item.smallItem}</Text>
+                        {/* <Text style={{ paddingLeft: 50, color: 'black', textAlign: 'center', alignItems: 'center', alignContent: 'center', alignSelf: 'center' }}>{item.description}</Text> */}
+                        <Text style={{ color: 'black', }}>({item.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원)</Text>
                       </View>
-                      <View style={{flex:1}}>
-                      <RadioButton.Item
-                        label=""
-                        value="dd"
-                        color="#00C1DE"
-                        status={checked2 === item.id ? 'checked' : 'unchecked'}
-                        onPress={() => {
-                          onChecked(item);
-                          setChecked2(item.id)
-                        }
-                        }
-                      />
+                      <View style={{ flex: 1 }}>
+                        <RadioButton.Item
+                          label=""
+                          value="dd"
+                          color="#00C1DE"
+                          status={checked2 === item.id ? 'checked' : 'unchecked'}
+                          onPress={() => {
+                            onChecked(item);
+                            setChecked2(item.id)
+                          }
+                          }
+                        />
                       </View>
                     </View>
                   )
@@ -317,7 +323,7 @@ const DetailOptionWrapper = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     padding: 10,
-    marginBottom:20,
+    marginBottom: 20,
     justifyContent: 'center',
     alignContent: 'center',
     borderTopLeftRadius: 30,
