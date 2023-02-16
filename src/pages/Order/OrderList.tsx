@@ -29,9 +29,10 @@ type Coupon = {
   isTargeted: boolean;
   storeId: number;
 }[];
+const width = Dimensions.get('window').width;
+
 const OrderList = ({ navigation, route }: OrderListPagePros) => {
   const [totalAmount, setTotalAmount] = useState<number>(0);
-  const width = Dimensions.get('window').width;
   const [request, setRequest] = useState<string>('');
   const [storeInfo, setStoreInfo] = useState<StoreInfo>(initialStoreInfo);
   const [order, setOrder] = useState<Order>({
@@ -142,70 +143,59 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
     <ScrollView style={OrderWrapper.MainContainer}>
 
       <View style={{ paddingTop: 10 }}>
-        <Text style={{ color: 'black', fontFamily: 'Apple SD Gothic Neo', fontSize: 20, fontWeight: '800' }}>주문상품 총 1개</Text>
-        <View style={{
-          paddingTop: 20,
-          flex: 0.1,
-          borderStyle: 'solid',
-          borderBottomWidth: 2,
-          borderColor: 'lightgray',
-          width: '100%',
-          justifyContent: 'center',
-          alignContent: 'center'
-        }}></View>
+        <View style={{flexDirection:'row'}}>
+          <Text style={OrderWrapper.BigTitle}>주문상품 총 </Text>
+          <Text style={[OrderWrapper.BigTitle,{color:'#00C1DE'}]}>1</Text>
+          <Text style={OrderWrapper.BigTitle}>개</Text>
+        </View>
+        <View style={OrderWrapper.Line}></View>
 
       </View>
 
       <View style={{ paddingTop: 10 }}>
-        <Text style={{ color: 'black', fontFamily: 'Apple SD Gothic Neo', fontSize: 20, fontWeight: '800' }}>
+        <Text style={OrderWrapper.BigTitle}>
           픽업시간 설정
         </Text>
 
-        <Text style={{ paddingTop: 10, fontWeight: 'bold' }}>
-          몇분 후에 픽업하길 원하시나요? 설정해주세요.</Text>
+        <Text style={[OrderWrapper.SmallTitle,{marginTop:3}]}>
+          몇분 후에 픽업하길 원하시나요? 픽업시간을 설정해주세요.</Text>
         <View style={{
-          flexDirection: 'row', display: 'flex', justifyContent: 'space-between', alignSelf: 'center', alignItems: 'center', alignContent: 'center'
+          flexDirection: 'row',  justifyContent: 'space-between', alignSelf: 'flex-end', alignItems: 'center', alignContent: 'center'
         }}>
           <TouchableOpacity
             onPress={minusAmount}
             disabled={storeInfo.cookTimeAvg === 0 ? true : false}>
-            <AntIcon name="minuscircleo" size={25} style={{ color: '#00C1DE' }} />
+            <AntIcon name="minuscircleo" size={20} style={{ color: '#00C1DE' }} />
           </TouchableOpacity>
-          <Text style={{ fontSize: 25, color: '#00C1DE', padding: 10 }}>
+          <Text style={{ fontSize: 20, color: '#00C1DE', padding: 3 }}>
             {storeInfo.cookTimeAvg}분
           </Text>
           <TouchableOpacity
             onPress={plusAmount}>
-            <AntIcon name="pluscircleo" size={25} style={{ color: '#00C1DE' }} />
+            <AntIcon name="pluscircleo" size={20} style={{ color: '#00C1DE' }} />
           </TouchableOpacity>
         </View>
-        <View style={{
-          paddingTop: 10,
-          flex: 0.1,
-          borderStyle: 'solid',
-          borderBottomWidth: 2,
-          borderColor: 'lightgray',
-          width: '100%',
-          justifyContent: 'center',
-          alignContent: 'center'
-        }}></View>
+        <View style={OrderWrapper.Line}></View>
       </View>
 
       <View style={{ paddingTop: 10 }}>
-        <Text style={{ color: 'black', fontFamily: 'Apple SD Gothic Neo', fontSize: 20, fontWeight: '800' }}>
+        <Text style={OrderWrapper.BigTitle}>
           요청사항</Text>
         <TextInput
           multiline={true}
           numberOfLines={10}
           style={{
-            width: width * 0.9,
-            height: width * 0.3,
+            height: width * 0.2,
             backgroundColor: 'rgba(0, 193, 222, 0.12)',
             borderRadius: 10,
             textAlignVertical: 'top',
-            margin: 10,
             borderColor: 'rgba(124, 0, 0, 0.05)',
             borderWidth: 1,
+            color: '#8F8F8F',
+            fontFamily: 'Apple SD Gothic Neo',
+            fontSize: 11,
+            marginTop:5,
+            fontWeight: '500'
           }}
           blurOnSubmit={false}
           onChangeText={(e) => handleRequest(e)}
@@ -213,130 +203,71 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
           placeholderTextColor="black"
           underlineColorAndroid="transparent"
         />
-        <View style={{
-          paddingTop: 20,
-          flex: 0.1,
-          borderStyle: 'solid',
-          borderBottomWidth: 2,
-          borderColor: 'lightgray',
-          width: '100%',
-          justifyContent: 'center',
-          alignContent: 'center'
-        }}></View>
+        <View style={OrderWrapper.Line}></View>
       </View>
 
       <View style={{ paddingTop: 10 }}>
-        <Text style={{ color: 'black', fontFamily: 'Apple SD Gothic Neo', fontSize: 20, fontWeight: '800' }}>
+        <Text style={OrderWrapper.BigTitle}>
           쿠폰 / 포인트
         </Text>
 
         <View style={{ flexDirection: 'row', paddingTop: 10, }}>
-          <Text style={{ paddingRight: 100 }}>
-            쿠폰
-          </Text>
-          <Text style={{ paddingRight: 30 }}>
-            전체 {coupon.length}장, 적용가능 {coupon.length} 장
+          <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,fontWeight:'700'}]}>
+            쿠폰 (전체 {coupon.length}장, 적용가능 {coupon.length} 장)
           </Text>
           <TouchableOpacity
             onPress={openModal}
-            style={{ borderWidth: 2, borderColor: 'gray', borderRadius: 5 }}>
+            style={{ borderWidth: 1, borderColor: '#BABABA', borderRadius: 3,flex:1,alignItems:'center',backgroundColor:'#EFEFEF' }}>
             <View>
-              <Text style={{ fontSize: 12, fontWeight: 'bold', padding: 5 }}>
+              <Text style={[OrderWrapper.SmallTitle,{color:'#8F8F8F'}]}>
                 쿠폰 선택
               </Text>
             </View>
           </TouchableOpacity>
         </View>
 
-        <View style={{
-          paddingTop: 5,
-          flex: 0.1,
-          borderStyle: 'solid',
-          borderBottomWidth: 2,
-          borderColor: 'lightgray',
-          width: '70%',
-          justifyContent: 'center',
-          alignContent: 'center'
-        }}></View>
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={{ paddingTop: 10, paddingRight: 100 }}>
-            포인트
-          </Text>
-          <Text style={{ paddingTop: 10 }}>
-            0 P
-          </Text>
-        </View>
-
-        <View style={{
-          paddingTop: 5,
-          flex: 0.1,
-          borderStyle: 'solid',
-          borderBottomWidth: 2,
-          borderColor: 'lightgray',
-          width: '70%',
-          justifyContent: 'center',
-          alignContent: 'center'
-        }}></View>
-
-        <Text style={{ paddingTop: 10 }}>
-          잔여 포인트 0 P</Text>
-        <View style={{
-          paddingTop: 20,
-          flex: 0.1,
-          borderStyle: 'solid',
-          borderBottomWidth: 2,
-          borderColor: 'lightgray',
-          width: '100%',
-          justifyContent: 'center',
-          alignContent: 'center'
-        }}></View>
+        <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,paddingTop:5,fontWeight:'700'}]}>
+          포인트 (0 P)
+        </Text>
+        <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,paddingTop:5,fontWeight:'700'}]}>
+          잔여 포인트 (0 P)</Text>
       </View>
 
       <View style={{ paddingTop: 10 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 20 }}>
-          <Text style={{ color: 'black', fontFamily: 'Apple SD Gothic Neo', fontSize: 20, fontWeight: '800' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text style={OrderWrapper.BigTitle}>
             총 결제금액</Text>
           <Text style={{ fontSize: 20, color: '#00C1DE', fontWeight: 'bold' }}>
             {route.params?.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10 }}>
-          <Text style={{ color: 'gray', fontFamily: 'Apple SD Gothic Neo', fontSize: 15, fontWeight: '800' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+          <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,fontWeight:'700'}]}>
             상품금액</Text>
           <Text style={{ fontSize: 15, color: 'black', fontWeight: 'bold' }}>
             {route.params?.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10 }}>
-          <Text style={{ color: 'gray', fontFamily: 'Apple SD Gothic Neo', fontSize: 15, fontWeight: '800' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between',}}>
+          <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,fontWeight:'700'}]}>
             쿠폰 할인</Text>
           <Text style={{ fontSize: 15, color: 'black', fontWeight: 'bold' }}>
             0원
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10 }}>
-          <Text style={{ color: 'gray', fontFamily: 'Apple SD Gothic Neo', fontSize: 15, fontWeight: '800' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+          <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,fontWeight:'700'}]}>
             포인트 할인</Text>
           <Text style={{ fontSize: 15, color: 'black', fontWeight: 'bold' }}>
             0원
           </Text>
         </View>
-        <View style={{
-          paddingTop: 20,
-          flex: 0.1,
-          borderStyle: 'solid',
-          borderBottomWidth: 2,
-          borderColor: 'lightgray',
-          width: '100%',
-          justifyContent: 'center',
-          alignContent: 'center'
-        }}></View>
-
+        <View style={OrderWrapper.Line}></View>
       </View>
 
       <View style={{ paddingTop: 10 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10 }}>
-          <Text style={{ color: 'black', fontFamily: 'Apple SD Gothic Neo', fontSize: 20, fontWeight: '800' }}>
+          <Text style={OrderWrapper.BigTitle}>
             결제 수단
           </Text>
         </View>
@@ -391,7 +322,27 @@ const OrderWrapper = StyleSheet.create({
   MainContainer: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 10
+    paddingLeft:25,
+    paddingRight:25,
+    paddingTop:10
+  },
+  Line:{
+    paddingTop: 10,
+    borderStyle: 'solid',
+    borderBottomWidth: 1,
+    borderColor: '#E7E7E7',
+  },
+  BigTitle:{
+    color: 'black',
+    fontFamily: 'Apple SD Gothic Neo',
+    fontSize: 16,
+    fontWeight: '800'
+  },
+  SmallTitle:{
+    color: '#8F8F8F',
+    fontFamily: 'Apple SD Gothic Neo',
+    fontSize: 11,
+    fontWeight: '500'
   }
 })
 export default OrderList;
