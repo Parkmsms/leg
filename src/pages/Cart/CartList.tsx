@@ -100,7 +100,7 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
   const delCart = (item:number,price:number) => {
     console.log("delete Click")
     let payload = {item:item,price:price}
-    setRadioButtons(radioButtons.filter((radio: StoreMenuOption) =>  radio.price !== price&& radio.id === item  ));
+    setRadioButtons(radioButtons.filter((radio: StoreMenuOption) =>  radio.id+radio.price !== item+price ));
     // setCheckList(checkList.filter((item: number) => item !== item));
     dispatch(deleteCartList(payload));
   }

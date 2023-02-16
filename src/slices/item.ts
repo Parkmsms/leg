@@ -14,6 +14,7 @@ export const item = createSlice({
 
     //카트에 상품 추가
     pushCartList: (state = initialState, action) => {
+      console.log("push",action.payload)
       state.cartItemList.push(action.payload)
     },
     //카트에 상품 삭제

@@ -111,6 +111,7 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
 
     console.log("카트에 담는 radioButtons", radioButtons);
     const testParam = {
+      'cartNm':route.params?.menu.id+totalPrice,
       'storeId': route.params?.storeId,
       'storeNm': route.params?.storeInfo.storeName,
       'bigItem': route.params?.menu.bigItem,
@@ -122,7 +123,6 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
       'totalAmount': totalAmount,
       'price': totalPrice
     }
-
     dispatch(pushCartList(testParam));
   }
   const goBack = () => {
