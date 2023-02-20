@@ -12,7 +12,9 @@ import { RadioButton } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   selectCartItemList,
+  selectCartId,
   pushCartList,
+  cartIdAdd
 } from '../../slices/item';
 
 type DetailOptionPageProps = {
@@ -39,12 +41,11 @@ const width = Dimensions.get('window').width;
 const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
   const dispatch = useDispatch();
   const cartItemList = useSelector(selectCartItemList);
+  const cartId = useSelector(selectCartId);
   const [storeMenu, setStoreMenu] = useState<StoreMenu1>(initialStoreMenu1);
   const [MenuOption, setMenuOption] = useState<StoreMenuDetail[]>([]);
   // const [detailMenu, setDetailMenu] = useState<StoreMenuOption[]>([]);
   const [checkList, setCheckList] = useState<number[]>([]);
-  const [cartList, setCartList] = useState<number[]>([]);
-  let arr: StoreMenuOption[] = [];
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [totalAmount, setTotalAmount] = useState<number>(1);
   const [contentLimit, setContentlimit] = useState<number>(20);
@@ -109,9 +110,8 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
 
   const setCart = () => {
 
-    console.log("카트에 담는 radioButtons", radioButtons);
     const testParam = {
-      'cartNm':route.params?.menu.id+totalPrice,
+      'cartId': cartId,
       'storeId': route.params?.storeId,
       'storeNm': route.params?.storeInfo.storeName,
       'bigItem': route.params?.menu.bigItem,
@@ -123,6 +123,8 @@ const DetailOptionPage = ({ navigation, route }: DetailOptionPageProps) => {
       'totalAmount': totalAmount,
       'price': totalPrice
     }
+
+    dispatch(cartIdAdd(1));
     dispatch(pushCartList(testParam));
   }
   const goBack = () => {

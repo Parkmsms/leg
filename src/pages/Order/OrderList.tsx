@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { RoundedCheckbox } from "react-native-rounded-checkbox";
 import AntIcon from "react-native-vector-icons/AntDesign";
-import { CartGet, CartPost, getAccessToken, getCouponList } from "../../config/AxiosFunction";
+import { CartGet, CartPost, getAccessToken, getCouponList, UserSimpleAPI } from "../../config/AxiosFunction";
 import { initialStoreInfo, StoreInfo } from "../../models/storeInfo";
 import Icon from "react-native-vector-icons/Entypo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomPopup from "../../components/Modal/BottomPopUp";
+import { RadioButton } from 'react-native-paper';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { initialUserSimpleInfo, UserSimpleInfo } from "../../models/userProfile";
 
 type OrderListPagePros = {
   route: any;
@@ -19,22 +22,30 @@ type Order = {
   totalPrice: number
 }
 type Coupon = {
-  id: number;
-  isFixed: boolean;
-  amount: number;
-  percentage: number;
-  name: string;
-  expiration: number;
-  minPrice: number;
-  isTargeted: boolean;
-  storeId: number;
+  id: number,
+  couponNo: string,
+  name: string,
+  isFixed: boolean,
+  amount: number,
+  percentage: number,
+  expiration: string,
+  minPrice: number,
+  isTargeted: boolean,
+  storeId: number
 }[];
+
 const width = Dimensions.get('window').width;
 
 const OrderList = ({ navigation, route }: OrderListPagePros) => {
+  //총액
   const [totalAmount, setTotalAmount] = useState<number>(0);
+  //총 상품 갯수
+  const [quantity, setQuantity] = useState<number>(0);
+  //쿠폰
+  const [couponInfo, setCouponInfo] = useState<Coupon>([])
   const [request, setRequest] = useState<string>('');
   const [storeInfo, setStoreInfo] = useState<StoreInfo>(initialStoreInfo);
+  const [userSimpleInfo, setUserSimpleInfo] = useState<UserSimpleInfo>(initialUserSimpleInfo);
   const [order, setOrder] = useState<Order>({
     cartId: 0,
     userId: 0,
@@ -56,56 +67,37 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
     await AsyncStorage.setItem('order', JSON.stringify(response.data));
   }
 
-  const getCart = async () => {
+  const getUserInfo = async () => {
     const accessToken = await getAccessToken('accessToken');
-    const response = await CartGet(
-      accessToken,
-      order.cartId
-    )
-    console.log(response.data);
-    setOrder(response.data);
+    const response = await UserSimpleAPI(accessToken);
+    setUserSimpleInfo(response.data)
   }
-
-  const getCart2 = async () => {
-    const order = await AsyncStorage.getItem('order');
-    console.log("이미 만들어놓은 카트", order);
-    if (order) {
-      setOrder(JSON.parse(order));
-    }
-  }
-
-
 
   useEffect(() => {
-    console.log(route.params?.postId);
-    console.log(route.params?.itemSets);
-    console.log(route.params?.totalPrice);
-    console.log(route.params?.storeInfo);
-    //storeInfo 설정
-    setStoreInfo(route.params?.storeInfo);
-    console.log(route.params?.cart);
-    console.log(order);
-
-    // setTotalAmount(storeInfo.cookTimeAvg)
+    //유저정보 
+    getUserInfo();
+    //쿠폰정보
+    getCoupons();
+    //초기 총액 설정
+    setTotalAmount(route.params?.totalPrice);
+    //상품갯수 설정
+    setQuantity(route.params?.checkList.length)
   }, [])
 
   const getCoupons = async () => {
     const accessToken = await getAccessToken('accessToken');
-    const response = await getCouponList(
-      accessToken,
-    )
-    console.log(response.data);
-    setCoupon(response.data);
+    const response = await getCouponList(accessToken)
+    setCouponInfo(response.data[0]);
   }
 
-  useEffect(() => {
-    if (order.cartId == 0) {
-      postCart();
-    } else {
-      getCart2();
-    }
-    getCoupons();
-  }, [])
+  // useEffect(() => {
+  //   if (order.cartId == 0) {
+  //     postCart();
+  //   } else {
+  //     getCart2();
+  //   }
+  //   getCoupons();
+  // }, [])
 
   const minusAmount = () => {
     setStoreInfo({
@@ -143,24 +135,23 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
     <ScrollView style={OrderWrapper.MainContainer}>
 
       <View style={{ paddingTop: 10 }}>
-        <View style={{flexDirection:'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           <Text style={OrderWrapper.BigTitle}>주문상품 총 </Text>
-          <Text style={[OrderWrapper.BigTitle,{color:'#00C1DE'}]}>1</Text>
+          <Text style={[OrderWrapper.BigTitle, { color: '#00C1DE' }]}>{quantity}</Text>
           <Text style={OrderWrapper.BigTitle}>개</Text>
         </View>
         <View style={OrderWrapper.Line}></View>
 
       </View>
 
-      <View style={{ paddingTop: 10 }}>
+      <View style={{ marginTop: 15 }}>
         <Text style={OrderWrapper.BigTitle}>
           픽업시간 설정
         </Text>
-
-        <Text style={[OrderWrapper.SmallTitle,{marginTop:3}]}>
+        <Text style={[OrderWrapper.SmallTitle, { marginTop: 3 }]}>
           몇분 후에 픽업하길 원하시나요? 픽업시간을 설정해주세요.</Text>
         <View style={{
-          flexDirection: 'row',  justifyContent: 'space-between', alignSelf: 'flex-end', alignItems: 'center', alignContent: 'center'
+          flexDirection: 'row', justifyContent: 'space-between', alignSelf: 'flex-end', alignItems: 'center', alignContent: 'center'
         }}>
           <TouchableOpacity
             onPress={minusAmount}
@@ -178,89 +169,104 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
         <View style={OrderWrapper.Line}></View>
       </View>
 
-      <View style={{ paddingTop: 10 }}>
+      <View style={{ marginTop: 15 }}>
         <Text style={OrderWrapper.BigTitle}>
           요청사항</Text>
         <TextInput
-          multiline={true}
+          multiline={false}
           numberOfLines={10}
           style={{
-            height: width * 0.2,
+            height: width * 0.1,
             backgroundColor: 'rgba(0, 193, 222, 0.12)',
             borderRadius: 10,
-            textAlignVertical: 'top',
+            textAlignVertical: 'center',
             borderColor: 'rgba(124, 0, 0, 0.05)',
             borderWidth: 1,
             color: '#8F8F8F',
             fontFamily: 'Apple SD Gothic Neo',
             fontSize: 11,
-            marginTop:5,
+            marginTop: 5,
             fontWeight: '500'
           }}
           blurOnSubmit={false}
           onChangeText={(e) => handleRequest(e)}
           placeholder="요청 사항을 적어주세요."
-          placeholderTextColor="black"
+          placeholderTextColor="8F8F8F"
           underlineColorAndroid="transparent"
         />
         <View style={OrderWrapper.Line}></View>
       </View>
 
-      <View style={{ paddingTop: 10 }}>
+      <View style={{ marginTop: 15 }}>
         <Text style={OrderWrapper.BigTitle}>
-          쿠폰 / 포인트
+          쿠폰/포인트
         </Text>
 
-        <View style={{ flexDirection: 'row', paddingTop: 10, }}>
-          <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,fontWeight:'700'}]}>
+        <View style={{ flexDirection: 'row', }}>
+          <Text style={[OrderWrapper.SmallTitle, { flex: 5, fontWeight: '700' }]}>
             쿠폰 (전체 {coupon.length}장, 적용가능 {coupon.length} 장)
           </Text>
           <TouchableOpacity
-            onPress={openModal}
-            style={{ borderWidth: 1, borderColor: '#BABABA', borderRadius: 3,flex:1,alignItems:'center',backgroundColor:'#EFEFEF' }}>
-            <View>
-              <Text style={[OrderWrapper.SmallTitle,{color:'#8F8F8F'}]}>
-                쿠폰 선택
-              </Text>
-            </View>
+            onPress={openModal}>
+            <Text style={[OrderWrapper.SmallTitle, { color: '#00C1DE', fontWeight: 'bold', borderRadius: 3, alignItems: 'center', justifyContent: 'center', backgroundColor: '#EFEFEF', }]}>
+              쿠폰 선택
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,paddingTop:5,fontWeight:'700'}]}>
-          포인트 (0 P)
+        <Text style={[OrderWrapper.SmallTitle, { flex: 5, fontWeight: '700' }]}>
+          잔여 포인트 ({userSimpleInfo.point.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')})
         </Text>
-        <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,paddingTop:5,fontWeight:'700'}]}>
-          잔여 포인트 (0 P)</Text>
       </View>
 
-      <View style={{ paddingTop: 10 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+      <View style={{ marginTop: 15 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={OrderWrapper.BigTitle}>
-            총 결제금액</Text>
-          <Text style={{ fontSize: 20, color: '#00C1DE', fontWeight: 'bold' }}>
-            {route.params?.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
+            총 결제금액
+          </Text>
+          <Text style={{ color: '#00C1DE', fontWeight: 'bold' }}>
+            {totalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
           </Text>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-          <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,fontWeight:'700'}]}>
+          <Text style={[OrderWrapper.SmallTitle, { flex: 5, fontWeight: '700' }]}>
             상품금액</Text>
-          <Text style={{ fontSize: 15, color: 'black', fontWeight: 'bold' }}>
-            {route.params?.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
+          <Text style={[OrderWrapper.SmallTitle, { color: 'black', fontWeight: 'bold' }]}>
+            {totalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between',}}>
-          <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,fontWeight:'700'}]}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+          <Text style={[OrderWrapper.SmallTitle, { flex: 5, fontWeight: '700' }]}>
             쿠폰 할인</Text>
-          <Text style={{ fontSize: 15, color: 'black', fontWeight: 'bold' }}>
+          <Text style={[OrderWrapper.SmallTitle, { color: 'black', fontWeight: 'bold' }]}>
             0원
           </Text>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-          <Text style={[OrderWrapper.SmallTitle,{fontSize:12,flex:5,fontWeight:'700'}]}>
+          <Text style={[OrderWrapper.SmallTitle, { flex: 5, fontWeight: '700' }]}>
             포인트 할인</Text>
-          <Text style={{ fontSize: 15, color: 'black', fontWeight: 'bold' }}>
-            0원
-          </Text>
+          <TextInput
+            multiline={true}
+            numberOfLines={10}
+            style={{
+              height: width * 0.09,
+              backgroundColor: 'rgba(0, 193, 222, 0.12)',
+              borderRadius: 10,
+              textAlignVertical: 'center',
+              borderColor: 'rgba(124, 0, 0, 0.05)',
+              borderWidth: 1,
+              color: '#8F8F8F',
+              fontFamily: 'Apple SD Gothic Neo',
+              fontSize: 11,
+              marginTop: 5,
+              fontWeight: '500'
+            }}
+            blurOnSubmit={false}
+            onChangeText={(e) => handleRequest(e)}
+            placeholder="사용가능 잔여포인트 0"
+            placeholderTextColor="#8F8F8F"
+            underlineColorAndroid="transparent"
+          />
         </View>
         <View style={OrderWrapper.Line}></View>
       </View>
@@ -303,7 +309,7 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
           <TouchableOpacity
             style={{ backgroundColor: '#00C1DE', borderRadius: 10, height: 50, width: 350, justifyContent: 'center', alignContent: 'center' }}>
             <Text style={{ fontWeight: '700', fontFamily: 'Urbanist', fontSize: 20, color: 'white', alignSelf: 'center', alignItems: 'center', textAlign: 'center', justifyContent: 'center', alignContent: 'center' }}>
-              {route.params?.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원 주문하기</Text>
+              {totalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원 주문하기</Text>
           </TouchableOpacity>
         </View>
 
@@ -322,26 +328,27 @@ const OrderWrapper = StyleSheet.create({
   MainContainer: {
     flex: 1,
     backgroundColor: 'white',
-    paddingLeft:25,
-    paddingRight:25,
-    paddingTop:10
+    paddingLeft: 25,
+    paddingRight: 25,
+    paddingTop: 10
   },
-  Line:{
+  Line: {
     paddingTop: 10,
     borderStyle: 'solid',
     borderBottomWidth: 1,
     borderColor: '#E7E7E7',
   },
-  BigTitle:{
+  BigTitle: {
     color: 'black',
     fontFamily: 'Apple SD Gothic Neo',
     fontSize: 16,
     fontWeight: '800'
   },
-  SmallTitle:{
+  SmallTitle: {
     color: '#8F8F8F',
     fontFamily: 'Apple SD Gothic Neo',
-    fontSize: 11,
+    fontSize: 13,
+    marginTop: 10,
     fontWeight: '500'
   }
 })

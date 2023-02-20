@@ -16,6 +16,7 @@ type CartListPageProps = {
   navigation?: any;
 }
 type StoreMenuOption = {
+  cartId: number,
   bigItem: string,
   storeId: number,
   storeNm: string;
@@ -59,11 +60,11 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
   const [checkList, setCheckList] = useState<number[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
-  const allCheck = (e:any) => {
-    if(e){
-      let test= radioButtons.map(radio => radio.id)
+  const allCheck = (e: any) => {
+    if (e) {
+      let test = radioButtons.map(radio => radio.id)
       setCheckList(test)
-    }else{
+    } else {
       setCheckList([])
     }
   }
@@ -71,69 +72,88 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
     console.log("선택한 ID", id);
 
     if (checkList.some((item: number) => item === id)) {
-      console.log("제거");
-      console.log(checkList.filter((item: number) => item !== id));
       // 선택한 id와 같지 않은것을 걸러내 
       setCheckList(checkList.filter((item: number) => item !== id));
       // setRadioButtons(radioButtons.filter((radio: StoreMenuOption) => radio.id !== id));
     } else {
-      console.log("추가");
       setCheckList(checkList.concat(id));
 
       // setRadioButtons(radioButtons.concat(choose));
     }
-    console.log("선택한 옵션 ", radioButtons.map(radio => radio.id));
 
-    setCart({
-      ...cart,
-      postId: route.params?.postId,
-      itemSets: [
-        {
-          bigItemId: storeMenu.id,
-          smallItemIds: radioButtons.map(radio => radio.id),
-          quantity: route.params?.amount
-        }
-      ],
-      totalPrice: route.params?.price
-    })
+    // setCart({
+    //   ...cart,
+    //   postId: route.params?.postId,
+    //   itemSets: [
+    //     {
+    //       bigItemId: storeMenu.id,
+    //       smallItemIds: radioButtons.map(radio => radio.id),
+    //       quantity: route.params?.amount
+    //     }
+    //   ],
+    //   totalPrice: route.params?.price
+    // })
   }
-  const delCart = (item:number,price:number) => {
-    console.log("delete Click")
-    let payload = {item:item,price:price}
-    setRadioButtons(radioButtons.filter((radio: StoreMenuOption) =>  radio.id+radio.price !== item+price ));
-    // setCheckList(checkList.filter((item: number) => item !== item));
-    dispatch(deleteCartList(payload));
+  const delCart = (item: number, id: number) => {
+
+    radioButtons.forEach((item: any, index: number) => {
+      if (item.cartId === item) {
+        radioButtons.splice(index, 1);
+      }
+    })
+    setRadioButtons(radioButtons.filter((radio: StoreMenuOption) => radio.cartId !== item));
+    setCheckList(checkList.filter((item: number) => item !== id));
+    dispatch(deleteCartList(item));
+
   }
 
   const goOrder = () => {
+    if (checkList.length === 0) {
+
+    }
+    else {
+
+    }
     navigation.navigate('OrderList', {
-      storeInfo: storeInfo,
-      cart: cart,
-      postId: route.params?.postId,
-      itemSets: cart?.itemSets,
-      totalPrice: route.params?.price
+      //전체 가격
+      totalPrice: totalPrice,
+      //체크박스 클릭한 상품 id
+      checkList: checkList,
+      //메뉴정보 List
+      radioButtons: radioButtons
     })
   }
+  //첫 실행시 렌더링
   useEffect(() => {
     console.log("세부메뉴아이템 ", route.params?.smallItem);
     //세부메뉴아이템 설정
     setRadioButtons(route.params?.smallItem);
+  }, []);
+
+  //가격 또는 체크박스 변경시 렌더링
+  useEffect(() => {
     //총액 계산
-    if(checkList.length ===0 ){
+    console.log("checkList=", checkList)
+    console.log("가격계산진행", checkList.length)
+    if (checkList.length === 0) {
       // setTotalPrice(route.params?.smallItem.map((item: any) => item.price).reduce((prev: any, curr: any) => prev + curr, 0))
       setTotalPrice(0);
-    }else{
+    } else {
+      console.log("test", radioButtons.map((item) => item.price));
       let selectFullPrice = 0;
       let checkItemPrice = [];
-      for(var j=0; j<checkList.length; j++){
-        checkItemPrice.push(radioButtons.filter((item)=>item.id === checkList[j]).map((item)=>item.price));
+      for (var j = 0; j < checkList.length; j++) {
+        checkItemPrice.push(radioButtons.filter((item) => item.id === checkList[j]).map((item) => item.price)[0]);
       }
-      for(var i in checkItemPrice){
-        selectFullPrice += checkItemPrice[i][0];
+      for (var i in checkItemPrice) {
+        selectFullPrice += checkItemPrice[i];
       }
+      console.log("총액:", checkItemPrice);
       setTotalPrice(selectFullPrice);
     }
-  }, [checkList]);
+
+  }, [checkList, radioButtons])
+
 
   return (
     <View style={CartWrapper.MainContainer}>
@@ -144,7 +164,7 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
           style={{ margin: 3 }}
           onCheckColor="#00C1DE"
           disabled={false}
-          onValueChange={(e)=>allCheck(e)}
+          onValueChange={(e) => allCheck(e)}
           value={checkList.length === radioButtons.length ? true : false}
         // onChange={allAgreeHnalder} 
         />
@@ -233,11 +253,11 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
                             {cartItem.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
                           </Text>
                         </View>
-                        <TouchableOpacity 
-                        onPress={ () => delCart(cartItem.id,cartItem.price)}
-                        style={{marginLeft:1,position:'absolute',left:width*0.85}}
+                        <TouchableOpacity
+                          onPress={() => delCart(cartItem.cartId, cartItem.id)}
+                          style={{ marginLeft: 1, position: 'absolute', left: width * 0.85 }}
                         >
-                          <Text style={[CartWrapper.FontText,{fontSize:16}]}>✖</Text>
+                          <Text style={[CartWrapper.FontText, { fontSize: 16 }]}>✖</Text>
                         </TouchableOpacity>
                       </View>
                       <View style={{

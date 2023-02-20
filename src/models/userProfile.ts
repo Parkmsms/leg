@@ -13,3 +13,17 @@ export const initialUserProfile: UserProfileData = {
   phone: '',
   email: '',
 };
+
+export interface UserSimpleInfo {
+  nickname: string;
+  profile: string,
+  point: number,
+  town: string
+}
+
+export const initialUserSimpleInfo: UserSimpleInfo = {
+  nickname: '',
+  profile: '',
+  point: 0,
+  town: ''
+};
