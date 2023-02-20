@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
 import { RoundedCheckbox } from "react-native-rounded-checkbox";
 import AntIcon from "react-native-vector-icons/AntDesign";
 import { CartGet, CartPost, getAccessToken, getCouponList, UserSimpleAPI } from "../../config/AxiosFunction";
@@ -37,7 +37,8 @@ type Coupon = {
 const width = Dimensions.get('window').width;
 
 const OrderList = ({ navigation, route }: OrderListPagePros) => {
-  //총액
+  const[amount,setAmount] = useState<number>(0);
+  //계산 총액
   const [totalAmount, setTotalAmount] = useState<number>(0);
   //총 상품 갯수
   const [quantity, setQuantity] = useState<number>(0);
@@ -51,6 +52,10 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
     userId: 0,
     postId: 0,
     totalPrice: 0
+  });
+  const [inputs, setInputs] = useState({
+    request: '',
+    discPoint: ''
   });
   const [coupon, setCoupon] = useState<Coupon>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -79,6 +84,8 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
     //쿠폰정보
     getCoupons();
     //초기 총액 설정
+    setAmount(route.params?.totalPrice)
+    //최종금액 설정
     setTotalAmount(route.params?.totalPrice);
     //상품갯수 설정
     setQuantity(route.params?.checkList.length)
@@ -90,14 +97,11 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
     setCouponInfo(response.data[0]);
   }
 
-  // useEffect(() => {
-  //   if (order.cartId == 0) {
-  //     postCart();
-  //   } else {
-  //     getCart2();
-  //   }
-  //   getCoupons();
-  // }, [])
+  //할인 적용
+  const discount = () =>{
+    setTotalAmount(amount - parseInt(inputs.discPoint));
+  }
+
 
   const minusAmount = () => {
     setStoreInfo({
@@ -111,11 +115,39 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
       cookTimeAvg: storeInfo.cookTimeAvg + 5
     });
   }
-  const handleRequest = (e: string) => {
-    setRequest(e)
-    console.log(e);
+  const handleRequest = (keyvalue:string, e: string) => {
 
+    setInputs({
+      ...inputs, 
+      [keyvalue]: e 
+    });
+
+    if(keyvalue=="discPoint"){
+      if(parseInt(e)>userSimpleInfo.point){
+        setInputs({
+          ...inputs, 
+          [keyvalue]: userSimpleInfo.point.toString()
+        });
+      }
+
+      if(parseInt(e)>amount){
+        setInputs({
+          ...inputs, 
+          [keyvalue]: amount.toString()
+        });
+      }
+
+      if(e=="" || e==undefined){
+        console.log("active",e)
+        console.log(amount);
+        // setTotalAmount((totalAmount)=> {return totalAmount=amount});
+      }
+    }
+
+    // setTotalAmount(()=>{ return totalAmount-parseInt(e)});
+    
   }
+
   const RoundedCheckBox = () => {
     return (
       <View>
@@ -124,6 +156,7 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
     )
   }
   const openModal = () => {
+    console.log(inputs)
     setModalOpen(true);
   }
 
@@ -133,7 +166,6 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
 
   return (
     <ScrollView style={OrderWrapper.MainContainer}>
-
       <View style={{ paddingTop: 10 }}>
         <View style={{ flexDirection: 'row' }}>
           <Text style={OrderWrapper.BigTitle}>주문상품 총 </Text>
@@ -141,9 +173,7 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
           <Text style={OrderWrapper.BigTitle}>개</Text>
         </View>
         <View style={OrderWrapper.Line}></View>
-
       </View>
-
       <View style={{ marginTop: 15 }}>
         <Text style={OrderWrapper.BigTitle}>
           픽업시간 설정
@@ -188,8 +218,9 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
             marginTop: 5,
             fontWeight: '500'
           }}
+          value={inputs.request}
           blurOnSubmit={false}
-          onChangeText={(e) => handleRequest(e)}
+          onChangeText={(e) => handleRequest("request",e)}
           placeholder="요청 사항을 적어주세요."
           placeholderTextColor="8F8F8F"
           underlineColorAndroid="transparent"
@@ -249,7 +280,7 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
             multiline={true}
             numberOfLines={10}
             style={{
-              height: width * 0.09,
+              height: width * 0.08,
               backgroundColor: 'rgba(0, 193, 222, 0.12)',
               borderRadius: 10,
               textAlignVertical: 'center',
@@ -257,16 +288,36 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
               borderWidth: 1,
               color: '#8F8F8F',
               fontFamily: 'Apple SD Gothic Neo',
-              fontSize: 11,
-              marginTop: 5,
+              fontSize: 8,
               fontWeight: '500'
             }}
+            keyboardType="number-pad"
+            textAlign="right"
+            value={inputs.discPoint}
             blurOnSubmit={false}
-            onChangeText={(e) => handleRequest(e)}
-            placeholder="사용가능 잔여포인트 0"
+            onChangeText={(e) => handleRequest("discPoint",e)}
+            placeholder={"잔여 포인트, "+userSimpleInfo.point.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +"원"}
             placeholderTextColor="#8F8F8F"
             underlineColorAndroid="transparent"
           />
+          <TouchableOpacity onPress={discount}
+          style={{
+            height: width * 0.08,
+            marginLeft:5,
+            backgroundColor: '#EFEFEF',
+            borderRadius: 5,
+            borderColor: 'rgba(124, 0, 0, 0.05)',
+            borderWidth: 1,
+            justifyContent:'center'
+          }}>
+            <Text
+            style={{
+              fontSize:9,
+              fontWeight:'500',
+              color:'black',
+              textAlignVertical:'center'
+            }}>할인적용</Text>
+          </TouchableOpacity>
         </View>
         <View style={OrderWrapper.Line}></View>
       </View>
