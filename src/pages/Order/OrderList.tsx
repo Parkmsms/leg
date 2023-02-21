@@ -37,14 +37,15 @@ type Coupon = {
 const width = Dimensions.get('window').width;
 
 const OrderList = ({ navigation, route }: OrderListPagePros) => {
-  const[amount,setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(0);
   //계산 총액
   const [totalAmount, setTotalAmount] = useState<number>(0);
   //총 상품 갯수
   const [quantity, setQuantity] = useState<number>(0);
   //쿠폰
   const [couponInfo, setCouponInfo] = useState<Coupon>([])
-  const [request, setRequest] = useState<string>('');
+  //최소시간
+  const [minMinutes, setMinminutes] = useState<number>(0);
   const [storeInfo, setStoreInfo] = useState<StoreInfo>(initialStoreInfo);
   const [userSimpleInfo, setUserSimpleInfo] = useState<UserSimpleInfo>(initialUserSimpleInfo);
   const [order, setOrder] = useState<Order>({
@@ -79,10 +80,15 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
   }
 
   useEffect(() => {
+    console.log("storeInfo", route.params?.storeInfo)
     //유저정보 
     getUserInfo();
+    //최소시간 설정
+    setMinminutes(route.params?.storeInfo.minCookTime);
     //쿠폰정보
     getCoupons();
+    //가게 정보 설정
+    setStoreInfo(route.params?.storeInfo)
     //초기 총액 설정
     setAmount(route.params?.totalPrice)
     //최종금액 설정
@@ -98,7 +104,7 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
   }
 
   //할인 적용
-  const discount = () =>{
+  const discount = () => {
     setTotalAmount(amount - parseInt(inputs.discPoint));
   }
 
@@ -106,46 +112,46 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
   const minusAmount = () => {
     setStoreInfo({
       ...storeInfo,
-      cookTimeAvg: storeInfo.cookTimeAvg - 5
+      minCookTime: storeInfo.minCookTime - 5
     })
   }
   const plusAmount = () => {
     setStoreInfo({
       ...storeInfo,
-      cookTimeAvg: storeInfo.cookTimeAvg + 5
+      minCookTime: storeInfo.minCookTime + 5
     });
   }
-  const handleRequest = (keyvalue:string, e: string) => {
+  const handleRequest = (keyvalue: string, e: string) => {
 
     setInputs({
-      ...inputs, 
-      [keyvalue]: e 
+      ...inputs,
+      [keyvalue]: e
     });
 
-    if(keyvalue=="discPoint"){
-      if(parseInt(e)>userSimpleInfo.point){
+    if (keyvalue == "discPoint") {
+      if (parseInt(e) > userSimpleInfo.point) {
         setInputs({
-          ...inputs, 
+          ...inputs,
           [keyvalue]: userSimpleInfo.point.toString()
         });
       }
 
-      if(parseInt(e)>amount){
+      if (parseInt(e) > amount) {
         setInputs({
-          ...inputs, 
+          ...inputs,
           [keyvalue]: amount.toString()
         });
       }
 
-      if(e=="" || e==undefined){
-        console.log("active",e)
+      if (e == "" || e == undefined) {
+        console.log("active", e)
         console.log(amount);
         // setTotalAmount((totalAmount)=> {return totalAmount=amount});
       }
     }
 
     // setTotalAmount(()=>{ return totalAmount-parseInt(e)});
-    
+
   }
 
   const RoundedCheckBox = () => {
@@ -185,11 +191,11 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
         }}>
           <TouchableOpacity
             onPress={minusAmount}
-            disabled={storeInfo.cookTimeAvg === 0 ? true : false}>
+            disabled={storeInfo.minCookTime <= minMinutes ? true : false}>
             <AntIcon name="minuscircleo" size={20} style={{ color: '#00C1DE' }} />
           </TouchableOpacity>
           <Text style={{ fontSize: 20, color: '#00C1DE', padding: 3 }}>
-            {storeInfo.cookTimeAvg}분
+            {storeInfo.minCookTime}분
           </Text>
           <TouchableOpacity
             onPress={plusAmount}>
@@ -220,9 +226,9 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
           }}
           value={inputs.request}
           blurOnSubmit={false}
-          onChangeText={(e) => handleRequest("request",e)}
+          onChangeText={(e) => handleRequest("request", e)}
           placeholder="요청 사항을 적어주세요."
-          placeholderTextColor="8F8F8F"
+          placeholderTextColor="#8F8F8F"
           underlineColorAndroid="transparent"
         />
         <View style={OrderWrapper.Line}></View>
@@ -263,7 +269,7 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
           <Text style={[OrderWrapper.SmallTitle, { flex: 5, fontWeight: '700' }]}>
             상품금액</Text>
           <Text style={[OrderWrapper.SmallTitle, { color: 'black', fontWeight: 'bold' }]}>
-            {totalAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
+            {amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
           </Text>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
@@ -295,28 +301,28 @@ const OrderList = ({ navigation, route }: OrderListPagePros) => {
             textAlign="right"
             value={inputs.discPoint}
             blurOnSubmit={false}
-            onChangeText={(e) => handleRequest("discPoint",e)}
-            placeholder={"잔여 포인트, "+userSimpleInfo.point.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +"원"}
+            onChangeText={(e) => handleRequest("discPoint", e)}
+            placeholder={"잔여 포인트, " + userSimpleInfo.point.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + "원"}
             placeholderTextColor="#8F8F8F"
             underlineColorAndroid="transparent"
           />
           <TouchableOpacity onPress={discount}
-          style={{
-            height: width * 0.08,
-            marginLeft:5,
-            backgroundColor: '#EFEFEF',
-            borderRadius: 5,
-            borderColor: 'rgba(124, 0, 0, 0.05)',
-            borderWidth: 1,
-            justifyContent:'center'
-          }}>
-            <Text
             style={{
-              fontSize:9,
-              fontWeight:'500',
-              color:'black',
-              textAlignVertical:'center'
-            }}>할인적용</Text>
+              height: width * 0.08,
+              marginLeft: 5,
+              backgroundColor: '#EFEFEF',
+              borderRadius: 5,
+              borderColor: 'rgba(124, 0, 0, 0.05)',
+              borderWidth: 1,
+              justifyContent: 'center'
+            }}>
+            <Text
+              style={{
+                fontSize: 9,
+                fontWeight: '500',
+                color: 'black',
+                textAlignVertical: 'center'
+              }}>할인적용</Text>
           </TouchableOpacity>
         </View>
         <View style={OrderWrapper.Line}></View>

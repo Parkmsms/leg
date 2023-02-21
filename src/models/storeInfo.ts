@@ -3,7 +3,7 @@ export interface StoreInfo {
   storeName: string;
   storeStar: number;
   postTitle: string;
-  cookTimeAvg: number;
+  minCookTime: number;
   storeAddress: string;
   storePhone: string;
   postContent: string;
@@ -16,7 +16,7 @@ export const initialStoreInfo: StoreInfo = {
   storeName: "",
   storeStar: 0,
   postTitle: "",
-  cookTimeAvg: 0,
+  minCookTime: 0,
   storeAddress: "",
   storePhone: "",
   postContent: "",

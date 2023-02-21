@@ -54,10 +54,10 @@ const Home = ({ navigation }: HomeProps) => {
                         messaging().registerDeviceForRemoteMessages();
                     }
                     messaging().getToken().then((token) => {
-                        console.log("messaging token", token);
+                        console.log("Home_messaging token", token);
                         setToken(token);
                     }).catch((error: any) => {
-                        console.log("error", error);
+                        console.log("messaging error", error);
                         setToken("device_Token");
                     })
                 }, 1000);

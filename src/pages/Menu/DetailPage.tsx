@@ -224,7 +224,7 @@ const DetailPage = ({ navigation, route }: DetailPageProps) => {
 
   const goCart = () => {
     navigation.navigate('CartList', {
-      storeInfo: selectStore,
+      storeInfo: storeInfo,
       postId: selectId,
       profile: selectProfile,
       menu: selectStoreMenu,

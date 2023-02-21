@@ -115,6 +115,8 @@ const CartList = ({ navigation, route }: CartListPageProps) => {
 
     }
     navigation.navigate('OrderList', {
+      //가게정보
+      storeInfo: route.params?.storeInfo,
       //전체 가격
       totalPrice: totalPrice,
       //체크박스 클릭한 상품 id
