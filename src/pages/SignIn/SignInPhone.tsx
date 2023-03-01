@@ -28,7 +28,7 @@ const SignInPhone = ({ navigation, route }: SignInPhone) => {
         }
     }
     useEffect(() => {
-        console.log("로그인 휴대폰 번호", route.params?.deviceInfo);
+        console.log("로그인 휴대폰 번호1", route.params?.deviceInfo);
 
     }, [])
     const getPhone = async () => {
