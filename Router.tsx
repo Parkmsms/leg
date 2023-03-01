@@ -4,8 +4,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import TabNavigator from "./src/navigations/TabNaigator";
 import StackNavigator from "./src/navigations/StackNavigator";
 import LoginSuccessNavigator from "./src/navigations/LoginSuccessNavigator";
-import Toast from 'react-native-toast-message'
-
 
 
 const Router = () => {

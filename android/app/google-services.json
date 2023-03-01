@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "709011725351",
-    "project_id": "werow-leg",
-    "storage_bucket": "werow-leg.appspot.com"
+    "project_number": "897433109924",
+    "project_id": "werow-leg-73a70",
+    "storage_bucket": "werow-leg-73a70.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:709011725351:android:82e647655d2fdaa65a8202",
+        "mobilesdk_app_id": "1:897433109924:android:4a452a6cd788ccf8a96d31",
         "android_client_info": {
           "package_name": "com.werow.leg"
         }
       },
       "oauth_client": [
         {
-          "client_id": "709011725351-lg4kghctfa3c46glb1amors9mehtnno6.apps.googleusercontent.com",
+          "client_id": "897433109924-g2r1sc90d9kse6vb8fkgmu05i4gh8hqo.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyChGUn7pIMyiZ-3GgmyWlwmTncEgSFldeo"
+          "current_key": "AIzaSyBW2qB-EHmjUfdGTyTq6tEEUs1ad139MU0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "709011725351-lg4kghctfa3c46glb1amors9mehtnno6.apps.googleusercontent.com",
+              "client_id": "897433109924-g2r1sc90d9kse6vb8fkgmu05i4gh8hqo.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
